@@ -27,6 +27,7 @@ public class SmoothFollow : MonoBehaviour
     // Use this for initialization
     void Awake()
     {
+        //Set Camera Distance from player
         Vector3 CameraDistance = cameraObj.position + offset;
         cameraObj.position = CameraDistance;
 
@@ -37,6 +38,12 @@ public class SmoothFollow : MonoBehaviour
         Cursor.visible = false;
     }
 
+    private void Update()
+    {
+        //Smooth Follow Player, Update each frame
+        transform.position = Vector3.Lerp(transform.position, target.position, 10);
+    }
+
     // Update is called once per frame
     void FixedUpdate()
     {
@@ -44,19 +51,25 @@ public class SmoothFollow : MonoBehaviour
         // We setup the rotation of the sticks here
         float inputX = Input.GetAxis("RightStickHorizontal");
         float inputZ = Input.GetAxis("RightStickVertical");
+        //Set up Keys
         mouseX = Input.GetAxis("Mouse X");
         mouseY = Input.GetAxis("Mouse Y");
+        //Combine inputs
         finalInputX = inputX + mouseX;
         finalInputZ = inputZ + mouseY;
 
+        //Rotation Speed
         rotY += finalInputX * inputSensitivity * Time.deltaTime;
         rotX += finalInputZ * inputSensitivity * Time.deltaTime;
 
+        //Camera Angle limit
         rotX = Mathf.Clamp(rotX, -clampAngle, clampAngle);
 
+        //Rotate Camera
         Quaternion localRotation = Quaternion.Euler(rotX, rotY, 0.0f);
         transform.rotation = Quaternion.Lerp(transform.rotation, localRotation, smoothSpeed) ;
 
+        //Make Camera-child look at player
         cameraObj.LookAt(target);
 
 

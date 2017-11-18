@@ -226,6 +226,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Gameplay\Camera\SmoothFollow.cs" />
+    <Compile Include="Assets\Scripts\Gameplay\Movement\PlayerController.cs" />
     <Compile Include="Assets\Scripts\Input\MouseData.cs" />
     <Compile Include="Assets\Scripts\Managers\GameManager.cs" />
   </ItemGroup>
