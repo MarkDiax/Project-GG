@@ -1,5 +1,5 @@
-Temp/
-Library/
+Temp/*
+Library/*
 
 
 .csproj
@@ -8,3 +8,4 @@ Library/
 .user
 .userprefs
 .DS_store
+Library/
