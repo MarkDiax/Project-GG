@@ -1,9 +1,12 @@
 ﻿using UnityEngine;
 
+/// <summary>
+/// Holds all managers such as InputManager.
+/// Makes sure the core gameplay features are instantiated.
+/// </summary>
 public class GameManager : MonoBehaviour {
 
-    MouseData _mouseData = MouseData.Instance;
-
+	InputManager Input = InputManager.Instance;
     void Awake () {
         DontDestroyOnLoad(gameObject);
 
@@ -18,8 +21,8 @@ public class GameManager : MonoBehaviour {
 
     private void UpdateMouseValues()
     {
-        _mouseData.mouseAngleX += Input.GetAxis("Mouse X") * _mouseData.sensitivityX;
-        _mouseData.mouseAngleY += Input.GetAxis("Mouse Y") * _mouseData.sensitivityY;
-        _mouseData.mouseAngleY = Mathf.Clamp(_mouseData.mouseAngleY, _mouseData.mouseAngleMinY, _mouseData.mouseAngleMaxY);
+        //_mouseData.mouseAngleX += Input.GetAxis("Mouse X") * _mouseData.sensitivityX;
+        //_mouseData.mouseAngleY += Input.GetAxis("Mouse Y") * _mouseData.sensitivityY;
+        //_mouseData.mouseAngleY = Mathf.Clamp(_mouseData.mouseAngleY, _mouseData.mouseAngleMinY, _mouseData.mouseAngleMaxY);
     }
 }

@@ -9,3 +9,7 @@ Library/*
 .userprefs
 .DS_store
 Library/
+
+\.vs/
+
+ProjectSettings/ProjectVersion\.txt
