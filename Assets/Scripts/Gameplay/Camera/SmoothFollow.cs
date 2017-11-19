@@ -18,14 +18,19 @@ public class SmoothFollow : MonoBehaviour {
 	}
 
 	void Update() {
-		if (input.Mouse.ScrollWheel != 0)
-			TargetDistance += (input.Mouse.ScrollWheel < 0) ? ZoomSpeed : -ZoomSpeed;
+		if (input.Mouse.ScrollWheel > 0)
+			TargetDistance += ZoomSpeed;
+		else if (input.Mouse.ScrollWheel < 0)
+			TargetDistance -= ZoomSpeed;
+
+		TargetDistance = Mathf.Clamp(TargetDistance, 4f, 30f);
 
 		Vector3 Direction = new Vector3(0, 0, -TargetDistance);
 		Quaternion Rotation = Quaternion.Euler(input.Mouse.Angle.y, input.Mouse.Angle.x, 0);
 
-		Vector3 targetPosition = Target.position + CameraOffset + Rotation * Direction;
-		transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, SmoothTime);
+		Vector3 targetPosition = Target.position + (Rotation * Direction);
+		transform.position = Vector3.Lerp(transform.position, targetPosition , SmoothTime * Time.deltaTime);
+
 
 		transform.LookAt(Target);
 	}
