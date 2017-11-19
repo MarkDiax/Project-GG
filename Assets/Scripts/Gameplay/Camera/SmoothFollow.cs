@@ -8,10 +8,8 @@ public class SmoothFollow : MonoBehaviour {
 	public float TargetDistance;
 	public float SmoothTime;
 	public float ZoomSpeed;
-	public Vector3 CameraOffset = new Vector3(0, 5, 0);
 
 	private InputManager input;
-	private Vector3 velocity = Vector3.zero;
 
 	private void Start() {
 		input = InputManager.Instance;

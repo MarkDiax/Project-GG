@@ -48,8 +48,14 @@ public class InputManager : Singleton<InputManager> {
 		public override void Init() { }
 
 		public void Update() {
-			vertical = Input.GetAxisRaw("Vertical");
-			horizontal = Input.GetAxisRaw("Horizontal");
+			if (GameManager.Instance.ControllerConnected) {
+				vertical = Input.GetAxisRaw("RightStickVertical");
+				horizontal = Input.GetAxisRaw("RightStickHorizontal");
+			}
+			else {
+				vertical = Input.GetAxisRaw("Vertical");
+				horizontal = Input.GetAxisRaw("Horizontal");
+			}
 		}
 
 		public float Vertical {
