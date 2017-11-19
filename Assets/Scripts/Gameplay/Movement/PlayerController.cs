@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour {
 
 	public float Smoothing;
-
+	public float StartSpeed;
 	public float MoveSpeed;
 	public float RotationSpeed;
 

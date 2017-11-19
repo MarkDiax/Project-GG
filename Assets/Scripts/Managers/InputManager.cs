@@ -19,15 +19,22 @@ public class InputManager : Singleton<InputManager> {
 
 	public class MouseData : Singleton<MouseData> {
 		private float angleX = 0f, angleY = 0f;
-		private float mouseAngleMinY = 5.0f, mouseAngleMaxY = 80.0f;
+		private float mouseAngleMinY = 0.0f, mouseAngleMaxY = 90.0f;
 		private float sensitivityX = 1.5f, sensitivityY = 1.5f;
 		private float scrollWheel;
 
 		public override void Init() { }
 
 		public void Update() {
-			angleX += Input.GetAxis("Mouse X") * sensitivityX;
-			angleY += Input.GetAxis("Mouse Y") * sensitivityY;
+			if (GameManager.Instance.ControllerConnected) {
+				angleX += Input.GetAxis("RightStickVertical") * sensitivityX;
+				angleY += Input.GetAxis("RightStickHorizontal") * sensitivityY;
+			}
+			else {
+				angleX += Input.GetAxis("Mouse X") * sensitivityX;
+				angleY += Input.GetAxis("Mouse Y") * sensitivityY;
+			}
+
 			angleY = Mathf.Clamp(angleY, mouseAngleMinY, mouseAngleMaxY);
 
 			scrollWheel = Input.GetAxis("Mouse ScrollWheel");
@@ -48,14 +55,8 @@ public class InputManager : Singleton<InputManager> {
 		public override void Init() { }
 
 		public void Update() {
-			if (GameManager.Instance.ControllerConnected) {
-				vertical = Input.GetAxisRaw("RightStickVertical");
-				horizontal = Input.GetAxisRaw("RightStickHorizontal");
-			}
-			else {
 				vertical = Input.GetAxisRaw("Vertical");
 				horizontal = Input.GetAxisRaw("Horizontal");
-			}
 		}
 
 		public float Vertical {
