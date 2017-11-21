@@ -206,33 +206,6 @@ Prefab:
       propertyPath: m_Name
       value: Player:Xbot
       objectReference: {fileID: 0}
-    - target: {fileID: 4510374004042462, guid: d8186a9f3ddc18c46a68ddb45c25062f, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4510374004042462, guid: d8186a9f3ddc18c46a68ddb45c25062f, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4510374004042462, guid: d8186a9f3ddc18c46a68ddb45c25062f, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 54255451150920654, guid: d8186a9f3ddc18c46a68ddb45c25062f,
-        type: 2}
-      propertyPath: m_IsKinematic
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 95607564374784256, guid: d8186a9f3ddc18c46a68ddb45c25062f,
-        type: 2}
-      propertyPath: m_Avatar
-      value: 
-      objectReference: {fileID: 9000000, guid: 40e29f223097fe648b36d30e2478eff4, type: 3}
-    - target: {fileID: 95607564374784256, guid: d8186a9f3ddc18c46a68ddb45c25062f,
-        type: 2}
-      propertyPath: m_WarningMessage
-      value: 
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: d8186a9f3ddc18c46a68ddb45c25062f, type: 2}
   m_IsPrefabParent: 0
@@ -518,15 +491,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84fe1c641f0fd61408670f63a0e649e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Target: {fileID: 1740039846}
+  Target: {fileID: 1708871374}
   TargetDistance: 4.6
   SmoothTime: 5
   ZoomSpeed: 1
---- !u!4 &1740039846 stripped
+--- !u!4 &1708871374 stripped
 Transform:
-  m_PrefabParentObject: {fileID: 4579806334896348, guid: f03ad0af1d7a9014cac59c2db0ee3d70,
+  m_PrefabParentObject: {fileID: 4299420632094340, guid: d8186a9f3ddc18c46a68ddb45c25062f,
     type: 2}
-  m_PrefabInternal: {fileID: 61593702}
+  m_PrefabInternal: {fileID: 151118662}
 --- !u!1 &1819121327
 GameObject:
   m_ObjectHideFlags: 0
