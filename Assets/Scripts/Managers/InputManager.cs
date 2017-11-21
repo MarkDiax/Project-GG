@@ -55,8 +55,8 @@ public class InputManager : Singleton<InputManager> {
 		public override void Init() { }
 
 		public void Update() {
-				vertical = Input.GetAxisRaw("Vertical");
-				horizontal = Input.GetAxisRaw("Horizontal");
+			vertical = Input.GetAxisRaw("Vertical");
+			horizontal = Input.GetAxisRaw("Horizontal");
 		}
 
 		public float Vertical {
