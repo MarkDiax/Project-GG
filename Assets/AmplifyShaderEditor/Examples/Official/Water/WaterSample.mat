@@ -55,7 +55,7 @@ Material:
     - _Float3: 0.9
     - _Foam: 1.79
     - _FoamDepth: 0.8
-    - _FoamFalloff: -40
+    - _FoamFalloff: -90
     - _FoamPower: 4
     - _FoamSmoothness: 0.5
     - _FoamSpecular: 0
@@ -72,6 +72,6 @@ Material:
     m_Colors:
     - _Color0: {r: 0, g: 0.6749488, b: 0.8088235, a: 0}
     - _Color1: {r: 0, g: 0.048731543, b: 0.22794023, a: 0}
-    - _DeepColor: {r: 0, g: 0.043101683, b: 0.24999824, a: 0}
+    - _DeepColor: {r: 0, g: 0.04310166, b: 0.24999821, a: 0}
     - _ShalowColor: {r: 0, g: 0.80882317, b: 0.8088235, a: 0}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
