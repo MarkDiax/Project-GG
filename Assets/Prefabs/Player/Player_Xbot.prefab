@@ -794,7 +794,7 @@ GameObject:
   - component: {fileID: 114408728907232924}
   m_Layer: 0
   m_Name: Player_Xbot
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -824,7 +824,7 @@ GameObject:
   - component: {fileID: 4366893807771588}
   m_Layer: 0
   m_Name: Camera Follow
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
