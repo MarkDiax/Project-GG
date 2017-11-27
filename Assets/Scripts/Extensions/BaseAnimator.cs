@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class BaseAnimator : MonoBehaviour {
-
+	[HideInInspector]
 	public Animator Animator;
 
 	protected virtual void Awake() {
