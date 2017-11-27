@@ -22,7 +22,7 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	private void Update() {
-		/*
+		
 		if (input.Keyboard.Vertical != 0) {
 
 			float MouseY = Quaternion.LookRotation(cam.transform.forward).eulerAngles.y;
@@ -30,6 +30,6 @@ public class PlayerController : MonoBehaviour {
 			player.transform.localRotation = Quaternion.Euler(playerEuler.x, MouseY, playerEuler.z);
 		}
 
-	*/
+	
 	}
 }
