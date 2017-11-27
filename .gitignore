@@ -13,3 +13,13 @@ Library/
 \.vs/
 
 ProjectSettings/ProjectVersion\.txt
+
+3dplatformer\.csproj
+
+3dplatformer\.Editor\.csproj
+
+3dplatformer\.Editor\.Plugins\.csproj
+
+3dplatformer\.Plugins\.csproj
+
+3dplatformer\.sln
