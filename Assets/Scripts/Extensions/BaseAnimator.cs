@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BaseAnimator : MonoBehaviour {
 
-	protected Animator Animator;
+	public Animator Animator;
 
 	protected virtual void Awake() {
 		Animator = GetComponent<Animator>();
