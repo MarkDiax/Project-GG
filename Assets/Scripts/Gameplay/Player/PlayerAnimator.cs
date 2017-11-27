@@ -15,14 +15,16 @@ public class PlayerAnimator : BaseAnimator {
 		input = InputManager.Instance;
 	}
 
-	private void Update() {
-		Animator.SetFloat("Speed", input.Keyboard.Vertical);
-		Animator.SetFloat("Rotation", input.Keyboard.Horizontal);
+
+	private void OnAnimatorMove() {
+		Animator.ApplyBuiltinRootMotion();
 
 
-		if (Input.GetKeyDown(KeyCode.Space)) {
+		if (input.Keyboard.Vertical != 0) {
 
-			TriggerExpression("Jump");
+			float MouseY = Quaternion.LookRotation(Camera.main.transform.forward).eulerAngles.y;
+			Vector3 playerEuler = transform.localEulerAngles;
+			transform.localRotation = Quaternion.Euler(playerEuler.x, MouseY, playerEuler.z);
 		}
 	}
 }

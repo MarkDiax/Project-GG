@@ -2163,7 +2163,7 @@ MeshCollider:
   m_Convex: 0
   m_InflateMesh: 0
   m_SkinWidth: 0.01
-  m_Mesh: {fileID: 4300002, guid: ce682f68285dcfb448b9194abf89313e, type: 3}
+  m_Mesh: {fileID: 4300002, guid: 2a72930bef1551f4bb910b7422a7dc5b, type: 3}
 --- !u!95 &95607564374784256
 Animator:
   serializedVersion: 3

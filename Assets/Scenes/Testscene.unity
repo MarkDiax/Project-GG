@@ -172,11 +172,11 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4276824963270394, guid: d8186a9f3ddc18c46a68ddb45c25062f, type: 2}
       propertyPath: m_LocalPosition.x
-      value: -0.95586044
+      value: 0.95
       objectReference: {fileID: 0}
     - target: {fileID: 4276824963270394, guid: d8186a9f3ddc18c46a68ddb45c25062f, type: 2}
       propertyPath: m_LocalPosition.y
-      value: 0.38967323
+      value: 2.31
       objectReference: {fileID: 0}
     - target: {fileID: 4276824963270394, guid: d8186a9f3ddc18c46a68ddb45c25062f, type: 2}
       propertyPath: m_LocalPosition.z
@@ -205,6 +205,21 @@ Prefab:
     - target: {fileID: 1554003838952390, guid: d8186a9f3ddc18c46a68ddb45c25062f, type: 2}
       propertyPath: m_Name
       value: Player:Xbot
+      objectReference: {fileID: 0}
+    - target: {fileID: 54255451150920654, guid: d8186a9f3ddc18c46a68ddb45c25062f,
+        type: 2}
+      propertyPath: m_IsKinematic
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 54255451150920654, guid: d8186a9f3ddc18c46a68ddb45c25062f,
+        type: 2}
+      propertyPath: m_UseGravity
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 64618280765577870, guid: d8186a9f3ddc18c46a68ddb45c25062f,
+        type: 2}
+      propertyPath: m_Convex
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: d8186a9f3ddc18c46a68ddb45c25062f, type: 2}

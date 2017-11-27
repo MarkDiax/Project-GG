@@ -60,6 +60,10 @@ public class BaseAnimator : MonoBehaviour {
 		}
 	}
 
+	public void SetFloat(string Name, float Value) {
+		Animator.SetFloat(Name, Value);
+	}
+
 	public void SetActive(bool Active) {
 		Animator.enabled = Active;
 	}
