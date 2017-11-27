@@ -22,12 +22,14 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	private void Update() {
-
+		/*
 		if (input.Keyboard.Vertical != 0) {
 
 			float MouseY = Quaternion.LookRotation(cam.transform.forward).eulerAngles.y;
 			Vector3 playerEuler = player.transform.localEulerAngles;
 			player.transform.localRotation = Quaternion.Euler(playerEuler.x, MouseY, playerEuler.z);
 		}
+
+	*/
 	}
 }
