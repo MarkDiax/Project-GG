@@ -7,10 +7,8 @@
 public class GameManager : MonoSingleton<GameManager> {
 
 	public override void Init() {
-		/*
 		Cursor.lockState = CursorLockMode.Locked;
 		Cursor.visible = false;
-	*/
 	}
 
 	private void Update() {
