@@ -56,21 +56,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!1 &1065090439838882
-GameObject:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 4299420632094340}
-  m_Layer: 0
-  m_Name: Camera Follow
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
 --- !u!1 &1115337941146136
 GameObject:
   m_ObjectHideFlags: 1
@@ -794,7 +779,7 @@ GameObject:
   - component: {fileID: 114408728907232924}
   m_Layer: 0
   m_Name: Player_Xbot
-  m_TagString: Player
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -824,7 +809,7 @@ GameObject:
   - component: {fileID: 4366893807771588}
   m_Layer: 0
   m_Name: Camera Follow
-  m_TagString: Player
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1359,19 +1344,6 @@ Transform:
   m_Father: {fileID: 4218583400598072}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!4 &4299420632094340
-Transform:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1065090439838882}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.5, z: -0.283}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 4510374004042462}
-  m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4304486306835040
 Transform:
   m_ObjectHideFlags: 1
@@ -1452,11 +1424,11 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1595108225762382}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.6, z: 0}
+  m_LocalPosition: {x: 0, y: 1.758, z: -0.034}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4510374004042462}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4369511100008046
 Transform:
@@ -1555,7 +1527,6 @@ Transform:
   - {fileID: 4169683669111986}
   - {fileID: 4098372865489994}
   - {fileID: 4014914641340574}
-  - {fileID: 4299420632094340}
   - {fileID: 4366893807771588}
   m_Father: {fileID: 4276824963270394}
   m_RootOrder: 0
@@ -2244,6 +2215,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Animator: {fileID: 0}
+  SmoothingValue: 9
 --- !u!137 &137421983577014940
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

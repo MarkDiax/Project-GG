@@ -4,9 +4,14 @@ using UnityEngine;
 
 [RequireComponent(typeof(Animator))]
 public class PlayerAnimator : BaseAnimator {
+	[Tooltip("The amount by which the input is smoothed. Lower value = less responsive")]
+	public float SmoothingValue;
 
 	private Player player;
 	private InputManager input;
+
+	private float speed;
+	private float rotation;
 
 	protected override void Awake() {
 		base.Awake();
@@ -16,8 +21,12 @@ public class PlayerAnimator : BaseAnimator {
 	}
 
 	private void Update() {
-		SetFloat("Speed", input.Keyboard.Vertical);
-		SetFloat("Rotation", input.Keyboard.Horizontal);
+
+		speed = Mathf.Lerp(speed, input.Keyboard.Vertical, SmoothingValue * Time.deltaTime);
+		rotation = Mathf.Lerp(rotation, input.Keyboard.Horizontal, SmoothingValue * Time.deltaTime);
+
+		SetFloat("Speed", speed);
+		SetFloat("Rotation", rotation);
 
 		if (Input.GetKeyDown(KeyCode.Space)) {
 			TriggerExpression("Jump");
