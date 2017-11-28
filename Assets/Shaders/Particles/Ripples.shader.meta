@@ -1,11 +1,11 @@
 fileFormatVersion: 2
-guid: 637b68e8ee63dc44a98ec3f13076d515
-timeCreated: 1511902237
+guid: 5aab5b1c24643a4468a2e3c243563334
+timeCreated: 1511899605
 licenseType: Free
 ShaderImporter:
   externalObjects: {}
   defaultTextures:
-  - _Ripples: {fileID: 8600000, guid: 189ea3ddce56b9444bab9992d7cf6595, type: 2}
+  - _TextureSample0: {fileID: 10300, guid: 0000000000000000f000000000000000, type: 0}
   userData: 
   assetBundleName: 
   assetBundleVariant: 
