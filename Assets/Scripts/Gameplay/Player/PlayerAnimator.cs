@@ -17,7 +17,7 @@ public class PlayerAnimator : BaseAnimator {
 
 	private void Update() {
 		SetFloat("Speed", input.Keyboard.Vertical);
-		//SetFloat("Rotation", input.Keyboard.Horizontal);
+		SetFloat("Rotation", input.Keyboard.Horizontal);
 
 		if (Input.GetKeyDown(KeyCode.Space)) {
 			TriggerExpression("Jump");

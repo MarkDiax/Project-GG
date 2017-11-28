@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 03680b2c4bb8b32418ff39e50191809d
-timeCreated: 1511620566
+guid: d3ed70ef019181d478fbd8106f51046c
+timeCreated: 1511620571
 licenseType: Free
 ModelImporter:
   serializedVersion: 22
@@ -141,7 +141,7 @@ ModelImporter:
     400130: mixamorig:Spine1
     400132: mixamorig:Spine2
     400134: //RootNode
-    7400000: Walking Strafe Left
+    7400000: Running Left
     9500000: //RootNode
   externalObjects: {}
   materials:
@@ -171,12 +171,12 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Walking Strafe Left
+      name: Running Left
       takeName: mixamo.com
       firstFrame: 0
-      lastFrame: 28
+      lastFrame: 21
       wrapMode: 0
-      orientationOffsetY: 0
+      orientationOffsetY: 90
       level: 0
       cycleOffset: 0
       loop: 0
@@ -186,9 +186,9 @@ ModelImporter:
       loopBlendOrientation: 0
       loopBlendPositionY: 0
       loopBlendPositionXZ: 0
-      keepOriginalOrientation: 0
+      keepOriginalOrientation: 1
       keepOriginalPositionY: 1
-      keepOriginalPositionXZ: 0
+      keepOriginalPositionXZ: 1
       heightFromFeet: 0
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000

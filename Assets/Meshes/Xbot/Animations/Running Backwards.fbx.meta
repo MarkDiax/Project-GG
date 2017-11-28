@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 595e289bdbe4e3247bf8b768044fb2e3
+guid: d8a8a78d763d26f4b9aece9fb4e35653
 timeCreated: 1511620571
 licenseType: Free
 ModelImporter:
@@ -141,7 +141,7 @@ ModelImporter:
     400130: mixamorig:Spine1
     400132: mixamorig:Spine2
     400134: //RootNode
-    7400000: Running
+    7400000: Running Backwards
     9500000: //RootNode
   externalObjects: {}
   materials:
@@ -171,12 +171,12 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Running
+      name: Running Backwards
       takeName: mixamo.com
       firstFrame: 0
       lastFrame: 21
       wrapMode: 0
-      orientationOffsetY: 0
+      orientationOffsetY: 180
       level: 0
       cycleOffset: 0
       loop: 0
