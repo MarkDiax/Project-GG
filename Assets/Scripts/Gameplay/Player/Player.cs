@@ -7,21 +7,21 @@ using UnityEngine;
 public class Player : MonoBehaviour {
 
 	private PlayerController controller;
-	private PlayerAnimator animator;
+	private PlayerCharacter animator;
 
 
-	public PlayerController Controller {
-		get {
-			if (controller == null)
-				controller = GetComponentInChildren<PlayerController>();
-			return controller;
-		}
+	private void Awake() {
+		controller = gameObject.AddComponent<PlayerController>();
 	}
 
-	public PlayerAnimator Animator {
+	public PlayerController Controller {
+		get { return controller; }
+	}
+
+	public PlayerCharacter Animator {
 		get {
 			if (animator == null)
-				animator = GetComponentInChildren<PlayerAnimator>();
+				animator = GetComponentInChildren<PlayerCharacter>();
 			return animator;
 		}
 	}

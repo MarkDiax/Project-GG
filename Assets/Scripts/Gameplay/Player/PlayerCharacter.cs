@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Animator))]
-public class PlayerAnimator : BaseAnimator {
+public class PlayerCharacter : BaseAnimator {
 	[Tooltip("The amount by which the input is smoothed. Lower value = less responsive")]
 	public float SmoothingValue;
 
@@ -21,7 +21,10 @@ public class PlayerAnimator : BaseAnimator {
 	}
 
 	private void Update() {
+		Animate();
+	}
 
+	private void Animate() {
 		speed = Mathf.Lerp(speed, input.Keyboard.Vertical, SmoothingValue * Time.deltaTime);
 		rotation = Mathf.Lerp(rotation, input.Keyboard.Horizontal, SmoothingValue * Time.deltaTime);
 
@@ -35,5 +38,13 @@ public class PlayerAnimator : BaseAnimator {
 
 	private void OnAnimatorMove() {
 		player.Controller.OnAnimatorMove();
+	}
+
+	public Vector3 GetDeltaPosition {
+		get { return Animator.deltaPosition; }
+	}
+
+	public Quaternion GetDeltaRotation {
+		get { return Animator.deltaRotation; }
 	}
 }
