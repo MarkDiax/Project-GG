@@ -90,21 +90,21 @@ Material:
     - _Distance6: 0
     - _Distance7: 0
     - _Distance8: 0
-    - _Distortion: 0.05
+    - _Distortion: 0.02
     - _DstBlend: 0
     - _Float0: 13.88027
     - _Float1: 0
-    - _FoamDepth: 0.8
+    - _FoamDepth: 0.9
     - _FoamFalloff: -90
-    - _FoamSmoothness: 0.9
-    - _FoamSpecular: 0
+    - _FoamSmoothness: 0.6
+    - _FoamSpecular: 0.2
     - _Frequency: 1.75
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
     - _Metallic: 0
     - _Mode: 0
-    - _NormalScale: 1
+    - _NormalScale: 0.5
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _Scale: 0.16
@@ -114,13 +114,19 @@ Material:
     - _SrcBlend: 1
     - _TessMax: 25
     - _TessMin: 10
-    - _TessPhongStrength: 0.5
-    - _TessValue: 20
+    - _TessPhongStrength: 1
+    - _TessValue: 5
+    - _TransAmbient: 0.1
+    - _TransDirect: 0.364
+    - _TransNormalDistortion: 0.587
+    - _TransScattering: 4.8
+    - _TransShadow: 0.37
+    - _Translucency: 14.7
     - _UVSec: 0
     - _WaterDepth: 1
-    - _WaterFalloff: -2
+    - _WaterFalloff: -0.2
     - _WaterSmoothness: 0.9
-    - _WaterSpecular: 0.05
+    - _WaterSpecular: 0.3
     - _WaveAmplitude1: 0
     - _WaveAmplitude2: 0
     - _WaveAmplitude3: 0
