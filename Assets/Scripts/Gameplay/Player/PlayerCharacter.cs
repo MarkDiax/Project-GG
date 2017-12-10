@@ -31,13 +31,16 @@ public class PlayerCharacter : BaseAnimator {
 		SetFloat("Speed", speed);
 		SetFloat("Rotation", rotation);
 
-		if (Input.GetKeyDown(KeyCode.Space)) {
-			TriggerExpression("Jump");
-		}
+		//if (Input.GetKeyDown(KeyCode.Space)) {
+		//	TriggerExpression("Jump");
+		//}
 	}
 
 	private void OnAnimatorMove() {
 		player.Controller.OnAnimatorMove();
+
+		transform.localPosition = Vector3.zero;
+		transform.localRotation = Quaternion.identity;
 	}
 
 	public Vector3 GetDeltaPosition {

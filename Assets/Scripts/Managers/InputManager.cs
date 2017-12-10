@@ -27,12 +27,12 @@ public class InputManager : Singleton<InputManager> {
 
 		public void Update() {
 			if (GameManager.Instance.ControllerConnected) {
-				angleX += Input.GetAxis("RightStickVertical") * sensitivityX;
-				angleY += Input.GetAxis("RightStickHorizontal") * sensitivityY;
+				angleX += Input.GetAxisRaw("RightStickVertical") * sensitivityX;
+				angleY += Input.GetAxisRaw("RightStickHorizontal") * sensitivityY;
 			}
 			else {
-				angleX += Input.GetAxis("Mouse X") * sensitivityX;
-				angleY += Input.GetAxis("Mouse Y") * sensitivityY;
+				angleX += Input.GetAxisRaw("Mouse X") * sensitivityX;
+				angleY += Input.GetAxisRaw("Mouse Y") * sensitivityY;
 			}
 
 			angleY = Mathf.Clamp(angleY, mouseAngleMinY, mouseAngleMaxY);
