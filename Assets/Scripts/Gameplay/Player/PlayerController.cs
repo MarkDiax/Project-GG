@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour {
 	private Vector3 acceleration;
 
 	private float OldMouseX;
+	private bool Grounded;
 
 	private void Awake() {
 		cam = Camera.main.transform;
@@ -26,26 +27,15 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	public void Jump(float Height) {
-		if (Grounded())
-			player.Rigidbody.AddForce(new Vector3(0, Height * 10, 0), ForceMode.Impulse);
+		if (Grounded)
+			player.Rigidbody.AddForce(new Vector3(0, Height, 0), ForceMode.VelocityChange);
 	}
 
-	private bool Grounded() {
+	private void Update() {
+		RaycastHit Info;
+		Physics.Raycast(new Ray(transform.position + new Vector3(0, 0.1f, 0), Vector3.down), out Info, 0.2f);
 
-		RaycastHit Info = new RaycastHit();
-		Physics.Raycast(new Ray(transform.position, Vector3.down), out Info, 0.1f, 9);
-
-		Debug.Log(Info.collider.name);
-
-		return Info.collider != null;
-
-		//return Info.collider.gameObject.layer == 9 ? true : false;
-
-		//return (Physics.Raycast(new Ray(transform.position, Vector3.down), 0.1f, 9));
-	}
-
-	private void FixedUpdate() {
-		
+		Grounded = (Info.collider != null); //&& Info.collider.gameObject.layer == 9);
 	}
 
 	private void LateUpdate() {
@@ -68,7 +58,7 @@ public class PlayerController : MonoBehaviour {
 	private void TiltPlayerWithMouse() {
 		Quaternion TargetRot = transform.localRotation;
 
-		if (Grounded()) {
+		if (Grounded) {
 			float Tilt = (OldMouseX - input.Mouse.Angle.x) * 4;
 
 			Vector3 PlayerRot = transform.localEulerAngles;

@@ -6,7 +6,7 @@ using UnityEngine;
 public class PlayerCharacter : BaseAnimator {
 	[Tooltip("The amount by which the input is smoothed. Lower value = less responsive")]
 	public float SmoothingValue;
-	public float JumpHeight;
+	public float JumpForce;
 
 	private Player player;
 	private InputManager input;
@@ -33,7 +33,7 @@ public class PlayerCharacter : BaseAnimator {
 		SetFloat("Rotation", rotation);
 
 		if (Input.GetKeyDown(KeyCode.Space)) {
-			player.Controller.Jump(JumpHeight);
+			player.Controller.Jump(JumpForce);
 		}
 		//if (Input.GetKeyDown(KeyCode.Space)) {
 		//	TriggerExpression("Jump");
