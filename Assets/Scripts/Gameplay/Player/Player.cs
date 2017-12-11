@@ -1,15 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 
+[System.Serializable]
+public class JumpValues {
+	public float StartHeight;
+	public float Attack;
+	public float Height;
+	public float Decay;
+}
+
 public class Player : MonoBehaviour {
+
+	public JumpValues JumpValues;
 
 	private PlayerController controller;
 	private PlayerCharacter animator;
 
-	private Rigidbody rigidbody;
+	private new Rigidbody rigidbody;
 
 	private void Awake() {
 		controller = gameObject.AddComponent<PlayerController>();
