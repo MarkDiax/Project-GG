@@ -9,6 +9,7 @@ public class Player : MonoBehaviour {
 	private PlayerController controller;
 	private PlayerCharacter animator;
 
+	private Rigidbody rigidbody;
 
 	private void Awake() {
 		controller = gameObject.AddComponent<PlayerController>();
@@ -23,6 +24,14 @@ public class Player : MonoBehaviour {
 			if (animator == null)
 				animator = GetComponentInChildren<PlayerCharacter>();
 			return animator;
+		}
+	}
+
+	public Rigidbody Rigidbody {
+		get {
+			if (rigidbody == null)
+				rigidbody = GetComponentInChildren<Rigidbody>();
+			return rigidbody;
 		}
 	}
 }
