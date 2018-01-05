@@ -2,19 +2,23 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour {
+
+	[Tooltip("The amount by which the input is smoothed. Lower value = less responsive")]
+	public float InputSmoothing = 9f;
 
 	private Player player;
 	private InputManager input;
 
 	private Transform cam;
-	private Vector3 acceleration;
 
 	private float OldMouseX;
 	private bool Grounded;
 
-	private Quaternion LookDir;
+	public float Speed;
+	private float Rotation;
 
 	private Coroutine JumpRoutine;
 
@@ -25,24 +29,65 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	private void Update() {
+		Move();
+
+		RaycastGround();
+
+
+		if (Speed != 0 || Rotation != 0) {
+			RotateWithMouse();
+
+			//TiltPlayerWithMouse();
+
+			float rotSpeed = Speed >= 0 ? 0 : 180f;
+			float Rot = Speed >= 0 ? Rotation * 90f : -Rotation * 90f;
+
+			transform.rotation *= Quaternion.Euler(0f, Rot + rotSpeed, 0f);
+			//transform.rotation *= Quaternion.Euler(0f, Speed * transform.eulerAngles.y, 0f);
+		}
+
+		UpdateUI();
+	}
+
+	private void UpdateUI() {
+		player.SpeedUI.text = "Speed: " + Speed;
+		player.RotationUI.text = "Rotation " + Rotation;
+	}
+
+	private void RaycastGround() {
 		RaycastHit Info;
 		Physics.Raycast(new Ray(transform.position + new Vector3(0, 0.1f, 0), Vector3.down), out Info, 0.2f);
 
 		Grounded = (Info.collider != null); //&& Info.collider.gameObject.layer == 9);
 	}
 
+	private void Move() {
+		Speed = Mathf.Lerp(Speed, input.Keyboard.Vertical, InputSmoothing * Time.deltaTime);
+		if (Mathf.Abs(Speed) < 0.01f)
+			Speed = 0f;
+
+		Rotation = Mathf.Lerp(Rotation, input.Keyboard.Horizontal, InputSmoothing * Time.deltaTime);
+		if (Mathf.Abs(Rotation) < 0.01f)
+			Rotation = 0f;
+
+
+		float absoluteSpeed = Mathf.Abs(Speed) + Math.Abs(Rotation);
+		transform.Translate(0, 0, (Mathf.Clamp01(absoluteSpeed) * 5) * Time.fixedDeltaTime);
+	}
+
 	public void OnAnimatorMove() {
 		//apply root motion + physics motion
-		transform.position += player.Animator.transform.localPosition + player.Animator.GetDeltaPosition;
-		transform.rotation = player.Animator.transform.localRotation * player.Animator.GetDeltaRotation;
+		transform.position += /*player.Animator.transform.localPosition + */ player.Animator.GetDeltaPosition;
+		//transform.rotation = player.Animator.transform.localRotation * player.Animator.GetDeltaRotation;
+
+		//player.Animator.ResetTransform();
+
+	}
+
+	private void FixedUpdate() {
+		transform.position += player.Animator.transform.localPosition;
 
 		player.Animator.ResetTransform();
-
-		if (input.Keyboard.Vertical != 0 || input.Keyboard.Horizontal != 0) {
-			//TiltPlayerWithMouse();
-
-			RotateWithMouse();
-		}
 	}
 
 	public void Jump() {
@@ -75,6 +120,8 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	private IEnumerator Jump_End(float Height, float Decay) {
+
+		yield return false;
 		float Progress = Height;
 
 		while (Progress >= 0) {
@@ -97,17 +144,16 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	private void TiltPlayerWithMouse() {
-		Quaternion TargetRot = transform.localRotation;
-
-		if (Grounded) {
-			float Tilt = (OldMouseX - input.Mouse.Angle.x) * 4;
-
-			Vector3 PlayerRot = transform.localEulerAngles;
-			TargetRot = Quaternion.Euler(new Vector3(PlayerRot.x, PlayerRot.y, Tilt));
-		}
-
-		transform.localRotation = Quaternion.Lerp(transform.localRotation, TargetRot, 5 * Time.deltaTime);
-
+		Vector3 PlayerRot = transform.eulerAngles;
+		float Tilt = Grounded ? (OldMouseX - input.Mouse.Angle.x + PlayerRot.z) : PlayerRot.z;
+		transform.rotation = Quaternion.Euler(PlayerRot.x, PlayerRot.y, Tilt);
 		OldMouseX = input.Mouse.Angle.x;
 	}
+
+	public float Velocity {
+		get {
+			return Mathf.Clamp01(Mathf.Abs(Speed) + Mathf.Abs(Rotation));
+		}
+	}
 }
+ 

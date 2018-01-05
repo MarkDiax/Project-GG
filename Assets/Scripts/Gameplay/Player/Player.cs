@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 [System.Serializable]
 public class JumpValues {
@@ -9,12 +10,23 @@ public class JumpValues {
 	public float Decay;
 }
 
+
+[System.Serializable]
+public class MovementValues {
+	public float Acceleration;
+	public float MaxSpeed;
+}
+
 public class Player : MonoBehaviour {
 
+	public Text SpeedUI;
+	public Text RotationUI;
+
 	public JumpValues JumpValues;
+	public MovementValues MovementValues;
 
 	private PlayerController controller;
-	private PlayerCharacter animator;
+	private PlayerAnimator animator;
 
 	private new Rigidbody rigidbody;
 
@@ -26,10 +38,10 @@ public class Player : MonoBehaviour {
 		get { return controller; }
 	}
 
-	public PlayerCharacter Animator {
+	public PlayerAnimator Animator {
 		get {
 			if (animator == null)
-				animator = GetComponentInChildren<PlayerCharacter>();
+				animator = GetComponentInChildren<PlayerAnimator>();
 			return animator;
 		}
 	}

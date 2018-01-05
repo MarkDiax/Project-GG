@@ -3,15 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Animator))]
-public class PlayerCharacter : BaseAnimator {
-	[Tooltip("The amount by which the input is smoothed. Lower value = less responsive")]
-	public float InputSmoothing;
+public class PlayerAnimator : BaseAnimator {
 
 	private Player player;
 	private InputManager input;
 
-	private float speed;
-	private float rotation;
 
 	protected override void Awake() {
 		base.Awake();
@@ -25,18 +21,16 @@ public class PlayerCharacter : BaseAnimator {
 	}
 
 	private void Animate() {
-		speed = Mathf.Lerp(speed, input.Keyboard.Vertical, InputSmoothing * Time.deltaTime);
-		rotation = Mathf.Lerp(rotation, input.Keyboard.Horizontal, InputSmoothing * Time.deltaTime);
 
-		SetFloat("Speed", speed);
-		SetFloat("Rotation", rotation);
+		SetFloat("Speed", player.Controller.Velocity);
+		//SetFloat("Rotation", rotation);
 
 		if (Input.GetKeyDown(KeyCode.Space)) {
 			player.Controller.Jump();
 		}
 	}
 
-	private void OnAnimatorMove() {
+	private void OnAnimatorMove() {	
 		player.Controller.OnAnimatorMove();
 	}
 

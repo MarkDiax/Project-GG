@@ -1353,9 +1353,9 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1554003838952390}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 4.727593, y: 0.627, z: -3.372159}
-  m_LocalScale: {x: 0.9, y: 0.75, z: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.627, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4510374004042462}
   - {fileID: 4108741256337072}
@@ -2242,8 +2242,8 @@ Rigidbody:
   m_AngularDrag: 0.05
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 80
+  m_Interpolate: 1
+  m_Constraints: 16
   m_CollisionDetection: 1
 --- !u!95 &95607564374784256
 Animator:
@@ -2254,8 +2254,8 @@ Animator:
   m_GameObject: {fileID: 1126837861796730}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 2a72930bef1551f4bb910b7422a7dc5b, type: 3}
-  m_Controller: {fileID: 9100000, guid: 9afe909c5cc43244fbaca4a7bd53ea8c, type: 2}
-  m_CullingMode: 1
+  m_Controller: {fileID: 9100000, guid: 03210c06641ac0949882b68b02c8a0be, type: 2}
+  m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
@@ -2278,6 +2278,9 @@ MonoBehaviour:
     Attack: 0.08
     Height: 2
     Decay: 0.075
+  MovementValues:
+    Acceleration: 0.1
+    MaxSpeed: 1
 --- !u!114 &114762587714170214
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2290,7 +2293,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Animator: {fileID: 0}
-  InputSmoothing: 9
 --- !u!136 &136930746954911206
 CapsuleCollider:
   m_ObjectHideFlags: 1
