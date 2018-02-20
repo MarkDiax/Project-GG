@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Animator))]
 public class PlayerAnimator : BaseAnimator {
 
 	private Player player;
@@ -22,12 +21,13 @@ public class PlayerAnimator : BaseAnimator {
 
 	private void Animate() {
 
-		SetFloat("Speed", player.Controller.Velocity);
+		//SetFloat("Speed", player.Controller.Velocity);
+
 		//SetFloat("Rotation", rotation);
 
-		if (Input.GetKeyDown(KeyCode.Space)) {
-			player.Controller.Jump();
-		}
+		//if (Input.GetKeyDown(KeyCode.Space)) {
+		//	player.Controller.Jump();
+		//}
 	}
 
 	private void OnAnimatorMove() {	
