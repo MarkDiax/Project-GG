@@ -319,6 +319,7 @@
     <Compile Include="Assets\Scripts\Gameplay\Player\Player.cs" />
     <Compile Include="Assets\Scripts\Gameplay\Player\PlayerAnimator.cs" />
     <Compile Include="Assets\Scripts\Gameplay\Player\PlayerController.cs" />
+    <Compile Include="Assets\Scripts\Gameplay\Player\PlayerTest.cs" />
     <Compile Include="Assets\Scripts\Graphics\CalculateNormals.cs" />
     <Compile Include="Assets\Scripts\Graphics\NormalSolver.cs" />
     <Compile Include="Assets\Scripts\Managers\GameManager.cs" />

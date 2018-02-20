@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Animator))]
 public class BaseAnimator : MonoBehaviour {
 	[HideInInspector]
 	public Animator Animator;
@@ -63,6 +64,10 @@ public class BaseAnimator : MonoBehaviour {
 	public void SetFloat(string Name, float Value) {
 		Animator.SetFloat(Name, Value);
 	}
+
+    public void SetFloat(string Name, float Value, float dampTime, float deltaTime) {
+        Animator.SetFloat(Name, Value, dampTime, deltaTime);
+    }
 
 	public void SetActive(bool Active) {
 		Animator.enabled = Active;
