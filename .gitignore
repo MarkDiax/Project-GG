@@ -23,3 +23,9 @@ ProjectSettings/ProjectVersion\.txt
 3dplatformer\.Plugins\.csproj
 
 3dplatformer\.sln
+
+project-gg\.csproj
+
+project-gg\.Editor\.Plugins\.csproj
+
+project-gg\.Plugins\.csproj
