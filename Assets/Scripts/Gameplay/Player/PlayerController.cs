@@ -23,6 +23,7 @@ public class PlayerController : MonoBehaviour
     private float currentSpeed;
 
     public bool Grounded;
+
     private void Awake()
     {
         cameraTransform = Camera.main.transform;
@@ -64,21 +65,11 @@ public class PlayerController : MonoBehaviour
 
         float animationSpeed = (Running ? 1 : .5f) * inputDir.magnitude;
         player.Animator.SetFloat("Speed", animationSpeed, speedSmoothTime, Time.deltaTime);
+
+
+        if (UnityEngine.Input.GetKeyDown(KeyCode.Space))
+            player.Animator.SetTrigger("Jump");
     }
-
-    public void OnAnimatorMove()
-    {
-        //apply root motion + physics motion
-        transform.position += player.Animator.GetDeltaPosition;
-    }
-
-    private void FixedUpdate()
-    {
-        transform.position += player.Animator.transform.localPosition;
-
-        player.Animator.ResetTransform();
-    }
-
 
     //private void TiltPlayerWithMouse() {
     //	Vector3 PlayerRot = transform.eulerAngles;

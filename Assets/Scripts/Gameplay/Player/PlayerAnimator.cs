@@ -30,11 +30,14 @@ public class PlayerAnimator : BaseAnimator {
 		//}
 	}
 
-	private void OnAnimatorMove() {	
-		player.Controller.OnAnimatorMove();
-	}
+    private void OnAnimatorMove()
+    {
+        transform.position += GetDeltaPosition;
 
-	public void ResetTransform() {
+        //player.Controller.OnAnimatorMove();
+    }
+
+    public void ResetTransform() {
 		transform.localPosition = Vector3.zero;
 		transform.localRotation = Quaternion.identity;
 	}

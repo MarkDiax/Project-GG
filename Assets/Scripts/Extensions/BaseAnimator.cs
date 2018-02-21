@@ -11,8 +11,8 @@ public class BaseAnimator : MonoBehaviour {
 		Animator = GetComponent<Animator>();
 	}
 
-	public void TriggerExpression(string Parameter) {
-		Animator.SetTrigger(Parameter);
+	public void SetTrigger(string Name) {
+		Animator.SetTrigger(Name);
 	}
 
 	public void ChangeToState(string State) {
