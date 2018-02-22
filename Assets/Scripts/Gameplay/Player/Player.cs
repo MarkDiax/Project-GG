@@ -28,4 +28,5 @@ public class Player : MonoBehaviour {
 			return rigidbody;
 		}
 	}
+
 }
