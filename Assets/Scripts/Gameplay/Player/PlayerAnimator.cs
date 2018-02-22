@@ -4,37 +4,17 @@ using UnityEngine;
 
 public class PlayerAnimator : BaseAnimator {
 
-	private Player player;
-	private InputManager input;
-
-
-	protected override void Awake() {
-		base.Awake();
-
-		player = PlayerTracker.Player;
-		input = InputManager.Instance;
-	}
-
 	private void Update() {
 		Animate();
 	}
 
 	private void Animate() {
-
-		//SetFloat("Speed", player.Controller.Velocity);
-
-		//SetFloat("Rotation", rotation);
-
-		//if (Input.GetKeyDown(KeyCode.Space)) {
-		//	player.Controller.Jump();
-		//}
+        //
 	}
 
     private void OnAnimatorMove()
     {
         transform.position += GetDeltaPosition;
-
-        //player.Controller.OnAnimatorMove();
     }
 
     public void ResetTransform() {

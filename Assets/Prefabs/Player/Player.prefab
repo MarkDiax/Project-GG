@@ -134,7 +134,7 @@ GameObject:
   m_IsActive: 1
 --- !u!1 &1205052955943270
 GameObject:
-  m_ObjectHideFlags: 1
+  m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 5
@@ -142,7 +142,7 @@ GameObject:
   - component: {fileID: 4408081572828556}
   m_Layer: 0
   m_Name: Erika_Archer_Meshes
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -254,7 +254,7 @@ GameObject:
   m_IsActive: 1
 --- !u!1 &1275401261201914
 GameObject:
-  m_ObjectHideFlags: 1
+  m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 5
@@ -262,7 +262,7 @@ GameObject:
   - component: {fileID: 4118746818576206}
   m_Layer: 0
   m_Name: Hips
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -886,7 +886,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1723934094941342
 GameObject:
   m_ObjectHideFlags: 1
@@ -1106,6 +1106,10 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4543521629802396}
+  - component: {fileID: 95680431374645046}
+  - component: {fileID: 54363050018436386}
+  - component: {fileID: 136654831916958916}
+  - component: {fileID: 114896918259767558}
   - component: {fileID: 114119688481683756}
   - component: {fileID: 114674602760649196}
   m_Layer: 0
@@ -1126,25 +1130,6 @@ GameObject:
   m_Layer: 0
   m_Name: RightHandIndex4
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!1 &1936658060772204
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 4814411661738326}
-  - component: {fileID: 95100648921725282}
-  - component: {fileID: 54397833707034550}
-  - component: {fileID: 136213453431537420}
-  - component: {fileID: 114853398596376780}
-  m_Layer: 0
-  m_Name: Archer
-  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1304,7 +1289,7 @@ Transform:
   - {fileID: 4228833802812688}
   - {fileID: 4842803467311230}
   - {fileID: 4643993647855726}
-  m_Father: {fileID: 4814411661738326}
+  m_Father: {fileID: 4543521629802396}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4132665277857884
@@ -1677,7 +1662,7 @@ Transform:
   - {fileID: 4023073159951782}
   - {fileID: 4673895307989858}
   - {fileID: 4704103522158904}
-  m_Father: {fileID: 4814411661738326}
+  m_Father: {fileID: 4543521629802396}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4463710949582912
@@ -1788,7 +1773,8 @@ Transform:
   m_LocalPosition: {x: 0.71542645, y: 1.3941675, z: -0.66771793}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 4814411661738326}
+  - {fileID: 4408081572828556}
+  - {fileID: 4118746818576206}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2102,21 +2088,6 @@ Transform:
   m_Father: {fileID: 4228833802812688}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!4 &4814411661738326
-Transform:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1936658060772204}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.42657351, y: -0.85316753, z: 0.66771793}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 4408081572828556}
-  - {fileID: 4118746818576206}
-  m_Father: {fileID: 4543521629802396}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4842803467311230
 Transform:
   m_ObjectHideFlags: 1
@@ -2297,12 +2268,12 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1710612652274756}
   m_Mesh: {fileID: 4300002, guid: 9be84809037537d4c917cdb4c6c15bd6, type: 3}
---- !u!54 &54397833707034550
+--- !u!54 &54363050018436386
 Rigidbody:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1936658060772204}
+  m_GameObject: {fileID: 1918624330530956}
   serializedVersion: 2
   m_Mass: 1
   m_Drag: 0
@@ -2310,21 +2281,21 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 80
+  m_Constraints: 112
   m_CollisionDetection: 1
---- !u!95 &95100648921725282
+--- !u!95 &95680431374645046
 Animator:
   serializedVersion: 3
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1936658060772204}
+  m_GameObject: {fileID: 1918624330530956}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 9be84809037537d4c917cdb4c6c15bd6, type: 3}
-  m_Controller: {fileID: 9100000, guid: 03210c06641ac0949882b68b02c8a0be, type: 2}
+  m_Controller: {fileID: 9100000, guid: ec6e7de31c3cdcb428c6197c0a96535b, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
-  m_ApplyRootMotion: 0
+  m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
@@ -2357,24 +2328,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f024f4c15a92a394f8d6ad1c6e179afb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &114853398596376780
+--- !u!114 &114896918259767558
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1936658060772204}
+  m_GameObject: {fileID: 1918624330530956}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7ab1a62c1da988448972df7e34a65635, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Animator: {fileID: 0}
---- !u!136 &136213453431537420
+--- !u!136 &136654831916958916
 CapsuleCollider:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1936658060772204}
+  m_GameObject: {fileID: 1918624330530956}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
