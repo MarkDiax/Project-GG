@@ -22,6 +22,8 @@ public class PlayerController : MonoBehaviour
     private float speedSmoothVelocity;
     private float currentSpeed;
 
+    public float jumpVelocity;
+
     public bool Grounded;
 
     private void Awake()
@@ -67,12 +69,11 @@ public class PlayerController : MonoBehaviour
         float animationSpeed = (Running ? 1 : .5f) * inputDir.magnitude;
         player.Animator.SetFloat("Speed", animationSpeed, speedSmoothTime, Time.deltaTime);
 
-
         moveDirection = transform.forward * currentSpeed;
 
         if (UnityEngine.Input.GetKeyDown(KeyCode.Space)) {
             player.Animator.SetTrigger("Jump");
-            player.Rigidbody.AddForce(Vector3.up * 150f);
+            player.Rigidbody.AddForce(Vector3.up * jumpVelocity);
         }
 
         transform.Translate(moveDirection * Time.deltaTime, Space.World);
