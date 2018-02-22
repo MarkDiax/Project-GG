@@ -51,6 +51,8 @@ public class PlayerController : MonoBehaviour
         Vector2 keyboardInput = Input.Keyboard.Input;
         Vector2 inputDir = keyboardInput.normalized;
 
+        Vector3 moveDirection = Vector3.zero;
+
         if (inputDir != Vector2.zero) {
             float targetRotation = Mathf.Atan2(inputDir.x, inputDir.y) * Mathf.Rad2Deg + cameraTransform.eulerAngles.y;
             transform.eulerAngles = Vector3.up * Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotation, ref turnSmoothVelocity, turnSmoothTime);
@@ -61,15 +63,21 @@ public class PlayerController : MonoBehaviour
         float targetSpeed = (Running ? runSpeed : walkSpeed) * inputDir.magnitude;
         currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed, ref speedSmoothVelocity, speedSmoothTime);
 
-        transform.Translate(transform.forward * currentSpeed * Time.deltaTime, Space.World);
 
         float animationSpeed = (Running ? 1 : .5f) * inputDir.magnitude;
         player.Animator.SetFloat("Speed", animationSpeed, speedSmoothTime, Time.deltaTime);
 
 
-        if (UnityEngine.Input.GetKeyDown(KeyCode.Space))
+        moveDirection = transform.forward * currentSpeed;
+
+        if (UnityEngine.Input.GetKeyDown(KeyCode.Space)) {
             player.Animator.SetTrigger("Jump");
+            player.Rigidbody.AddForce(Vector3.up * 150f);
+        }
+
+        transform.Translate(moveDirection * Time.deltaTime, Space.World);
     }
+
 
     //private void TiltPlayerWithMouse() {
     //	Vector3 PlayerRot = transform.eulerAngles;
