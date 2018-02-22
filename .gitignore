@@ -29,3 +29,9 @@ project-gg\.csproj
 project-gg\.Editor\.Plugins\.csproj
 
 project-gg\.Plugins\.csproj
+
+project-gg\.sln
+
+*.csproj
+
+*.sln
