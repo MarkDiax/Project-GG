@@ -8,12 +8,11 @@ public class PlayerController : MonoBehaviour
 {
     private Player player;
     private InputManager input;
-    private CharacterController character;
+    private CharacterController controller;
     private Transform cameraTransform;
 
     public float walkSpeed = 2;
     public float runSpeed = 6;
-    public bool Running;
 
     public float turnSmoothTime = 0.2f;
     private float turnSmoothVelocity;
@@ -22,72 +21,91 @@ public class PlayerController : MonoBehaviour
     private float speedSmoothVelocity;
     private float currentSpeed;
 
-    public float jumpVelocity;
-    [Range(0,1)]
-    public float jumpScale;
+    public float jumpHeight;
+    public float gravityMod;
+    [Range(0, 1)]
+    public float airControl;
 
-    public bool Grounded;
-    Vector3 moveDirection = Vector3.zero;
+    [HideInInspector]
+    public bool Running, Grounded;
+
+    private Vector2 inputDir;
+    private Vector3 moveDir;
 
     private void Awake()
     {
         cameraTransform = Camera.main.transform;
         input = InputManager.Instance;
         player = PlayerTracker.Player;
-        character = GetComponent<CharacterController>();
-    }
-
-    private void Update()
-    {
-        player.Animator.SetBool("Grounded", Grounded);
-
-        Move();
-    }
-
-    private void OnDrawGizmos()
-    {
-        Gizmos.DrawRay(transform.position + new Vector3(0, 0.5f), new Vector3(0,-0.6f));
-    }
-   
-    private void FixedUpdate()
-    {
-        RaycastHit Hit;
-        Grounded = Physics.Raycast(transform.position + new Vector3(0, 0.5f), Vector3.down, out Hit, 0.6f);
+        controller = GetComponent<CharacterController>();
     }
 
     private void Move()
     {
-        Vector2 keyboardInput = input.Keyboard.Input;
-        Vector2 inputDir = keyboardInput.normalized;
-
-        Running = UnityEngine.Input.GetAxisRaw("Run") > 0;
-
-        if (inputDir != Vector2.zero) {
+        if (inputDir != Vector2.zero)
+        {
             float targetRotation = Mathf.Atan2(inputDir.x, inputDir.y) * Mathf.Rad2Deg + cameraTransform.eulerAngles.y;
-            transform.eulerAngles = Vector3.up * Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotation, ref turnSmoothVelocity, turnSmoothTime);
+            transform.eulerAngles = Vector3.up * Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotation, ref turnSmoothVelocity, GetModifiedSmoothTime(turnSmoothTime));
         }
 
         float targetSpeed = (Running ? runSpeed : walkSpeed) * inputDir.magnitude;
-        currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed, ref speedSmoothVelocity, speedSmoothTime);
+        currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed, ref speedSmoothVelocity, GetModifiedSmoothTime(speedSmoothTime));
 
-        float animationSpeed = (Running ? 1 : .5f) * inputDir.magnitude;
+        moveDir.y += Physics.gravity.y * gravityMod * Time.deltaTime;
+        moveDir = transform.forward * currentSpeed + Vector3.up * moveDir.y;
+
+        controller.Move(moveDir * Time.deltaTime);
+        currentSpeed = new Vector2(controller.velocity.x, controller.velocity.z).magnitude;
+
+        if (controller.isGrounded)
+            moveDir.y = 0f;
+    }
+
+    private void Update()
+    {
+        //input
+        Vector2 keyboardInput = input.Keyboard.Input;
+        inputDir = keyboardInput.normalized;
+
+        if (UnityEngine.Input.GetKeyDown(KeyCode.Space))
+            Jump();
+
+        Running = UnityEngine.Input.GetAxisRaw("Run") > 0;
+
+        Move();
+
+        Animate();
+    }
+
+    private void Animate()
+    {
+        player.Animator.SetBool("Grounded", controller.isGrounded);
+
+        float animationSpeed = (Running ? currentSpeed / runSpeed : currentSpeed / walkSpeed * 0.5f) * inputDir.magnitude;
         player.Animator.SetFloat("Speed", animationSpeed, speedSmoothTime, Time.deltaTime);
+    }
 
-        moveDirection = transform.forward * currentSpeed + new Vector3(0,moveDirection.y);
+    private void Jump()
+    {
+        if (controller.isGrounded)
+        {
+            float gravity = Physics.gravity.y * gravityMod;
+            float jumpVelocity = Mathf.Sqrt(-2 * gravity * jumpHeight);
+            moveDir.y = jumpVelocity;
 
-        if (character.isGrounded) {
-
-            if (UnityEngine.Input.GetKeyDown(KeyCode.Space)) {
-                player.Animator.SetTrigger("Jump");
-                //player.Rigidbody.AddForce(Vector3.up * jumpVelocity);
-
-                moveDirection.y = jumpVelocity;
-            }
+            player.Animator.SetTrigger("Jump");
         }
+    }
 
-        moveDirection.y += Physics.gravity.y * jumpScale;
-        character.Move(moveDirection * Time.deltaTime);
-        //transform.Translate(moveDirection * Time.deltaTime, Space.World);
+    private float GetModifiedSmoothTime(float smoothTime)
+    {
+        if (controller.isGrounded)
+            return smoothTime;
+
+        if (airControl == 0)
+            return float.MaxValue;
+
+        return smoothTime / airControl;
     }
 
     //private void TiltPlayerWithMouse() {
