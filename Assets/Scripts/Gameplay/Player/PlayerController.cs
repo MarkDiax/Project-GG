@@ -25,6 +25,7 @@ public class PlayerController : MonoBehaviour
     public float jumpVelocity;
 
     public bool Grounded;
+    Vector3 moveDirection = Vector3.zero;
 
     private void Awake()
     {
@@ -47,17 +48,18 @@ public class PlayerController : MonoBehaviour
         RaycastHit Info;
         Physics.Raycast(new Ray(transform.position + new Vector3(0, 0.1f, 0), Vector3.down), out Info, 0.2f);
 
-        //Debug.Log(Info.collider.gameObject.layer);
-        Debug.Log(Info.collider);
-        Grounded = (Info.collider != null);//&& Info.collider.gameObject.layer == 9);
+        Grounded = (Info.collider != null);
+    }
+
+    private void FixedUpdate()
+    {
+
     }
 
     private void Move()
     {
         Vector2 keyboardInput = Input.Keyboard.Input;
         Vector2 inputDir = keyboardInput.normalized;
-
-        Vector3 moveDirection = Vector3.zero;
 
         if (inputDir != Vector2.zero) {
             float targetRotation = Mathf.Atan2(inputDir.x, inputDir.y) * Mathf.Rad2Deg + cameraTransform.eulerAngles.y;
@@ -68,7 +70,6 @@ public class PlayerController : MonoBehaviour
 
         float targetSpeed = (Running ? runSpeed : walkSpeed) * inputDir.magnitude;
         currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed, ref speedSmoothVelocity, speedSmoothTime);
-
 
         float animationSpeed = (Running ? 1 : .5f) * inputDir.magnitude;
         player.Animator.SetFloat("Speed", animationSpeed, speedSmoothTime, Time.deltaTime);
@@ -82,6 +83,7 @@ public class PlayerController : MonoBehaviour
 
         transform.Translate(moveDirection * Time.deltaTime, Space.World);
     }
+
 
 
     //private void TiltPlayerWithMouse() {
