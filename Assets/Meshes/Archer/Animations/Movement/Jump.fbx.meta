@@ -1,14 +1,14 @@
 fileFormatVersion: 2
-guid: 8a7665460955c2545aac9e18109c8cce
-timeCreated: 1519223969
+guid: fa1305ad0c7558f40bda67fb5a7e9920
+timeCreated: 1519302177
 licenseType: Free
 ModelImporter:
   serializedVersion: 22
   fileIDToRecycleName:
-    100000: Head
-    100002: HeadTop_End
-    100004: Hips
-    100006: //RootNode
+    100000: //RootNode
+    100002: Head
+    100004: HeadTop_End
+    100006: Hips
     100008: LeftArm
     100010: LeftEye
     100012: LeftFoot
@@ -73,10 +73,10 @@ ModelImporter:
     100130: Spine
     100132: Spine1
     100134: Spine2
-    400000: Head
-    400002: HeadTop_End
-    400004: Hips
-    400006: //RootNode
+    400000: //RootNode
+    400002: Head
+    400004: HeadTop_End
+    400006: Hips
     400008: LeftArm
     400010: LeftEye
     400012: LeftFoot
@@ -174,7 +174,7 @@ ModelImporter:
       name: Jump
       takeName: mixamo.com
       firstFrame: 0
-      lastFrame: 52
+      lastFrame: 60
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -184,12 +184,12 @@ ModelImporter:
       loopTime: 0
       loopBlend: 0
       loopBlendOrientation: 0
-      loopBlendPositionY: 1
+      loopBlendPositionY: 0
       loopBlendPositionXZ: 0
       keepOriginalOrientation: 0
-      keepOriginalPositionY: 0
+      keepOriginalPositionY: 1
       keepOriginalPositionXZ: 0
-      heightFromFeet: 1
+      heightFromFeet: 0
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []

@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: fa1305ad0c7558f40bda67fb5a7e9920
-timeCreated: 1519302177
+guid: d9846fd01553d8a498e6350d5b5361b7
+timeCreated: 1519308917
 licenseType: Free
 ModelImporter:
   serializedVersion: 22
@@ -141,7 +141,8 @@ ModelImporter:
     400130: Spine
     400132: Spine1
     400134: Spine2
-    7400000: Jump1
+    7400000: mixamo.com
+    7400002: Jump - Idle
     9500000: //RootNode
   externalObjects: {}
   materials:
@@ -171,10 +172,10 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Jump1
+      name: Jump - Idle
       takeName: mixamo.com
       firstFrame: 0
-      lastFrame: 60
+      lastFrame: 114
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

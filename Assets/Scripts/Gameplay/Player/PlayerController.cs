@@ -35,18 +35,22 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        RaycastGround();
+
+        player.Animator.SetBool("Grounded", Grounded);
+
         Move();
-
-        //RaycastGround();
-
     }
 
-    //private void RaycastGround() {
-    //	RaycastHit Info;
-    //	Physics.Raycast(new Ray(transform.position + new Vector3(0, 0.1f, 0), Vector3.down), out Info, 0.2f);
+    private void RaycastGround()
+    {
+        RaycastHit Info;
+        Physics.Raycast(new Ray(transform.position + new Vector3(0, 0.1f, 0), Vector3.down), out Info, 0.2f);
 
-    //	Grounded = (Info.collider != null); //&& Info.collider.gameObject.layer == 9);
-    //}
+        //Debug.Log(Info.collider.gameObject.layer);
+        Debug.Log(Info.collider);
+        Grounded = (Info.collider != null);//&& Info.collider.gameObject.layer == 9);
+    }
 
     private void Move()
     {
@@ -71,7 +75,7 @@ public class PlayerController : MonoBehaviour
 
         moveDirection = transform.forward * currentSpeed;
 
-        if (UnityEngine.Input.GetKeyDown(KeyCode.Space)) {
+        if (UnityEngine.Input.GetKeyDown(KeyCode.Space) && Grounded) {
             player.Animator.SetTrigger("Jump");
             player.Rigidbody.AddForce(Vector3.up * jumpVelocity);
         }
