@@ -175,7 +175,7 @@ ModelImporter:
       name: Jump - Idle
       takeName: mixamo.com
       firstFrame: 0
-      lastFrame: 114
+      lastFrame: 55
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

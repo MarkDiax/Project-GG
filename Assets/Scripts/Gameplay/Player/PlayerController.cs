@@ -17,6 +17,9 @@ public class PlayerController : MonoBehaviour
     public float turnSmoothTime = 0.2f;
     private float turnSmoothVelocity;
 
+    public float tiltSmoothTime = 0.1f;
+    private float tiltSmoothVelocity;
+
     public float speedSmoothTime = 0.1f;
     private float speedSmoothVelocity;
     private float currentSpeed;
@@ -27,10 +30,11 @@ public class PlayerController : MonoBehaviour
     public float airControl;
 
     [HideInInspector]
-    public bool Running, Grounded;
+    public bool Running, Grounded, Landed;
 
     private Vector2 inputDir;
     private Vector3 moveDir;
+    private float gravity;
 
     private void Awake()
     {
@@ -38,27 +42,8 @@ public class PlayerController : MonoBehaviour
         input = InputManager.Instance;
         player = PlayerTracker.Player;
         controller = GetComponent<CharacterController>();
-    }
 
-    private void Move()
-    {
-        if (inputDir != Vector2.zero)
-        {
-            float targetRotation = Mathf.Atan2(inputDir.x, inputDir.y) * Mathf.Rad2Deg + cameraTransform.eulerAngles.y;
-            transform.eulerAngles = Vector3.up * Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotation, ref turnSmoothVelocity, GetModifiedSmoothTime(turnSmoothTime));
-        }
-
-        float targetSpeed = (Running ? runSpeed : walkSpeed) * inputDir.magnitude;
-        currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed, ref speedSmoothVelocity, GetModifiedSmoothTime(speedSmoothTime));
-
-        moveDir.y += Physics.gravity.y * gravityMod * Time.deltaTime;
-        moveDir = transform.forward * currentSpeed + Vector3.up * moveDir.y;
-
-        controller.Move(moveDir * Time.deltaTime);
-        currentSpeed = new Vector2(controller.velocity.x, controller.velocity.z).magnitude;
-
-        if (controller.isGrounded)
-            moveDir.y = 0f;
+        gravity = Physics.gravity.y * gravityMod;
     }
 
     private void Update()
@@ -72,9 +57,49 @@ public class PlayerController : MonoBehaviour
 
         Running = UnityEngine.Input.GetAxisRaw("Run") > 0;
 
+        Rotate();
+
         Move();
 
         Animate();
+    }
+
+    private void Move()
+    {
+        float targetSpeed = (Running ? runSpeed : walkSpeed) * inputDir.magnitude;
+        currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed, ref speedSmoothVelocity, GetModifiedSmoothTime(speedSmoothTime));
+
+        moveDir.y += gravity * Time.deltaTime;
+        moveDir = transform.forward * currentSpeed + Vector3.up * moveDir.y;
+
+        controller.Move(moveDir * Time.deltaTime);
+        currentSpeed = new Vector2(controller.velocity.x, controller.velocity.z).magnitude;
+
+        if (controller.isGrounded)
+            moveDir.y = 0f;
+    }
+
+    private void Rotate()
+    {
+        float previousY = transform.rotation.eulerAngles.y;
+
+        if (inputDir != Vector2.zero)
+        {
+            //direction
+            float targetRotation = Mathf.Atan2(inputDir.x, inputDir.y) * Mathf.Rad2Deg + cameraTransform.eulerAngles.y;
+            Vector3 moveVector = Vector3.up * Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotation, ref turnSmoothVelocity, GetModifiedSmoothTime(turnSmoothTime));
+
+            //z-tilt
+            float zOffset = moveVector.y - previousY;
+            Vector3 tiltVector = Vector3.forward * Mathf.SmoothDampAngle(transform.eulerAngles.z, -zOffset * 1.6f, ref tiltSmoothVelocity, GetModifiedSmoothTime(tiltSmoothTime));
+
+            transform.eulerAngles = moveVector + tiltVector;
+        }
+        else
+        {
+            float zAxis = Mathf.LerpAngle(transform.eulerAngles.z, 0, Time.deltaTime * 50f);
+            transform.eulerAngles -= Vector3.forward * zAxis;
+        }
     }
 
     private void Animate()
@@ -83,13 +108,14 @@ public class PlayerController : MonoBehaviour
 
         float animationSpeed = (Running ? currentSpeed / runSpeed : currentSpeed / walkSpeed * 0.5f) * inputDir.magnitude;
         player.Animator.SetFloat("Speed", animationSpeed, speedSmoothTime, Time.deltaTime);
+
+        player.Animator.SetFloat("VelocityY", controller.velocity.y / gravity);
     }
 
     private void Jump()
     {
         if (controller.isGrounded)
         {
-            float gravity = Physics.gravity.y * gravityMod;
             float jumpVelocity = Mathf.Sqrt(-2 * gravity * jumpHeight);
             moveDir.y = jumpVelocity;
 
