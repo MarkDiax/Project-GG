@@ -89,7 +89,7 @@ Material:
     - _EmissionScaleUI: 0
     - _Gloss: 0.5
     - _GlossMapScale: 1
-    - _Glossiness: 0.48
+    - _Glossiness: 0.4
     - _GlossyReflections: 1
     - _Lightmapping: 1
     - _Metallic: 0
