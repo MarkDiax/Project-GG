@@ -182,9 +182,8 @@ GameObject:
   - component: {fileID: 752713967}
   - component: {fileID: 752713966}
   - component: {fileID: 752713970}
-  - component: {fileID: 752713971}
   m_Layer: 0
-  m_Name: PlayerIsh
+  m_Name: RopeClimber
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -250,7 +249,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 752713965}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 36.2, y: 1.5, z: -38.07}
+  m_LocalPosition: {x: 36.2, y: 3.519, z: -38.07}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -264,37 +263,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 752713965}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e5a30a5b9a820241a3341abee135da3, type: 3}
+  m_Script: {fileID: 11500000, guid: 01a78b9d9fb37744b8686c5e1f68a8fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walkSpeed: 2
-  runSpeed: 6
-  turnSmoothTime: 0.2
-  tiltSmoothTime: 0.1
-  speedSmoothTime: 0.1
-  jumpHeight: 1
-  gravityMod: 1
-  airControl: 1
-  Running: 0
-  Grounded: 0
-  Landed: 0
---- !u!143 &752713971
-CharacterController:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 752713965}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Height: 1
-  m_Radius: 0.5
-  m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1139982660
 GameObject:
   m_ObjectHideFlags: 0
