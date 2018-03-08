@@ -30,8 +30,12 @@ public class CableComponent : MonoBehaviour
 
     #endregion
 
-    public SphereCollider[] Points {
+    public SphereCollider[] Colliders {
         get { return colliders; }
+    }
+
+    public CableParticle[] Particles {
+        get { return points; }
     }
 
     #region Initial setup
@@ -93,18 +97,25 @@ public class CableComponent : MonoBehaviour
     */
     void InitColliders()
     {
-        colliders = new SphereCollider[points.Length];
+        colliders = new SphereCollider[points.Length - 2];
 
         for (int i = 0; i < colliders.Length; i++)
         {
-            GameObject newObject = new GameObject("RopeCollider");
-            newObject.tag = "Rope";
-            newObject.transform.parent = transform;
+            GameObject ropePart = new GameObject("RopeCollider");
+            ropePart.tag = "Rope";
+            ropePart.transform.parent = transform;
 
-            colliders[i] = newObject.AddComponent(typeof(SphereCollider)) as SphereCollider;
+            colliders[i] = ropePart.AddComponent(typeof(SphereCollider)) as SphereCollider;
             colliders[i].isTrigger = true;
             colliders[i].radius = line.startWidth / 2;
             colliders[i].center = Vector3.zero;
+
+            Rigidbody rb = ropePart.AddComponent<Rigidbody>();
+            rb.useGravity = false;
+
+            ropePart.transform.position = points[i + 1].Position;
+
+            points[i + 1].Bind(ropePart.transform);
         }
     }
 
@@ -181,7 +192,9 @@ public class CableComponent : MonoBehaviour
     void UpdateColliders()
     {
         for (int i = 0; i < colliders.Length; i++)
-            colliders[i].transform.position = points[i].Position;
+        {
+            colliders[i].transform.position = points[i + 1].Position;
+        }
     }
 
     #endregion

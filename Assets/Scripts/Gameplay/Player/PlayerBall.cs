@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class PlayerBall : MonoBehaviour
 {
-
     private Coroutine Climb;
 
     private void OnTriggerEnter(Collider other)
@@ -15,26 +14,24 @@ public class PlayerBall : MonoBehaviour
 
     private IEnumerator RopeClimb(Collider Part)
     {
-
         CableComponent Cable = Part.gameObject.GetComponentInParent<CableComponent>();
 
         Collider currentPart = Part;
-        //transform.parent = currentPart.transform;
 
         int index = int.MaxValue;
-        for (int i = 0; i < Cable.Points.Length; i++)
+        for (int i = 0; i < Cable.Colliders.Length; i++)
         {
-            if (Cable.Points[i] == currentPart)
+            if (Cable.Colliders[i] == currentPart)
                 index = i;
         }
-
 
         while (index > 0)
         {
             if (Vector3.Distance(transform.position, currentPart.gameObject.transform.position) < 0.1f)
             {
                 index--;
-                currentPart = Cable.Points[index];
+                currentPart = Cable.Colliders[index];
+
                 transform.parent = currentPart.transform;
             }
 
