@@ -226,7 +226,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4744835075545096, guid: 24670b9b0ab5d64448a51647c511d9aa, type: 2}
       propertyPath: m_LocalPosition.y
-      value: 10.713543
+      value: 18.83
       objectReference: {fileID: 0}
     - target: {fileID: 4744835075545096, guid: 24670b9b0ab5d64448a51647c511d9aa, type: 2}
       propertyPath: m_LocalPosition.z
@@ -256,11 +256,11 @@ Prefab:
         type: 2}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 4fb51aa7001a2244395ddf6a15d37389, type: 2}
+      objectReference: {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
     - target: {fileID: 114732925530026704, guid: 24670b9b0ab5d64448a51647c511d9aa,
         type: 2}
       propertyPath: _segments
-      value: 30
+      value: 24
       objectReference: {fileID: 0}
     - target: {fileID: 54215630276100768, guid: 24670b9b0ab5d64448a51647c511d9aa,
         type: 2}
@@ -275,17 +275,52 @@ Prefab:
     - target: {fileID: 120084670906232428, guid: 24670b9b0ab5d64448a51647c511d9aa,
         type: 2}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 54215630276100768, guid: 24670b9b0ab5d64448a51647c511d9aa,
         type: 2}
       propertyPath: m_Mass
-      value: 5
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 54215630276100768, guid: 24670b9b0ab5d64448a51647c511d9aa,
         type: 2}
       propertyPath: m_Constraints
       value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 120084670906232428, guid: 24670b9b0ab5d64448a51647c511d9aa,
+        type: 2}
+      propertyPath: m_Parameters.generateLightingData
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 120084670906232428, guid: 24670b9b0ab5d64448a51647c511d9aa,
+        type: 2}
+      propertyPath: m_Parameters.numCapVertices
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 120084670906232428, guid: 24670b9b0ab5d64448a51647c511d9aa,
+        type: 2}
+      propertyPath: m_LightProbeUsage
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 120084670906232428, guid: 24670b9b0ab5d64448a51647c511d9aa,
+        type: 2}
+      propertyPath: m_ReflectionProbeUsage
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 114732925530026704, guid: 24670b9b0ab5d64448a51647c511d9aa,
+        type: 2}
+      propertyPath: _distanceBetweenSegments
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 54215630276100768, guid: 24670b9b0ab5d64448a51647c511d9aa,
+        type: 2}
+      propertyPath: m_AngularDrag
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 54215630276100768, guid: 24670b9b0ab5d64448a51647c511d9aa,
+        type: 2}
+      propertyPath: m_Drag
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 24670b9b0ab5d64448a51647c511d9aa, type: 2}
@@ -785,7 +820,7 @@ MeshRenderer:
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
   m_StitchLightmapSeams: 0
-  m_SelectedEditorRenderState: 3
+  m_SelectedEditorRenderState: 2
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
