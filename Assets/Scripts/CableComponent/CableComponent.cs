@@ -113,9 +113,6 @@ public class CableComponent : MonoBehaviour
             Rigidbody rb = ropePart.AddComponent<Rigidbody>();
             rb.useGravity = false;
 
-            ropePart.transform.position = points[i + 1].Position;
-
-            points[i + 1].Bind(ropePart.transform);
         }
     }
 

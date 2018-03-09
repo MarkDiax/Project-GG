@@ -11,7 +11,16 @@ public class RopeBehaviour : MonoBehaviour {
 
     List<RopePart> _ropeSegments;
 
+    LineRenderer _line;
+
     private void Awake()
+    {
+        InitRope();
+
+        SetupLine();
+    }
+
+    private void InitRope()
     {
         _ropeSegments = new List<RopePart>();
         _ropeSegments.Add(_startObject);
@@ -24,7 +33,27 @@ public class RopeBehaviour : MonoBehaviour {
             ropePart.CharacterJoint.connectedBody = _ropeSegments[i].GetComponent<Rigidbody>();
 
             ropePart.transform.position = _ropeSegments[i].transform.position + Vector3.down * _distanceBetweenSegments;
-            Debug.Log(ropePart.transform.position);
+        }
+    }
+
+    private void SetupLine()
+    {
+        _line = GetComponent<LineRenderer>();
+
+        _line.positionCount = _ropeSegments.Count;
+    }
+
+
+    private void Update()
+    {
+        UpdateLine();
+    }
+
+    private void UpdateLine()
+    {
+        for (int i = 0; i < _line.positionCount; i++)
+        {
+            _line.SetPosition(i, _ropeSegments[i].transform.position);
         }
     }
 }
