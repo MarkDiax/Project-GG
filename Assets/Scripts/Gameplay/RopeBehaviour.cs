@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RopeBehaviour : MonoBehaviour {
+public class RopeBehaviour : MonoBehaviour
+{
     [SerializeField] RopePart _startObject;
     [SerializeField] RopePart _particlePrefab;
 
     [SerializeField] float _segments;
     [SerializeField] float _distanceBetweenSegments;
+
+    [SerializeField] bool _showColliders;
 
     List<RopePart> _ropeSegments;
 
@@ -41,6 +44,9 @@ public class RopeBehaviour : MonoBehaviour {
         _line = GetComponent<LineRenderer>();
 
         _line.positionCount = _ropeSegments.Count;
+
+        for (int i = 0; i < _ropeSegments.Count; i++)
+            _ropeSegments[i].GetComponent<Renderer>().enabled = _showColliders;
     }
 
 
