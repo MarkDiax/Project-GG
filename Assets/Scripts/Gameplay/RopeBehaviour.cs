@@ -18,12 +18,12 @@ public class RopeBehaviour : MonoBehaviour
 
     private void Awake()
     {
-        InitRope();
+        SetupRope();
 
         SetupLine();
     }
 
-    private void InitRope()
+    private void SetupRope()
     {
         _ropeSegments = new List<RopePart>();
         _ropeSegments.Add(_startObject);
@@ -37,6 +37,12 @@ public class RopeBehaviour : MonoBehaviour
 
             ropePart.transform.position = _ropeSegments[i].transform.position + Vector3.down * _distanceBetweenSegments;
         }
+
+        for (int i = 0; i < _ropeSegments.Count; i++)
+        {
+            _ropeSegments[i].GetComponent<Renderer>().enabled = _showColliders;
+            _ropeSegments[i].tag = "Rope";
+        }
     }
 
     private void SetupLine()
@@ -44,9 +50,6 @@ public class RopeBehaviour : MonoBehaviour
         _line = GetComponent<LineRenderer>();
 
         _line.positionCount = _ropeSegments.Count;
-
-        for (int i = 0; i < _ropeSegments.Count; i++)
-            _ropeSegments[i].GetComponent<Renderer>().enabled = _showColliders;
     }
 
 
