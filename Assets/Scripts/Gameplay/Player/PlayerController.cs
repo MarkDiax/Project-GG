@@ -54,8 +54,9 @@ public class PlayerController : MonoBehaviour
         Vector2 keyboardInput = input.Keyboard.Input;
         _inputDir = keyboardInput.normalized;
 
-        if (UnityEngine.Input.GetKeyDown(KeyCode.Space))
-            Jump();
+        if (UnityEngine.Input.GetKeyDown(KeyCode.Space) && controller.isGrounded)
+            player.Animator.SetTrigger("Jump");
+        //Jump();
 
         Running = UnityEngine.Input.GetAxisRaw("Run") > 0;
 
@@ -111,18 +112,24 @@ public class PlayerController : MonoBehaviour
         float animationSpeed = (Running ? _currentSpeed / runSpeed : _currentSpeed / walkSpeed * 0.5f) * _inputDir.magnitude;
         player.Animator.SetFloat("Speed", animationSpeed, speedSmoothTime, Time.deltaTime);
 
-        //player.Animator.SetFloat("VelocityY", controller.velocity.y / gravity);
+
+        //to fix a floating-point precision issue in the animator
+        //float PlayerMoveSpeed = float.Parse(player.Animator.GetFloat("Speed").ToString("F4"));
+
+        float PlayerMoveSpeed = player.Animator.GetFloat("Speed");
+        if (player.Animator.GetFloat("Speed") < 0.01f)
+            PlayerMoveSpeed = 0;
+
+        player.Animator.SetFloat("Speed",PlayerMoveSpeed);
     }
 
-    private void Jump()
+    public void Jump()
     {
-        if (controller.isGrounded)
-        {
-            float jumpVelocity = Mathf.Sqrt(-2 * _gravity * jumpHeight);
-            _moveDir.y = jumpVelocity;
+        float jumpVelocity = Mathf.Sqrt(-2 * _gravity * (Mathf.Max(0.3f,  jumpHeight * _inputDir.magnitude)));
+        _moveDir.y = jumpVelocity;
 
-            player.Animator.SetTrigger("Jump");
-        }
+        //player.Animator.SetTrigger("Jump");
+
     }
 
     private float GetModifiedSmoothTime(float smoothTime)

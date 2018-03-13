@@ -69,8 +69,11 @@ public class BaseAnimator : MonoBehaviour {
         Animator.SetFloat(Name, Value, dampTime, deltaTime);
     }
 
-    public void SetBool(string Name, bool Value)
-    {
+    public float GetFloat(string Name) {
+       return Animator.GetFloat(Name);
+    }
+
+    public void SetBool(string Name, bool Value) {
         Animator.SetBool(Name, Value);
     }
 

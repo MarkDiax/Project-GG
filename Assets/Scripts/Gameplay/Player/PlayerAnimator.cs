@@ -12,6 +12,11 @@ public class PlayerAnimator : BaseAnimator {
         //
 	}
 
+    public void JumpEvent()
+    {
+        Player.Instance.Controller.Jump();
+    }
+
     private void OnAnimatorMove()
     {
         transform.position += GetDeltaPosition;
