@@ -69,13 +69,13 @@ MonoBehaviour:
       screenEdgeMask:
         intensity: 0.025
   depthOfField:
-    m_Enabled: 0
+    m_Enabled: 1
     m_Settings:
-      focusDistance: 10
-      aperture: 5.6
+      focusDistance: 4.41
+      aperture: 1
       focalLength: 50
-      useCameraFov: 0
-      kernelSize: 1
+      useCameraFov: 1
+      kernelSize: 3
   motionBlur:
     m_Enabled: 1
     m_Settings:
@@ -85,17 +85,17 @@ MonoBehaviour:
   eyeAdaptation:
     m_Enabled: 1
     m_Settings:
-      lowPercent: 35.531403
-      highPercent: 85.53146
-      minLuminance: -4.05
-      maxLuminance: -3.99
+      lowPercent: 28.828465
+      highPercent: 62.375854
+      minLuminance: -5
+      maxLuminance: -1
       keyValue: 0.25
       dynamicKeyValue: 1
       adaptationType: 0
       speedUp: 1
       speedDown: 1
-      logMin: -9
-      logMax: 9
+      logMin: -5
+      logMax: 13
   bloom:
     m_Enabled: 1
     m_Settings:
@@ -107,25 +107,25 @@ MonoBehaviour:
         antiFlicker: 1
       lensDirt:
         texture: {fileID: 2800000, guid: 3884f7a2d04ffe8409ad9200b275896f, type: 3}
-        intensity: 24
+        intensity: 2
   colorGrading:
     m_Enabled: 1
     m_Settings:
       tonemapping:
-        tonemapper: 1
-        neutralBlackIn: 0.004
-        neutralWhiteIn: 13.9
-        neutralBlackOut: 0
-        neutralWhiteOut: 10
-        neutralWhiteLevel: 5.3
+        tonemapper: 2
+        neutralBlackIn: 0.0658
+        neutralWhiteIn: 14.61
+        neutralBlackOut: 0.012
+        neutralWhiteOut: 14.35
+        neutralWhiteLevel: 3.67
         neutralWhiteClip: 10
       basic:
-        postExposure: 1.64
+        postExposure: 1
         temperature: 9
         tint: 0
         hueShift: 0
-        saturation: 1.1
-        contrast: 0.75
+        saturation: 1.5
+        contrast: 1
       channelMixer:
         red: {x: 1, y: 0, z: 0}
         green: {x: 0, y: 1, z: 0}
