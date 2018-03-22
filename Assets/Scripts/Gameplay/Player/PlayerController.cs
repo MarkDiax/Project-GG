@@ -3,13 +3,16 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using UnityEngine.Events;
 
 public class PlayerController : MonoBehaviour
 {
-    private Player player;
-    private InputManager input;
-    private CharacterController controller;
-    private Transform cameraTransform;
+    private Player _player;
+    private InputManager _input;
+    private CharacterController _controller;
+    private Transform _cameraTransform;
+
+    #region Movement Control Fields
 
     public float walkSpeed = 2;
     public float runSpeed = 6;
@@ -29,67 +32,71 @@ public class PlayerController : MonoBehaviour
     [Range(0, 1)]
     public float airControl;
 
-    [HideInInspector]
-    public bool Running, Grounded, Landed;
-
     private Vector2 _inputDir;
     private Vector3 _moveDir;
     private float _gravity;
+    private bool _running;
+
+    #endregion
+
+    public bool usePhysics;
 
     private Coroutine _climbRoutine;
 
-    private void Awake()
-    {
-        cameraTransform = Camera.main.transform;
-        input = InputManager.Instance;
-        player = Player.Instance;
-        controller = GetComponent<CharacterController>();
+    private void Awake() {
+        _cameraTransform = Camera.main.transform;
+        _input = InputManager.Instance;
+        _player = Player.Instance;
+        _controller = GetComponent<CharacterController>();
 
-        _gravity = Physics.gravity.y * gravityMod;
+        usePhysics = true;
+        UseGravity(true);
+
+        _input.Keyboard.OnJump += () => {
+            if (_controller.isGrounded)
+                _player.Animator.SetTrigger("Jump");
+        };
     }
 
-    private void Update()
-    {
+    private void Update() {
         //input
-        Vector2 keyboardInput = input.Keyboard.Input;
+        Vector2 keyboardInput = new Vector2(InputManager.Instance.GetAxis(InputKey.MoveHorizontal), InputManager.Instance.GetAxis(InputKey.MoveVertical)); // _input.Keyboard.Input;
         _inputDir = keyboardInput.normalized;
 
-        if (UnityEngine.Input.GetKeyDown(KeyCode.Space) && controller.isGrounded)
-            player.Animator.SetTrigger("Jump");
-        //Jump();
+        _running = InputManager.Instance.GetKey(InputKey.Run); //UnityEngine.Input.GetAxisRaw("Run") > 0;
 
-        Running = UnityEngine.Input.GetAxisRaw("Run") > 0;
+        if (Input.GetKey(KeyCode.Q))
+            _player.Climber.Climb();
+        else if (_player.Climber.OnRope == false) { // HACK! To be removed
 
-        Rotate();
+            Rotate();
 
-        Move();
+            Move();
+        }
 
         Animate();
     }
 
-    private void Move()
-    {
-        float targetSpeed = (Running ? runSpeed : walkSpeed) * _inputDir.magnitude;
+    private void Move() {
+        float targetSpeed = (_running ? runSpeed : walkSpeed) * _inputDir.magnitude;
         _currentSpeed = Mathf.SmoothDamp(_currentSpeed, targetSpeed, ref _speedSmoothVelocity, GetModifiedSmoothTime(speedSmoothTime));
 
         _moveDir.y += _gravity * Time.deltaTime;
         _moveDir = transform.forward * _currentSpeed + Vector3.up * _moveDir.y;
 
-        controller.Move(_moveDir * Time.deltaTime);
-        _currentSpeed = new Vector2(controller.velocity.x, controller.velocity.z).magnitude;
+        _controller.Move(_moveDir * Time.deltaTime);
+        _currentSpeed = new Vector2(_controller.velocity.x, _controller.velocity.z).magnitude;
 
-        if (controller.isGrounded)
+        if (_controller.isGrounded)
             _moveDir.y = 0f;
     }
 
-    private void Rotate()
-    {
+    private void Rotate() {
         float previousY = transform.rotation.eulerAngles.y;
 
-        if (_inputDir != Vector2.zero)
-        {
+        if (_inputDir != Vector2.zero) {
             //direction
-            float targetRotation = Mathf.Atan2(_inputDir.x, _inputDir.y) * Mathf.Rad2Deg + cameraTransform.eulerAngles.y;
+            float targetRotation = Mathf.Atan2(_inputDir.x, _inputDir.y) * Mathf.Rad2Deg + _cameraTransform.eulerAngles.y;
             Vector3 moveVector = Vector3.up * Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotation, ref _turnSmoothVelocity, GetModifiedSmoothTime(turnSmoothTime));
 
             //z-tilt
@@ -98,43 +105,33 @@ public class PlayerController : MonoBehaviour
 
             transform.eulerAngles = moveVector + tiltVector;
         }
-        else
-        {
+        else {
             float zAxis = Mathf.LerpAngle(transform.eulerAngles.z, 0, Time.deltaTime * 50f);
             transform.eulerAngles -= Vector3.forward * zAxis;
         }
     }
 
-    private void Animate()
-    {
-        player.Animator.SetBool("Grounded", controller.isGrounded);
+    private void Animate() {
+        _player.Animator.SetBool("Grounded", _controller.isGrounded);
 
-        float animationSpeed = (Running ? _currentSpeed / runSpeed : _currentSpeed / walkSpeed * 0.5f) * _inputDir.magnitude;
-        player.Animator.SetFloat("Speed", animationSpeed, speedSmoothTime, Time.deltaTime);
+        float animationSpeed = (_running ? _currentSpeed / runSpeed : _currentSpeed / walkSpeed * 0.5f) * _inputDir.magnitude;
+        _player.Animator.SetFloat("Speed", animationSpeed, speedSmoothTime, Time.deltaTime);
 
-
-        //to fix a floating-point precision issue in the animator
-        //float PlayerMoveSpeed = float.Parse(player.Animator.GetFloat("Speed").ToString("F4"));
-
-        float PlayerMoveSpeed = player.Animator.GetFloat("Speed");
-        if (player.Animator.GetFloat("Speed") < 0.01f)
+        //to fix a floating-point precision issue in the animator:
+        float PlayerMoveSpeed = _player.Animator.GetFloat("Speed");
+        if (PlayerMoveSpeed < 0.3f && _inputDir.magnitude == 0)
             PlayerMoveSpeed = 0;
 
-        player.Animator.SetFloat("Speed",PlayerMoveSpeed);
+        _player.Animator.SetFloat("Speed", PlayerMoveSpeed);
     }
 
-    public void Jump()
-    {
-        float jumpVelocity = Mathf.Sqrt(-2 * _gravity * (Mathf.Max(0.3f,  jumpHeight * _inputDir.magnitude)));
+    public void Jump() {
+        float jumpVelocity = Mathf.Sqrt(-2 * _gravity * (Mathf.Max(0.3f, jumpHeight * _player.Animator.GetFloat("Speed"))));
         _moveDir.y = jumpVelocity;
-
-        //player.Animator.SetTrigger("Jump");
-
     }
 
-    private float GetModifiedSmoothTime(float smoothTime)
-    {
-        if (controller.isGrounded)
+    private float GetModifiedSmoothTime(float smoothTime) {
+        if (_controller.isGrounded)
             return smoothTime;
 
         if (airControl == 0)
@@ -143,21 +140,28 @@ public class PlayerController : MonoBehaviour
         return smoothTime / airControl;
     }
 
-    void OnControllerColliderHit(ControllerColliderHit hit)
-    {
-        if (hit.collider.tag == "Rope")
-        {
-            Debug.Log("rope");
-        }
+    void OnControllerColliderHit(ControllerColliderHit hit) {
 
-        Rigidbody body = hit.collider.attachedRigidbody;
-        if (body == null || body.isKinematic)
+        //add force to colliding rigidbodies
+        AddPhysicsForceOnHit(hit.collider.attachedRigidbody, hit);
+    }
+
+    private void AddPhysicsForceOnHit(Rigidbody rigidbody, ControllerColliderHit hit) {
+        if (!usePhysics || rigidbody == null || rigidbody.isKinematic)
             return;
 
         if (hit.moveDirection.y < -0.3F)
             return;
 
         Vector3 pushDir = new Vector3(hit.moveDirection.x, hit.moveDirection.y, hit.moveDirection.z);
-        body.velocity = pushDir * 5f;
+        rigidbody.AddForce(pushDir * 100, ForceMode.Force);
+    }
+
+    public void UseGravity(bool Use) {
+        _gravity = Use ? Physics.gravity.y * gravityMod : 0;
+    }
+
+    public bool Grounded {
+        get { return _controller.isGrounded; }
     }
 }

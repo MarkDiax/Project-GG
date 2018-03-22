@@ -20,6 +20,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4066413443913366}
   - component: {fileID: 114974931941365596}
+  - component: {fileID: 114375848412504298}
   m_Layer: 0
   m_Name: Game
   m_TagString: Untagged
@@ -40,6 +41,37 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114375848412504298
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1972945587671526}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b28a485bfe770f644935fd27a4ce3bcd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dontDestroyOnLoad: 1
+  _inputKeys:
+  - input: 
+    key: 0
+  - input: Horizontal
+    key: 1
+  - input: Vertical
+    key: 2
+  - input: Run
+    key: 3
+  - input: 
+    key: 4
+  - input: 
+    key: 5
+  - input: 
+    key: 6
+  - input: 
+    key: 7
+  - input: 
+    key: 8
 --- !u!114 &114974931941365596
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -51,3 +83,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a0b745ad6e5ace46893420a86cdd9ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dontDestroyOnLoad: 1

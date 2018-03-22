@@ -14133,16 +14133,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114632885705184382, guid: 397f31cd1cd40d94fb633e41644822b2,
-        type: 2}
-      propertyPath: jumpHeight
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 114632885705184382, guid: 397f31cd1cd40d94fb633e41644822b2,
-        type: 2}
-      propertyPath: gravityMod
-      value: 1.5
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 397f31cd1cd40d94fb633e41644822b2, type: 2}
   m_IsPrefabParent: 0
@@ -18178,7 +18168,7 @@ Prefab:
       objectReference: {fileID: 1276909940}
     - target: {fileID: 4407596305975708, guid: f7288ba2e1f6c1645824e23c9c2f8fe0, type: 2}
       propertyPath: m_LocalRotation.x
-      value: 0.049241766
+      value: 0.04924175
       objectReference: {fileID: 0}
     - target: {fileID: 4407596305975708, guid: f7288ba2e1f6c1645824e23c9c2f8fe0, type: 2}
       propertyPath: m_LocalRotation.z
@@ -18186,11 +18176,11 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4418597675123050, guid: f7288ba2e1f6c1645824e23c9c2f8fe0, type: 2}
       propertyPath: m_LocalRotation.z
-      value: -0.0000000099980815
+      value: -0.000000009998081
       objectReference: {fileID: 0}
     - target: {fileID: 4418597675123050, guid: f7288ba2e1f6c1645824e23c9c2f8fe0, type: 2}
       propertyPath: m_LocalRotation.w
-      value: 0.9999678
+      value: 0.99996775
       objectReference: {fileID: 0}
     - target: {fileID: 4407596305975708, guid: f7288ba2e1f6c1645824e23c9c2f8fe0, type: 2}
       propertyPath: m_LocalRotation.y
@@ -18980,7 +18970,7 @@ Mesh:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: pb_Mesh18374
+  m_Name: pb_Mesh87888
   serializedVersion: 8
   m_SubMeshes:
   - serializedVersion: 2

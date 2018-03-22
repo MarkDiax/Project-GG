@@ -1,0 +1,9 @@
+extensions: .aspx .ascx
+extensions: .vb
+extensions: designer.cs generated.cs
+extensions: .cs .cpp .h
+#region Copyright Notice
+// For use of this code, please contact the company or creator of the code.
+// Creator: Mark Offenberg
+// Copyright (c) 2018 Despresso Games - All Rights Reserved
+#endregion

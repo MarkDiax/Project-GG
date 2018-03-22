@@ -20,12 +20,11 @@ GameObject:
   m_Component:
   - component: {fileID: 4538378767619988}
   - component: {fileID: 33575037449276086}
-  - component: {fileID: 135650790337275750}
   - component: {fileID: 23478961775429300}
   - component: {fileID: 54215630276100768}
-  - component: {fileID: 114054778018802834}
-  m_Layer: 0
-  m_Name: Start
+  - component: {fileID: 136658224889656820}
+  m_Layer: 10
+  m_Name: Hanger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -39,9 +38,9 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4744835075545096}
-  - component: {fileID: 114732925530026704}
   - component: {fileID: 120084670906232428}
-  m_Layer: 0
+  - component: {fileID: 114899871913876312}
+  m_Layer: 10
   m_Name: Rope
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -54,9 +53,9 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1127613516757364}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalScale: {x: 0.1, y: 0.075, z: 0.1}
   m_Children: []
   m_Father: {fileID: 4744835075545096}
   m_RootOrder: 0
@@ -68,7 +67,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1904666636453530}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 44.57782, y: 18.83, z: -45.81}
+  m_LocalPosition: {x: 0, y: 8.1, z: -6.34}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children:
   - {fileID: 4538378767619988}
@@ -115,7 +114,7 @@ MeshFilter:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1127613516757364}
-  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!54 &54215630276100768
 Rigidbody:
   m_ObjectHideFlags: 1
@@ -127,22 +126,11 @@ Rigidbody:
   m_Drag: 1
   m_AngularDrag: 15
   m_UseGravity: 0
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 14
+  m_Constraints: 126
   m_CollisionDetection: 0
---- !u!114 &114054778018802834
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1127613516757364}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a29ab184ccea04b4b864590e4b813aab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &114732925530026704
+--- !u!114 &114899871913876312
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -150,15 +138,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 1904666636453530}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bff96804d5b1ab04fa3d1514a4e5b4cb, type: 3}
+  m_Script: {fileID: 11500000, guid: 4e528eda32544064f8b4ec5ca364d819, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _startObject: {fileID: 114054778018802834}
-  _particlePrefab: {fileID: 114329041422483074, guid: 9cfa15faba253694a87c3a1da958692c,
+  _ropePartPrefab: {fileID: 114804445512157978, guid: 9cfa15faba253694a87c3a1da958692c,
     type: 2}
-  _segments: 32
-  _distanceBetweenSegments: 0.6
-  _showColliders: 0
+  _ropeHanger: {fileID: 1127613516757364}
+  _segments: 80
+  _distanceBetweenSegments: 0.1
+  _showColliders: 1
+  ropeSegments: []
 --- !u!120 &120084670906232428
 LineRenderer:
   m_ObjectHideFlags: 1
@@ -193,12 +182,10 @@ LineRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Positions:
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
+  m_Positions: []
   m_Parameters:
     serializedVersion: 2
-    widthMultiplier: 0.25
+    widthMultiplier: 0.1
     widthCurve:
       serializedVersion: 2
       m_Curve:
@@ -247,15 +234,16 @@ LineRenderer:
     generateLightingData: 1
   m_UseWorldSpace: 1
   m_Loop: 0
---- !u!135 &135650790337275750
-SphereCollider:
+--- !u!136 &136658224889656820
+CapsuleCollider:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1127613516757364}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
-  serializedVersion: 2
   m_Radius: 0.5
+  m_Height: 2
+  m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
