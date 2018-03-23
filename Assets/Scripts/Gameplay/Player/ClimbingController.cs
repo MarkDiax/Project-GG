@@ -6,6 +6,9 @@ public class ClimbingController : MonoBehaviour
     [SerializeField]
     private float _climbSpeed;
 
+    [SerializeField]
+    private Transform _leftHand, _rightHand;
+
     private Player _player;
     private RopePart _currentPart;
     private RopeBehaviour _currentRope;
@@ -66,20 +69,22 @@ public class ClimbingController : MonoBehaviour
 
         }
 
-       // UpdateRopeTriggers();
+        // UpdateRopeTriggers();
     }
-
-
 
     private void Update() {
         if (!OnRope || _currentPart == null)
             return;
 
-        float climbDir = _climbSpeed * Mathf.Abs(_moveDir);
-        Vector3 targetPos = _currentRope.ropeSegments[_ropeIndex].transform.position - Vector3.back * (_currentPart.Radius /5);
-        _player.transform.position = Vector3.Lerp(_player.transform.position, targetPos, climbDir * Time.deltaTime);
-        
-        onRopeClimbing(climbDir);
+        Vector3 targetPos = _currentRope.ropeSegments[_ropeIndex].transform.position - Vector3.back * (_currentPart.Radius / 5);
+        _player.transform.position = Vector3.Lerp(_player.transform.position, targetPos, _climbSpeed * Time.deltaTime);
+        _player.transform.eulerAngles = new Vector3(0, _player.transform.eulerAngles.y, 0);
+
+
+        Debug.Log(_climbSpeed * _moveDir);
+        onRopeClimbing(_climbSpeed * _moveDir);
+
+
     }
 
     private void UpdateRopeTriggers() {

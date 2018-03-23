@@ -63,7 +63,7 @@ public class PlayerController : MonoBehaviour
         Vector2 keyboardInput = new Vector2(InputManager.Instance.GetAxis(InputKey.MoveHorizontal), InputManager.Instance.GetAxis(InputKey.MoveVertical)); // _input.Keyboard.Input;
         _inputDir = keyboardInput.normalized;
 
-        _running = InputManager.Instance.GetKey(InputKey.Run); //UnityEngine.Input.GetAxisRaw("Run") > 0;
+        _running = InputManager.Instance.GetKey(InputKey.Run);
 
         if (Input.GetKey(KeyCode.Q))
             _player.Climber.Climb();
@@ -82,7 +82,7 @@ public class PlayerController : MonoBehaviour
         _currentSpeed = Mathf.SmoothDamp(_currentSpeed, targetSpeed, ref _speedSmoothVelocity, GetModifiedSmoothTime(speedSmoothTime));
 
         _moveDir.y += _gravity * Time.deltaTime;
-        _moveDir = transform.forward * _currentSpeed + Vector3.up * _moveDir.y;
+        _moveDir = _player.transform.forward * _currentSpeed + Vector3.up * _moveDir.y;
 
         _controller.Move(_moveDir * Time.deltaTime);
         _currentSpeed = new Vector2(_controller.velocity.x, _controller.velocity.z).magnitude;
@@ -92,22 +92,22 @@ public class PlayerController : MonoBehaviour
     }
 
     private void Rotate() {
-        float previousY = transform.rotation.eulerAngles.y;
+        float previousY = _player.transform.rotation.eulerAngles.y;
 
         if (_inputDir != Vector2.zero) {
             //direction
             float targetRotation = Mathf.Atan2(_inputDir.x, _inputDir.y) * Mathf.Rad2Deg + _cameraTransform.eulerAngles.y;
-            Vector3 moveVector = Vector3.up * Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotation, ref _turnSmoothVelocity, GetModifiedSmoothTime(turnSmoothTime));
+            Vector3 moveVector = Vector3.up * Mathf.SmoothDampAngle(_player.transform.eulerAngles.y, targetRotation, ref _turnSmoothVelocity, GetModifiedSmoothTime(turnSmoothTime));
 
             //z-tilt
             float zOffset = moveVector.y - previousY;
-            Vector3 tiltVector = Vector3.forward * Mathf.SmoothDampAngle(transform.eulerAngles.z, -zOffset * 1.2f, ref _tiltSmoothVelocity, GetModifiedSmoothTime(tiltSmoothTime));
+            Vector3 tiltVector = Vector3.forward * Mathf.SmoothDampAngle(_player.transform.eulerAngles.z, -zOffset * 1.2f, ref _tiltSmoothVelocity, GetModifiedSmoothTime(tiltSmoothTime));
 
-            transform.eulerAngles = moveVector + tiltVector;
+            _player.transform.eulerAngles = moveVector + tiltVector;
         }
         else {
-            float zAxis = Mathf.LerpAngle(transform.eulerAngles.z, 0, Time.deltaTime * 50f);
-            transform.eulerAngles -= Vector3.forward * zAxis;
+            float zAxis = Mathf.LerpAngle(_player.transform.eulerAngles.z, 0, Time.deltaTime * 50f);
+            _player.transform.eulerAngles -= Vector3.forward * zAxis;
         }
     }
 
@@ -126,7 +126,7 @@ public class PlayerController : MonoBehaviour
     }
 
     public void Jump() {
-        float jumpVelocity = Mathf.Sqrt(-2 * _gravity * (Mathf.Max(0.3f, jumpHeight * _player.Animator.GetFloat("Speed"))));
+        float jumpVelocity = Mathf.Sqrt(-2 * _gravity * jumpHeight);
         _moveDir.y = jumpVelocity;
     }
 

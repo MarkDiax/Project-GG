@@ -9,12 +9,11 @@ public class Player : MonoSingleton<Player>
     private Rigidbody _rigidbody;
     private PlayerTrigger _trigger;
 
-    //private PlayerActions _actions;
 
     public PlayerController Controller {
         get {
             if (_controller == null)
-                _controller = GetComponent<PlayerController>();
+                _controller = GetComponentInChildren<PlayerController>();
             return _controller;
         }
     }
@@ -22,7 +21,7 @@ public class Player : MonoSingleton<Player>
     public ClimbingController Climber {
         get {
             if (_climber == null)
-                _climber = GetComponent<ClimbingController>();
+                _climber = GetComponentInChildren<ClimbingController>();
             return _climber;
         }
     }
@@ -50,12 +49,4 @@ public class Player : MonoSingleton<Player>
             return _trigger;
         }
     }
-
-    //public PlayerActions Actions {
-    //    get {
-    //        if (_actions == null)
-    //            _actions = GetComponentInChildren<PlayerActions>();
-    //        return _actions;
-    //    }
-    //}
 }
