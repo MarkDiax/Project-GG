@@ -194,14 +194,21 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
-      - time: 0.28989702
+      - time: 0.2529512
         functionName: RopeHandSwitch
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.8062952
+      - time: 0.48198196
+        functionName: HoldRope
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.70531
         functionName: RopeHandSwitch
         data: 
         objectReferenceParameter: {instanceID: 0}
@@ -209,13 +216,6 @@ ModelImporter:
         intParameter: 0
         messageOptions: 0
       - time: 0.9797298
-        functionName: HoldRope
-        data: 
-        objectReferenceParameter: {instanceID: 0}
-        floatParameter: 0
-        intParameter: 0
-        messageOptions: 0
-      - time: 0.48198196
         functionName: HoldRope
         data: 
         objectReferenceParameter: {instanceID: 0}
