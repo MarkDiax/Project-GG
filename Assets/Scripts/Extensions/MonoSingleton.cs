@@ -13,7 +13,6 @@ using System.Collections.Generic;
 /// </summary>
 public abstract class MonoSingleton<T> : MonoBehaviour where T : MonoSingleton<T>
 {
-
     public bool dontDestroyOnLoad = true;
 
     private static T instance = null;

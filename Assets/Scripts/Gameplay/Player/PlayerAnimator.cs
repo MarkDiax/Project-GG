@@ -4,29 +4,39 @@ using UnityEngine;
 
 public class PlayerAnimator : CharacterAnimator
 {
-
     private bool _onRope;
     private Player _player;
 
     private bool _useRootMotion;
 
-
     protected override void Awake() {
         base.Awake();
 
         _player = Player.Instance;
+    }
 
-        _player.Trigger.onRopeTrigger += OnRope;
-        _player.Climber.onRopeClimbing += Climb;
+    private void Start() {
+        EventManager.RopeEvent.OnRope.AddListener(OnRope);
+        EventManager.RopeEvent.OnRopeClimbing.AddListener(Climb);
     }
 
     private void Climb(float ClimbSpeed) {
         SetFloat("climbSpeed", ClimbSpeed);
     }
 
-    private void OnRope(RopePart Part) {
-        _onRope = Part == null ? false : true;
+    private void OnRope(bool OnRope) {
+        _onRope = OnRope;
         _useRootMotion = !_onRope;
+    }
+
+    public void RopeHandSwitch() {
+        if (EventManager.RopeEvent.OnHandSwitch != null)
+            EventManager.RopeEvent.OnHandSwitch();
+    }
+
+    public void HoldRope() {
+        if (EventManager.RopeEvent.OnRopeHold != null)
+            EventManager.RopeEvent.OnRopeHold();
     }
 
     private void Update() {

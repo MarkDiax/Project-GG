@@ -39,9 +39,9 @@ public class PlayerController : MonoBehaviour
 
     #endregion
 
-    public bool usePhysics;
-
-    private Coroutine _climbRoutine;
+    [HideInInspector]
+    public bool usePhysics = true;
+    private bool _onRope;
 
     private void Awake() {
         _cameraTransform = Camera.main.transform;
@@ -49,32 +49,32 @@ public class PlayerController : MonoBehaviour
         _player = Player.Instance;
         _controller = GetComponent<CharacterController>();
 
-        usePhysics = true;
         UseGravity(true);
 
-        _input.Keyboard.OnJump += () => {
-            if (_controller.isGrounded)
-                _player.Animator.SetTrigger("Jump");
-        };
+        EventManager.RopeEvent.OnRope.AddListener(OnRope);
     }
 
     private void Update() {
-        //input
-        Vector2 keyboardInput = new Vector2(InputManager.Instance.GetAxis(InputKey.MoveHorizontal), InputManager.Instance.GetAxis(InputKey.MoveVertical)); // _input.Keyboard.Input;
-        _inputDir = keyboardInput.normalized;
+        UpdateInput();
 
-        _running = InputManager.Instance.GetKey(InputKey.Run);
-
-        if (Input.GetKey(KeyCode.Q))
-            _player.Climber.Climb();
-        else if (_player.Climber.OnRope == false) { // HACK! To be removed
-
+        if (!_onRope) {
             Rotate();
-
             Move();
         }
 
         Animate();
+    }
+
+    private void UpdateInput() {
+        Vector2 keyboardInput = new Vector2(InputManager.GetAxis(InputKey.MoveHorizontal), InputManager.GetAxis(InputKey.MoveVertical));
+        _inputDir = keyboardInput.normalized;
+
+        _running = InputManager.GetKey(InputKey.Run);
+
+        if (InputManager.GetKeyDown(InputKey.Jump)) {
+            if (_controller.isGrounded)
+                _player.Animator.SetTrigger("Jump");
+        }
     }
 
     private void Move() {
@@ -130,6 +130,12 @@ public class PlayerController : MonoBehaviour
         _moveDir.y = jumpVelocity;
     }
 
+
+    private void OnControllerColliderHit(ControllerColliderHit hit) {
+        //add force to colliding rigidbodies
+        AddPhysicsForceOnHit(hit.collider.attachedRigidbody, hit);
+    }
+
     private float GetModifiedSmoothTime(float smoothTime) {
         if (_controller.isGrounded)
             return smoothTime;
@@ -138,12 +144,6 @@ public class PlayerController : MonoBehaviour
             return float.MaxValue;
 
         return smoothTime / airControl;
-    }
-
-    void OnControllerColliderHit(ControllerColliderHit hit) {
-
-        //add force to colliding rigidbodies
-        AddPhysicsForceOnHit(hit.collider.attachedRigidbody, hit);
     }
 
     private void AddPhysicsForceOnHit(Rigidbody rigidbody, ControllerColliderHit hit) {
@@ -155,6 +155,10 @@ public class PlayerController : MonoBehaviour
 
         Vector3 pushDir = new Vector3(hit.moveDirection.x, hit.moveDirection.y, hit.moveDirection.z);
         rigidbody.AddForce(pushDir * 100, ForceMode.Force);
+    }
+
+    private void OnRope(bool OnRope) {
+        _onRope = OnRope;
     }
 
     public void UseGravity(bool Use) {

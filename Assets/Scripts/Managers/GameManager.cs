@@ -11,10 +11,13 @@ public class GameManager : MonoSingleton<GameManager>, IManager
 
     public override void Init() {
         LockMouse(_lockMouse);
+
+        EventManager.Instance.Init();
     }
 
     public void Update() {
         InputManager.Instance.Update();
+        EventManager.Instance.Update();
     }
 
     public bool ControllerConnected {

@@ -11,15 +11,12 @@ using System;
 
 public class PlayerTrigger : MonoBehaviour
 {
-    public delegate void OnRopeTrigger(RopePart ropePart);
-    public event OnRopeTrigger onRopeTrigger;
-
     private void OnTriggerEnter(Collider other) {
         if (other.tag != Player.Instance.tag) {
             if (other.gameObject.layer == (int)Layers.Rope) {
 
-                if (onRopeTrigger != null)
-                    onRopeTrigger(other.GetComponent<RopePart>());
+                if (EventManager.RopeEvent.OnRopeTrigger != null)
+                    EventManager.RopeEvent.OnRopeTrigger.Invoke(other.GetComponent<RopePart>());
             }
         }
     }
@@ -28,19 +25,19 @@ public class PlayerTrigger : MonoBehaviour
         if (other.tag != Player.Instance.tag) {
             if (other.gameObject.layer == (int)Layers.Rope) {
 
-                if (onRopeTrigger != null)
-                    onRopeTrigger(other.GetComponent<RopePart>());
+                if (EventManager.RopeEvent.OnRopeTrigger != null)
+                    EventManager.RopeEvent.OnRopeTrigger.Invoke(other.GetComponent<RopePart>());
             }
         }
     }
 
-    private void OnTriggerExit(Collider other) {
-        if (other.tag != Player.Instance.tag) {
-            if (other.gameObject.layer == (int)Layers.Rope) {
+    //private void OnTriggerExit(Collider other) {
+    //    if (other.tag != Player.Instance.tag) {
+    //        if (other.gameObject.layer == (int)Layers.Rope) {
 
-                if (onRopeTrigger != null)
-                    onRopeTrigger(null);
-            }
-        }
-    }
+    //            if (EventManager.RopeEvent.OnRopeTrigger != null)
+    //                EventManager.RopeEvent.OnRopeTrigger.Invoke(null);
+    //        }
+    //    }
+    //}
 }
