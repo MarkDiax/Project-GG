@@ -35,7 +35,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1972945587671526}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.6772408, y: 2.2175515, z: 2.1862297}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -60,18 +60,20 @@ MonoBehaviour:
     key: 1
   - input: Vertical
     key: 2
-  - input: Run
+  - input: Jump
     key: 3
-  - input: 
+  - input: Run
     key: 4
-  - input: 
+  - input: Fire1
     key: 5
-  - input: 
+  - input: Fire2
     key: 6
-  - input: 
+  - input: Fire1
     key: 7
   - input: 
     key: 8
+  - input: 
+    key: 9
 --- !u!114 &114974931941365596
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -84,3 +86,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dontDestroyOnLoad: 1
+  _lockMouse: 1

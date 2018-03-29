@@ -4,6 +4,7 @@ using UnityEngine;
 public class Player : MonoSingleton<Player>
 {
     private PlayerController _controller;
+    private PlayerCombat _combat;
     private ClimbingController _climber;
     private PlayerAnimator _animator;
     private Rigidbody _rigidbody;
@@ -15,6 +16,14 @@ public class Player : MonoSingleton<Player>
             if (_controller == null)
                 _controller = GetComponentInChildren<PlayerController>();
             return _controller;
+        }
+    }
+
+    public PlayerCombat Combat {
+        get {
+            if (_combat == null)
+                _combat = GetComponentInChildren<PlayerCombat>();
+            return _combat;
         }
     }
 

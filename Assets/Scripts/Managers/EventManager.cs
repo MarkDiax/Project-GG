@@ -30,8 +30,19 @@ public class EventManager : Singleton<EventManager>, IManager
         }
     }
 
+    public static class PlayerEvent
+    {
+        public static BoolEvent OnBowAim;
+        public static UnityAction OnBowShoot;
+
+        public static void Init() {
+            OnBowAim = new BoolEvent();
+        }
+    }
+
     public override void Init() {
         RopeEvent.Init();
+        PlayerEvent.Init();
     }
 
     public void Update() {

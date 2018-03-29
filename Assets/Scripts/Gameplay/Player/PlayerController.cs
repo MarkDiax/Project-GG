@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.Events;
+using Cinemachine;
 
 public class PlayerController : MonoBehaviour
 {
@@ -75,6 +76,19 @@ public class PlayerController : MonoBehaviour
             if (_controller.isGrounded)
                 _player.Animator.SetTrigger("Jump");
         }
+
+        if (InputManager.GetKey(InputKey.Aim)) {
+            if (EventManager.PlayerEvent.OnBowAim != null)
+                EventManager.PlayerEvent.OnBowAim.Invoke(true);
+
+            if (InputManager.GetKeyDown(InputKey.Shoot)) {
+                if (EventManager.PlayerEvent.OnBowShoot != null)
+                    EventManager.PlayerEvent.OnBowShoot.Invoke();
+            }
+        }
+        if (InputManager.GetKeyUp(InputKey.Aim))
+            if (EventManager.PlayerEvent.OnBowAim != null)
+                EventManager.PlayerEvent.OnBowAim.Invoke(false);
     }
 
     private void Move() {
@@ -129,7 +143,6 @@ public class PlayerController : MonoBehaviour
         float jumpVelocity = Mathf.Sqrt(-2 * _gravity * jumpHeight);
         _moveDir.y = jumpVelocity;
     }
-
 
     private void OnControllerColliderHit(ControllerColliderHit hit) {
         //add force to colliding rigidbodies

@@ -4,10 +4,14 @@ using UnityEngine;
 
 public class PlayerAnimator : CharacterAnimator
 {
-    private bool _onRope;
     private Player _player;
 
+    private bool _onRope;
     private bool _useRootMotion;
+
+    [Header("Bones")]
+    [SerializeField]
+    private Transform _spine;
 
     protected override void Awake() {
         base.Awake();
@@ -29,14 +33,27 @@ public class PlayerAnimator : CharacterAnimator
         _useRootMotion = !_onRope;
     }
 
-    public void RopeHandSwitch() {
-        if (EventManager.RopeEvent.OnHandSwitch != null)
-            EventManager.RopeEvent.OnHandSwitch();
+    public void OnRopeClimb() {
+        if (InputManager.GetAxis(InputKey.MoveVertical) > 0) {
+            if (EventManager.RopeEvent.OnHandSwitch != null)
+                EventManager.RopeEvent.OnHandSwitch();
+
+        }
+        else {
+            if (EventManager.RopeEvent.OnRopeHold != null)
+                EventManager.RopeEvent.OnRopeHold();
+        }
     }
 
-    public void HoldRope() {
-        if (EventManager.RopeEvent.OnRopeHold != null)
-            EventManager.RopeEvent.OnRopeHold();
+    public void OnRopeHold() {
+        if (InputManager.GetAxis(InputKey.MoveVertical) > 0) {
+            if (EventManager.RopeEvent.OnRopeHold != null)
+                EventManager.RopeEvent.OnRopeHold();
+        }
+        else {
+            if (EventManager.RopeEvent.OnHandSwitch != null)
+                EventManager.RopeEvent.OnHandSwitch();
+        }
     }
 
     private void Update() {
@@ -45,6 +62,9 @@ public class PlayerAnimator : CharacterAnimator
 
     private void Animate() {
         SetBool("RopeClimbing", _onRope);
+        SetBool("AimBow", InputManager.GetKey(InputKey.Aim));
+
+        SetTrigger("FireArrow", InputManager.GetKey(InputKey.Aim) && InputManager.GetKeyDown(InputKey.Shoot));
     }
 
     public void JumpEvent() {

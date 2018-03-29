@@ -195,28 +195,28 @@ ModelImporter:
       curves: []
       events:
       - time: 0.2529512
-        functionName: RopeHandSwitch
+        functionName: OnRopeClimb
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
       - time: 0.48198196
-        functionName: HoldRope
+        functionName: OnRopeHold
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
       - time: 0.70531
-        functionName: RopeHandSwitch
+        functionName: OnRopeClimb
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
       - time: 0.9797298
-        functionName: HoldRope
+        functionName: OnRopeHold
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
