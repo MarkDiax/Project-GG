@@ -44,7 +44,7 @@ public class PlayerController : MonoBehaviour
     public bool usePhysics = true;
     private bool _onRope;
 
-    private void Awake() {
+    private void Start() {
         _cameraTransform = Camera.main.transform;
         _input = InputManager.Instance;
         _player = Player.Instance;
