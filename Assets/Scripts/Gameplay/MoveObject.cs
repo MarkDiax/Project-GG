@@ -4,11 +4,33 @@ using UnityEngine;
 
 public class MoveObject : MonoBehaviour {
 
-    public float MinClamp = 30f;
-    public float MaxClamp = 150f;
-	
-	// Update is called once per frame
-	void LateUpdate () {
-        transform.eulerAngles = new Vector3(Mathf.Clamp(transform.rotation.eulerAngles.x, MinClamp, MaxClamp),transform.rotation.eulerAngles.y, Mathf.Clamp(transform.rotation.eulerAngles.z, MinClamp, MaxClamp));
+    public GameObject snapPoint;
+    public GameObject moveableCrate;
+    public GameObject player;
+    private bool attached;
+
+    private void Start()
+    {
+        attached = false;
+    }
+
+    private void Update()
+    {
+        if (attached == true && Input.GetKey("e"))
+        {
+            moveableCrate.transform.parent = null;
+            attached = false;
+            Debug.Log("Detached");
+        }
+    }
+
+
+    private void OnTriggerEnter(Collider other)
+    {
+        player.transform.position = snapPoint.transform.position;
+        player.transform.eulerAngles = new Vector3(0, snapPoint.transform.rotation.y, 0);
+        moveableCrate.transform.parent = player.transform;
+        attached = true;
+        Debug.Log("Attached");
     }
 }
