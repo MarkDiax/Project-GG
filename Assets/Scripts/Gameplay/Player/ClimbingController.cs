@@ -33,6 +33,9 @@ public class ClimbingController : MonoBehaviour
     }
 
     void OnRopeTrigger(RopePart Part) {
+        if (_interactRoutine != null || _climbRoutine != null)
+            return;
+
         if (Input.GetKeyDown(KeyCode.E) && _interactRoutine == null) {
             if (Part.Rope.attachedInteractable != null)
                 _attachedInteractable = Part.Rope.attachedInteractable;
