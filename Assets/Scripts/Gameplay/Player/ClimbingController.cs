@@ -115,17 +115,17 @@ public class ClimbingController : MonoBehaviour
     private void ReleaseRope() {
         if (_interactRoutine != null) {
             StopCoroutine(_interactRoutine);
+            IgnoreCollisionsWithRope(false);
             _interactRoutine = null;
         }
 
         if (_climbRoutine != null) {
             StopCoroutine(_climbRoutine);
             _climbRoutine = null;
+            IgnoreCollisionsWithRope(false);
             DetachFromRope();
             _player.transform.position += Vector3.back * 2;
         }
-
-        IgnoreCollisionsWithRope(false);
     }
 
     private void OnHandSwitch() {
