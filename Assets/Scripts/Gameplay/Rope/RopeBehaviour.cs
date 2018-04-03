@@ -13,6 +13,8 @@ public class RopeBehaviour : MonoBehaviour
     [SerializeField] float _distanceBetweenSegments;
     [SerializeField] bool _showColliders;
 
+    [SerializeField] Transform LastChild;
+
     LineRenderer _line;
     Coroutine _lineRoutine;
 
@@ -40,6 +42,9 @@ public class RopeBehaviour : MonoBehaviour
 
             ropePart.CharacterJoint.connectedBody = connectedObject.GetComponent<Rigidbody>();
             ropePart.transform.position = connectedObject.transform.position + (Vector3.down * _distanceBetweenSegments);
+
+            LastChild = this.gameObject.transform.GetChild(transform.childCount - 1);
+            Debug.Log(LastChild);
         }
     }
 
@@ -59,6 +64,12 @@ public class RopeBehaviour : MonoBehaviour
 
             yield return new WaitForFixedUpdate();
         }
+    }
+
+    public void Update()
+    {
+        float dist = Vector3.Distance(LastChild.position, transform.position);
+        //Debug.Log("Distance to other: " + dist);
     }
 
     public void Respawn() {
