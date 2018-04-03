@@ -22,6 +22,13 @@ public class RopePart : MonoBehaviour
         get { return _collider.radius; }
     }
 
+    public void OnJointBreak(float breakForce) {
+        Rope.Respawn();
+
+        if (EventManager.RopeEvent.OnRopeBreak != null)
+            EventManager.RopeEvent.OnRopeBreak();
+    }
+
     public CharacterJoint CharacterJoint {
         get { return _joint; }
     }

@@ -8,20 +8,20 @@ public class EventManager : Singleton<EventManager>, IManager
     public class FloatEvent : UnityEvent<float> { }
 
     public class GameObjectEvent : UnityEvent<GameObject> { }
-    
+
     public class RopePartEvent : UnityEvent<RopePart> { }
 
     public class BoolEvent : UnityEvent<bool> { }
     #endregion
 
-    public static class RopeEvent
-    {
+    public static class RopeEvent {
         public static BoolEvent OnRope;
         public static RopePartEvent OnRopeTrigger;
         public static FloatEvent OnRopeClimbing;
 
         public static UnityAction OnHandSwitch;
         public static UnityAction OnRopeHold;
+        public static UnityAction OnRopeBreak;
 
         public static void Init() {
             OnRope = new BoolEvent();
@@ -30,13 +30,12 @@ public class EventManager : Singleton<EventManager>, IManager
         }
     }
 
-    public static class PlayerEvent
-    {
-        public static BoolEvent OnBowAim;
+    public static class PlayerEvent {
+        public static BoolEvent OnBowDraw;
         public static UnityAction OnBowShoot;
 
         public static void Init() {
-            OnBowAim = new BoolEvent();
+            OnBowDraw = new BoolEvent();
         }
     }
 

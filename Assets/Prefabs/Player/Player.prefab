@@ -2402,7 +2402,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _arrow: {fileID: 1861663416159372, guid: 649876aa0510a1348be6aecadb18044f, type: 2}
   _arrowSpawnPoint: {fileID: 4951926635009178}
+  _arrowForceAdd: 5
+  _arrowForceMax: 20
   _rope: {fileID: 0}
+  debugtext: {fileID: 0}
 --- !u!136 &136217465868715276
 CapsuleCollider:
   m_ObjectHideFlags: 1

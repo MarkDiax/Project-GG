@@ -52,7 +52,7 @@ public class PlayerController : MonoBehaviour
 
         UseGravity(true);
 
-        EventManager.RopeEvent.OnRope.AddListener(OnRope);
+        EventManager.RopeEvent.OnRope.AddListener((OnRope) => _onRope = OnRope);
     }
 
     private void Update() {
@@ -78,8 +78,8 @@ public class PlayerController : MonoBehaviour
         }
 
         if (InputManager.GetKey(InputKey.Aim)) {
-            if (EventManager.PlayerEvent.OnBowAim != null)
-                EventManager.PlayerEvent.OnBowAim.Invoke(true);
+            if (EventManager.PlayerEvent.OnBowDraw != null)
+                EventManager.PlayerEvent.OnBowDraw.Invoke(true);
 
             if (InputManager.GetKeyDown(InputKey.Shoot)) {
                 if (EventManager.PlayerEvent.OnBowShoot != null)
@@ -87,8 +87,8 @@ public class PlayerController : MonoBehaviour
             }
         }
         if (InputManager.GetKeyUp(InputKey.Aim))
-            if (EventManager.PlayerEvent.OnBowAim != null)
-                EventManager.PlayerEvent.OnBowAim.Invoke(false);
+            if (EventManager.PlayerEvent.OnBowDraw != null)
+                EventManager.PlayerEvent.OnBowDraw.Invoke(false);
     }
 
     private void Move() {
@@ -170,9 +170,6 @@ public class PlayerController : MonoBehaviour
         rigidbody.AddForce(pushDir * 100, ForceMode.Force);
     }
 
-    private void OnRope(bool OnRope) {
-        _onRope = OnRope;
-    }
 
     public void UseGravity(bool Use) {
         _gravity = Use ? Physics.gravity.y * gravityMod : 0;

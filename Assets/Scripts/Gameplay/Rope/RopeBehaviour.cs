@@ -7,12 +7,14 @@ public class RopeBehaviour : MonoBehaviour
     [SerializeField] RopePart _ropePartPrefab;
     [SerializeField] GameObject _ropeHanger;
 
+    public Interactable attachedInteractable;
+
     [SerializeField] float _segments;
     [SerializeField] float _distanceBetweenSegments;
     [SerializeField] bool _showColliders;
 
     LineRenderer _line;
-    Coroutine _climbRoutine;
+    Coroutine _lineRoutine;
 
     [HideInInspector]
     public List<RopePart> ropeSegments;
@@ -45,15 +47,30 @@ public class RopeBehaviour : MonoBehaviour
         _line = GetComponent<LineRenderer>();
 
         _line.positionCount = ropeSegments.Count;
+        _lineRoutine = StartCoroutine(UpdateLine());
     }
 
-    private void Update() {
-        UpdateLine();
-    }
+    private IEnumerator UpdateLine() {
+        while (true) {
 
-    private void UpdateLine() {
-        for (int i = 0; i < _line.positionCount; i++) {
-            _line.SetPosition(i, ropeSegments[i].transform.position);
+            for (int i = 0; i < _line.positionCount; i++) 
+                _line.SetPosition(i, ropeSegments[i].transform.position);
+            
+
+            yield return new WaitForFixedUpdate();
         }
+    }
+
+    public void Respawn() {
+        StopCoroutine(_lineRoutine);
+
+        for (int i = 0; i < ropeSegments.Count; i++) {
+            Destroy(ropeSegments[i].gameObject);
+        }
+
+        ropeSegments.Clear();
+
+        SetupRope();
+        SetupLine();
     }
 }

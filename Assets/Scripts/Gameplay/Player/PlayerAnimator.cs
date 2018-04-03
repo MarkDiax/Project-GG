@@ -5,9 +5,11 @@ using UnityEngine;
 public class PlayerAnimator : CharacterAnimator
 {
     private Player _player;
+    private Transform _camera;
 
     private bool _onRope;
     private bool _useRootMotion;
+    private bool _drawingBow;
 
     [Header("Bones")]
     [SerializeField]
@@ -17,27 +19,22 @@ public class PlayerAnimator : CharacterAnimator
         base.Awake();
 
         _player = Player.Instance;
+        _camera = Camera.main.transform;
     }
 
     private void Start() {
-        EventManager.RopeEvent.OnRope.AddListener(OnRope);
-        EventManager.RopeEvent.OnRopeClimbing.AddListener(Climb);
-    }
-
-    private void Climb(float ClimbSpeed) {
-        SetFloat("climbSpeed", ClimbSpeed);
-    }
-
-    private void OnRope(bool OnRope) {
-        _onRope = OnRope;
-        _useRootMotion = !_onRope;
+        EventManager.RopeEvent.OnRopeClimbing.AddListener((ClimbSpeed) => SetFloat("climbSpeed", ClimbSpeed));
+        EventManager.PlayerEvent.OnBowDraw.AddListener((Drawing) => _drawingBow = Drawing);
+        EventManager.RopeEvent.OnRope.AddListener((OnRope) => {
+            _onRope = OnRope;
+            _useRootMotion = !_onRope;
+        });
     }
 
     public void OnRopeClimb() {
         if (InputManager.GetAxis(InputKey.MoveVertical) > 0) {
             if (EventManager.RopeEvent.OnHandSwitch != null)
                 EventManager.RopeEvent.OnHandSwitch();
-
         }
         else {
             if (EventManager.RopeEvent.OnRopeHold != null)
@@ -58,6 +55,14 @@ public class PlayerAnimator : CharacterAnimator
 
     private void Update() {
         Animate();
+    }
+
+    private void LateUpdate() {
+        if (_drawingBow) {
+
+            _player.transform.eulerAngles = new Vector3(_player.transform.eulerAngles.x, _camera.eulerAngles.y, _player.transform.eulerAngles.z);
+            _spine.eulerAngles = new Vector3(_spine.eulerAngles.x, _spine.eulerAngles.y, _camera.eulerAngles.x);
+        }
     }
 
     private void Animate() {
@@ -88,4 +93,6 @@ public class PlayerAnimator : CharacterAnimator
     public Quaternion GetDeltaRotation {
         get { return Animator.deltaRotation; }
     }
+
+    public Transform UpperSpine { get { return _spine; } }
 }
