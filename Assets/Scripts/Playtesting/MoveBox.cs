@@ -8,7 +8,7 @@ public class MoveBox : MonoBehaviour {
     private bool canMoveRight = true;
     private bool canMoveForward = true;
     private bool canMoveBackward = true;
-    private float speed = 0.05f;
+    private float speed = 0.01f;
     private Vector3 moveDirectionSide;
     private Vector3 moveDirectionFwd;
 
@@ -60,7 +60,11 @@ public class MoveBox : MonoBehaviour {
             transform.GetComponent<ClimbingController>().enabled = true;
             transform.GetComponent<MoveBox>().enabled = false;
 
-            Debug.Log("KeyTriggered");
+            canMoveBackward = true;
+            canMoveForward = true;
+            canMoveLeft = true;
+            canMoveRight = true;
+
         }
 
         transform.Translate(moveDirectionSide + moveDirectionFwd);
@@ -74,11 +78,16 @@ public class MoveBox : MonoBehaviour {
         fwd = transform.forward;
         lft = -transform.right;
 
-        if (Physics.Raycast(transform.position, fwd, 3f))
+        if (Physics.Raycast(transform.position, fwd, 3))
+
+        {
             canMoveForward = false;
+            Debug.Log("MoveForward" + canMoveForward);
+        }
         else
         {
             canMoveForward = true;
+            Debug.Log("MoveForward" + canMoveForward);
         }
 
         if (Physics.Raycast(transform.position, fwd * -1, 1))
