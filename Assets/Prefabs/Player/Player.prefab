@@ -2125,8 +2125,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1933204693103134}
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 0.9, y: 0.4, z: -0.95}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.452, z: 0.816}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4547094612348474}
@@ -2134,7 +2134,7 @@ Transform:
   - {fileID: 4657533225236690}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4911876562730522
 Transform:
   m_ObjectHideFlags: 1
@@ -2402,9 +2402,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _arrow: {fileID: 1861663416159372, guid: 649876aa0510a1348be6aecadb18044f, type: 2}
   _arrowSpawnPoint: {fileID: 4951926635009178}
-  _arrowForceAdd: 5
-  _arrowForceMax: 20
-  _rope: {fileID: 0}
+  _arrowForceAdd: 20
+  _arrowForceMax: 25
+  _rope: {fileID: 114899871913876312, guid: 24670b9b0ab5d64448a51647c511d9aa, type: 2}
   debugtext: {fileID: 0}
 --- !u!136 &136217465868715276
 CapsuleCollider:
@@ -2776,6 +2776,6 @@ CharacterController:
   m_Radius: 0.25
   m_SlopeLimit: 45
   m_StepOffset: 0.3
-  m_SkinWidth: 0.0001
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0.9, z: 0}
+  m_SkinWidth: 0.1
+  m_MinMoveDistance: 0
+  m_Center: {x: 0, y: 1, z: 0}

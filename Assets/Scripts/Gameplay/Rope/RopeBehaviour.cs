@@ -7,8 +7,6 @@ public class RopeBehaviour : MonoBehaviour
     [SerializeField] RopePart _ropePartPrefab;
     [SerializeField] GameObject _ropeHanger;
 
-    public Interactable attachedInteractable;
-
     [SerializeField] float _segments;
     [SerializeField] float _distanceBetweenSegments;
     [SerializeField] bool _showColliders;
@@ -22,33 +20,51 @@ public class RopeBehaviour : MonoBehaviour
     public List<RopePart> ropeSegments;
 
     private void Awake() {
-        SetupRope();
-        SetupLine();
+        if (ropeSegments != null) {
+            for (int i = 0; i < ropeSegments.Count; i++) {
+                if (ropeSegments[i] == null) {
+                    ropeSegments.Clear();
+                    CreateRope();
+                    break;
+                }
+            }
+        }
+        else
+            CreateRope();
+
+        SetupJoints();
+        SetupRendering();
     }
 
-    private void SetupRope() {
+    public void CreateRope() {
         ropeSegments = new List<RopePart>();
+
         for (int i = 0; i < _segments; i++) {
             RopePart ropePart = Instantiate(_ropePartPrefab.gameObject, transform).GetComponent<RopePart>();
             ropeSegments.Add(ropePart);
 
             ropePart.name = _ropePartPrefab.name + i;
-            ropePart.Rope = this;
             ropePart.tag = _ropeHanger.tag;
             ropePart.gameObject.layer = _ropeHanger.layer;
-            ropePart.GetComponent<Renderer>().enabled = _showColliders;
 
             GameObject connectedObject = i > 0 ? ropeSegments[i - 1].gameObject : _ropeHanger;
-
-            ropePart.CharacterJoint.connectedBody = connectedObject.GetComponent<Rigidbody>();
             ropePart.transform.position = connectedObject.transform.position + (Vector3.down * _distanceBetweenSegments);
+        }
 
-            LastChild = this.gameObject.transform.GetChild(transform.childCount - 1);
-            Debug.Log(LastChild);
+        LastChild = ropeSegments[ropeSegments.Count - 1].transform;
+    }
+
+    private void SetupJoints() {
+        for (int i = 0; i < ropeSegments.Count; i++) {
+            ropeSegments[i].GetComponent<Renderer>().enabled = _showColliders;
+            ropeSegments[i].Rope = this;
+
+            GameObject connectedObject = i > 0 ? ropeSegments[i - 1].gameObject : _ropeHanger;
+            ropeSegments[i].CharacterJoint.connectedBody = connectedObject.GetComponent<Rigidbody>();
         }
     }
 
-    private void SetupLine() {
+    private void SetupRendering() {
         _line = GetComponent<LineRenderer>();
 
         _line.positionCount = ropeSegments.Count;
@@ -58,30 +74,32 @@ public class RopeBehaviour : MonoBehaviour
     private IEnumerator UpdateLine() {
         while (true) {
 
-            for (int i = 0; i < _line.positionCount; i++) 
+            for (int i = 0; i < _line.positionCount; i++)
                 _line.SetPosition(i, ropeSegments[i].transform.position);
-            
+
 
             yield return new WaitForFixedUpdate();
         }
     }
 
-    public void Update()
-    {
+    public void Update() {
+        if (LastChild == null)
+            return;
+
         float dist = Vector3.Distance(LastChild.position, transform.position);
-        //Debug.Log("Distance to other: " + dist);
     }
 
     public void Respawn() {
+        if (EventManager.RopeEvent.OnRopeBreak != null)
+            EventManager.RopeEvent.OnRopeBreak.Invoke(this);
+
         StopCoroutine(_lineRoutine);
 
         for (int i = 0; i < ropeSegments.Count; i++) {
             Destroy(ropeSegments[i].gameObject);
         }
 
-        ropeSegments.Clear();
-
-        SetupRope();
-        SetupLine();
+        ropeSegments = null;
+        Awake();
     }
 }

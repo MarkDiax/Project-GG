@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class RopePart : MonoBehaviour
 {
@@ -15,18 +16,25 @@ public class RopePart : MonoBehaviour
         _joint = GetComponent<CharacterJoint>();
         _collider = GetComponent<CapsuleCollider>();
 
-        playerHolder = transform.GetChild(0); 
+        playerHolder = transform.GetChild(0);
     }
 
     public float Radius {
         get { return _collider.radius; }
     }
 
+    private void Update() {
+
+        if (_joint == null)
+            return;
+        //if higher than 70%
+        if ((_joint.currentForce.magnitude / _joint.breakForce * 1000) > 70) {
+            //play sound
+        }
+    }
+
     public void OnJointBreak(float breakForce) {
         Rope.Respawn();
-
-        if (EventManager.RopeEvent.OnRopeBreak != null)
-            EventManager.RopeEvent.OnRopeBreak();
     }
 
     public CharacterJoint CharacterJoint {

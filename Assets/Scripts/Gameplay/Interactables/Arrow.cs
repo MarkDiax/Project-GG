@@ -16,8 +16,7 @@ public class Arrow : Interactable
         if (Object != null) {
             Object.Interact(this.gameObject);
 
-            GameObject gb = Instantiate(_rope).gameObject;
-            gb.transform.position = transform.position;
+            Instantiate(_rope.gameObject, transform.position, Quaternion.identity);
 
             Destroy(GetComponent<Rigidbody>());
             Destroy(GetComponent<Collider>());

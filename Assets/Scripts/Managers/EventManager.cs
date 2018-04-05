@@ -10,6 +10,7 @@ public class EventManager : Singleton<EventManager>, IManager
     public class GameObjectEvent : UnityEvent<GameObject> { }
 
     public class RopePartEvent : UnityEvent<RopePart> { }
+    public class RopeTypeEvent : UnityEvent<RopeBehaviour> { }
 
     public class BoolEvent : UnityEvent<bool> { }
     #endregion
@@ -18,21 +19,23 @@ public class EventManager : Singleton<EventManager>, IManager
         public static BoolEvent OnRope;
         public static RopePartEvent OnRopeTrigger;
         public static FloatEvent OnRopeClimbing;
+        public static RopeTypeEvent OnRopeBreak;
 
         public static UnityAction OnHandSwitch;
         public static UnityAction OnRopeHold;
-        public static UnityAction OnRopeBreak;
 
         public static void Init() {
             OnRope = new BoolEvent();
             OnRopeClimbing = new FloatEvent();
             OnRopeTrigger = new RopePartEvent();
+            OnRopeBreak = new RopeTypeEvent();
         }
     }
 
     public static class PlayerEvent {
         public static BoolEvent OnBowDraw;
         public static UnityAction OnBowShoot;
+        public static UnityAction OnJump;
 
         public static void Init() {
             OnBowDraw = new BoolEvent();

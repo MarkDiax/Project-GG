@@ -81,7 +81,7 @@ MeshRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1352290743138194}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -208,7 +208,7 @@ CharacterJoint:
   m_ProjectionDistance: 5
   m_ProjectionAngle: 180
   m_BreakForce: 6000
-  m_BreakTorque: 6000
+  m_BreakTorque: Infinity
   m_EnableCollision: 1
   m_EnablePreprocessing: 0
   m_MassScale: 1

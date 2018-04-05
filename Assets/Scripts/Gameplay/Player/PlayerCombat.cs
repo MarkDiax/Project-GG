@@ -41,8 +41,14 @@ public class PlayerCombat : MonoBehaviour
 
         _arrowForce = Mathf.Clamp(_arrowForce + (_arrowForceAdd * Time.deltaTime), 0, _arrowForceMax);
 
-        debugtext.text = "DrawCharge: " + _arrowForce;
-        DebugLine();
+        Debugging();    
+    }
+
+    private void Debugging() {
+
+        if (debugtext != null)
+            debugtext.text = "DrawCharge: " + _arrowForce;
+
     }
 
     private void OnBowShoot() {
@@ -55,8 +61,5 @@ public class PlayerCombat : MonoBehaviour
         rb.AddForce(_cam.forward * _arrowForce + Vector3.up * (_arrowForce / 5), ForceMode.Impulse);
 
         _arrowForce = 0;
-    }
-
-    private void DebugLine() {
     }
 }

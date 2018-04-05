@@ -56,13 +56,13 @@ public class PlayerController : MonoBehaviour
     }
 
     private void Update() {
-        UpdateInput();
-
         if (!_onRope) {
             Rotate();
-            Move();
+            UpdateSpeed();
         }
 
+        UpdateInput();
+        Move();
         Animate();
     }
 
@@ -91,18 +91,19 @@ public class PlayerController : MonoBehaviour
                 EventManager.PlayerEvent.OnBowDraw.Invoke(false);
     }
 
-    private void Move() {
+    private void UpdateSpeed() {
         float targetSpeed = (_running ? runSpeed : walkSpeed) * _inputDir.magnitude;
         _currentSpeed = Mathf.SmoothDamp(_currentSpeed, targetSpeed, ref _speedSmoothVelocity, GetModifiedSmoothTime(speedSmoothTime));
 
         _moveDir.y += _gravity * Time.deltaTime;
         _moveDir = _player.transform.forward * _currentSpeed + Vector3.up * _moveDir.y;
 
+        GroundCheck();
+    }
+
+    private void Move() {
         _controller.Move(_moveDir * Time.deltaTime);
         _currentSpeed = new Vector2(_controller.velocity.x, _controller.velocity.z).magnitude;
-
-        if (_controller.isGrounded)
-            _moveDir.y = 0f;
     }
 
     private void Rotate() {
@@ -140,13 +141,23 @@ public class PlayerController : MonoBehaviour
     }
 
     public void Jump() {
-        float jumpVelocity = Mathf.Sqrt(-2 * _gravity * jumpHeight);
-        _moveDir.y = jumpVelocity;
+        _moveDir.y = Mathf.Sqrt(-2 * _gravity * jumpHeight);
     }
 
     private void OnControllerColliderHit(ControllerColliderHit hit) {
         //add force to colliding rigidbodies
         AddPhysicsForceOnHit(hit.collider.attachedRigidbody, hit);
+    }
+
+    private void AddPhysicsForceOnHit(Rigidbody rigidbody, ControllerColliderHit hit) {
+        if (!usePhysics || rigidbody == null || rigidbody.isKinematic)
+            return;
+
+        if (hit.moveDirection.y < -0.3F)
+            return;
+
+        Vector3 pushDir = new Vector3(hit.moveDirection.x, hit.moveDirection.y, hit.moveDirection.z);
+        rigidbody.AddForce(pushDir * 50, ForceMode.Force);
     }
 
     private float GetModifiedSmoothTime(float smoothTime) {
@@ -159,23 +170,15 @@ public class PlayerController : MonoBehaviour
         return smoothTime / airControl;
     }
 
-    private void AddPhysicsForceOnHit(Rigidbody rigidbody, ControllerColliderHit hit) {
-        if (!usePhysics || rigidbody == null || rigidbody.isKinematic)
-            return;
-
-        if (hit.moveDirection.y < -0.3F)
-            return;
-
-        Vector3 pushDir = new Vector3(hit.moveDirection.x, hit.moveDirection.y, hit.moveDirection.z);
-        rigidbody.AddForce(pushDir * 100, ForceMode.Force);
-    }
-
-
     public void UseGravity(bool Use) {
         _gravity = Use ? Physics.gravity.y * gravityMod : 0;
     }
 
-    public bool Grounded {
-        get { return _controller.isGrounded; }
+    private void GroundCheck() {
+        RaycastHit hit;
+
+        if (Physics.Raycast(_player.transform.position, Vector3.down, out hit, 0.01f) && _controller.isGrounded) {
+            //_moveDir.y = 0;
+        }
     }
 }
