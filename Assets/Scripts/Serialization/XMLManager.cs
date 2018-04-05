@@ -11,6 +11,7 @@ public class XMLManager : MonoSingleton<XMLManager>
     private bool _recordCurrentSession;
 
     public XMLTrigger[] xmlTriggers;
+    public int player = 1;
 
     [HideInInspector]
     public ItemDatabase items;
@@ -40,7 +41,7 @@ public class XMLManager : MonoSingleton<XMLManager>
 
     public void SaveData() {
         XmlSerializer serializer = new XmlSerializer(typeof(ItemDatabase));
-        string path = Application.dataPath + "/StreamingAssets/XML/playerdata.xml";
+        string path = Application.dataPath + "/StreamingAssets/XML/playerdata.player_" + player + ".xml";
         FileStream stream = new FileStream(path, FileMode.Create);
         serializer.Serialize(stream, items);
         Debug.Log("Saving ItemData to: " + path);

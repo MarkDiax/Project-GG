@@ -27,7 +27,16 @@ public class MovingPlatform : MonoBehaviour {
         {
             SetDestination(destination == startPosition ? endPosition : startPosition);
         }
-	}
+
+        if (Physics.Raycast(platform.position, -transform.up, 1f))
+        {
+            platformSpeed = 0.0f;
+        }
+        else
+        {
+            platformSpeed = 2f;
+        }
+    }
 
 
     private void OnDrawGizmos()
@@ -45,4 +54,5 @@ public class MovingPlatform : MonoBehaviour {
         destination = dest;
         direction = (destination.position - platform.position).normalized;
     }
+
 }
