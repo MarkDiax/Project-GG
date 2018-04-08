@@ -10,6 +10,9 @@ public class RopePart : MonoBehaviour
     private CapsuleCollider _collider;
 
     [HideInInspector]
+    public Vector3 defaultPos;
+
+    [HideInInspector]
     public Transform playerHolder;
 
     private void Awake() {
@@ -25,7 +28,7 @@ public class RopePart : MonoBehaviour
 
     private void Update() {
 
-        if (_joint == null)
+        if (CharacterJoint == null)
             return;
         //if higher than 70%
         if ((_joint.currentForce.magnitude / _joint.breakForce * 1000) > 70) {
@@ -38,7 +41,11 @@ public class RopePart : MonoBehaviour
     }
 
     public CharacterJoint CharacterJoint {
-        get { return _joint; }
+        get {
+            if (_joint == null)
+                _joint = GetComponent<CharacterJoint>();
+            return _joint;
+        }
     }
 
     public RopeBehaviour Rope { get; set; }

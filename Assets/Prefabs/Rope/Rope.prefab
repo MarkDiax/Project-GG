@@ -145,8 +145,8 @@ MonoBehaviour:
     type: 2}
   _ropeHanger: {fileID: 1127613516757364}
   _segments: 80
-  _distanceBetweenSegments: 0.075
-  _showColliders: 0
+  _distanceBetweenSegments: 0.09
+  _showColliders: 1
   LastChild: {fileID: 0}
   ropeSegments:
   - {fileID: 0}

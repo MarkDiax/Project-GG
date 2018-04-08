@@ -10,6 +10,9 @@ public class Player : MonoSingleton<Player>
     private Rigidbody _rigidbody;
     private PlayerTrigger _trigger;
 
+    private void Update() {
+        
+    }
 
     public PlayerController Controller {
         get {

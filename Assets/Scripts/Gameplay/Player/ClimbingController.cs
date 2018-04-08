@@ -28,7 +28,7 @@ public class ClimbingController : MonoBehaviour
         EventManager.RopeEvent.OnHandSwitch += OnHandSwitch;
         EventManager.RopeEvent.OnRopeHold += () => _holdRope = true;
         EventManager.RopeEvent.OnRopeTrigger.AddListener(OnRopeTrigger);
-        EventManager.RopeEvent.OnRopeBreak.AddListener(ReleaseRope);
+        EventManager.RopeEvent.OnRopeBreak.AddListener((Part) => ReleaseRope());
     }
 
     void OnRopeTrigger(RopePart Part) {
@@ -60,7 +60,7 @@ public class ClimbingController : MonoBehaviour
             if (Input.GetKey(KeyCode.E)) {
                 endPoint.transform.parent = endPoint.Rope.transform;
                 endPoint.gameObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotationY;
-                ReleaseRope(null);
+                ReleaseRope();
                 yield break;
             }
 
@@ -71,14 +71,14 @@ public class ClimbingController : MonoBehaviour
     private IEnumerator Climbing() {
         while (true) {
             if (InputManager.GetKey(InputKey.Jump)) {
-                ReleaseRope(null);
+                ReleaseRope();
                 DetachFromRope();
                 _player.transform.position += Vector3.back * 2;
                 yield break;
             }
 
             _moveDir = InputManager.GetAxis(InputKey.MoveVertical);
-
+            print(_moveDir);
             if (_moveDir != 0) {
                 Vector3 targetPos = _currentPart.transform.position - Vector3.back * (_currentPart.Radius / 5);
                 if (_moveDir < 0)
@@ -111,7 +111,7 @@ public class ClimbingController : MonoBehaviour
         }
     }
 
-    private void ReleaseRope(RopeBehaviour Rope) {
+    private void ReleaseRope() {
         if (_interactRoutine != null) {
             StopCoroutine(_interactRoutine);
             IgnoreCollisionsWithRope(false);
@@ -135,7 +135,8 @@ public class ClimbingController : MonoBehaviour
         if (_moveDir < 1)
             hand = _leftHand.position.y < _rightHand.position.y ? _leftHand : _rightHand;
 
-        float oldDistance = Vector3.Distance(_currentPart.transform.position, hand.position);
+        //float oldDistance = Vector3.Distance(_currentPart.transform.position, hand.position);
+        //RopePart oldPart = _currentPart;
 
         float range = float.MaxValue;
         for (int i = 0; i < _currentRope.ropeSegments.Count; i++) {
@@ -145,10 +146,13 @@ public class ClimbingController : MonoBehaviour
                 range = distance;
                 _currentPart = _currentRope.ropeSegments[i];
             }
-
-            Debug.Log(oldDistance <= distance);
         }
+        //if (oldDistance <= range) {
+        //    _currentPart = oldPart;
+        //    print("olddistance < range");
+        //}
 
+        print(_currentPart);
         _holdRope = false;
         _player.transform.SetParent(_currentPart.playerHolder);
     }

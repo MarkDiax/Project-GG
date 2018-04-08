@@ -19,39 +19,46 @@ public class RopeBehaviour : MonoBehaviour
     [HideInInspector]
     public List<RopePart> ropeSegments;
 
-    private void Awake() {
-        if (ropeSegments != null) {
-            for (int i = 0; i < ropeSegments.Count; i++) {
-                if (ropeSegments[i] == null) {
-                    ropeSegments.Clear();
-                    CreateRope();
-                    break;
-                }
-            }
-        }
-        else
+    private void Start() {
+        ropeSegments = new List<RopePart>();
+
+        if (!CheckForChildren()) {
             CreateRope();
+            CheckForChildren();
+        }
 
         SetupJoints();
         SetupRendering();
     }
 
-    public void CreateRope() {
-        ropeSegments = new List<RopePart>();
+    private bool CheckForChildren() {
+        print(transform.childCount);
+        if (transform.childCount > 1) {
+            for (int i = 0; i < transform.childCount; i++) {
+                RopePart node = transform.GetChild(i).GetComponent<RopePart>();
 
-        for (int i = 0; i < _segments; i++) {
-            RopePart ropePart = Instantiate(_ropePartPrefab.gameObject, transform).GetComponent<RopePart>();
-            ropeSegments.Add(ropePart);
+                if (node != null) {
+                    ropeSegments.Add(node);
+                }
+            }
 
-            ropePart.name = _ropePartPrefab.name + i;
-            ropePart.tag = _ropeHanger.tag;
-            ropePart.gameObject.layer = _ropeHanger.layer;
-
-            GameObject connectedObject = i > 0 ? ropeSegments[i - 1].gameObject : _ropeHanger;
-            ropePart.transform.position = connectedObject.transform.position + (Vector3.down * _distanceBetweenSegments);
+            return true;
         }
 
-        LastChild = ropeSegments[ropeSegments.Count - 1].transform;
+        return false;
+    }
+
+    public void CreateRope() {
+        for (int i = 0; i < _segments; i++) {
+            RopePart node = Instantiate(_ropePartPrefab.gameObject, transform).GetComponent<RopePart>();
+
+            node.name = _ropePartPrefab.name + i;
+            node.tag = _ropeHanger.tag;
+            node.gameObject.layer = _ropeHanger.layer;
+
+            node.transform.position = transform.GetChild(i).position + (Vector3.down * _distanceBetweenSegments);
+            node.defaultPos = node.transform.position;
+        }
     }
 
     private void SetupJoints() {
@@ -62,6 +69,8 @@ public class RopeBehaviour : MonoBehaviour
             GameObject connectedObject = i > 0 ? ropeSegments[i - 1].gameObject : _ropeHanger;
             ropeSegments[i].CharacterJoint.connectedBody = connectedObject.GetComponent<Rigidbody>();
         }
+        LastChild = ropeSegments[ropeSegments.Count - 1].transform;
+
     }
 
     private void SetupRendering() {
@@ -73,10 +82,12 @@ public class RopeBehaviour : MonoBehaviour
 
     private IEnumerator UpdateLine() {
         while (true) {
+            for (int i = 0; i < _line.positionCount; i++) {
+                if (ropeSegments[i] == null)
+                    yield break;
 
-            for (int i = 0; i < _line.positionCount; i++)
                 _line.SetPosition(i, ropeSegments[i].transform.position);
-
+            }
 
             yield return new WaitForFixedUpdate();
         }
@@ -90,16 +101,27 @@ public class RopeBehaviour : MonoBehaviour
     }
 
     public void Respawn() {
+        StopCoroutine(_lineRoutine);
+
         if (EventManager.RopeEvent.OnRopeBreak != null)
             EventManager.RopeEvent.OnRopeBreak.Invoke(this);
 
-        StopCoroutine(_lineRoutine);
+        StartCoroutine(RespawnRope());
+    }
 
+    private IEnumerator RespawnRope() {
         for (int i = 0; i < ropeSegments.Count; i++) {
             Destroy(ropeSegments[i].gameObject);
         }
+        ropeSegments.Clear();
 
-        ropeSegments = null;
-        Awake();
+
+        yield return new WaitUntil(() => transform.childCount == 1);
+        print("Respawning Rope: " + name);
+
+        CreateRope();
+        CheckForChildren();
+        SetupJoints();
+        SetupRendering();
     }
 }
