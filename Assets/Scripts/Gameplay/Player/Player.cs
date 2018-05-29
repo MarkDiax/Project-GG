@@ -10,8 +10,34 @@ public class Player : MonoSingleton<Player>
     private Rigidbody _rigidbody;
     private PlayerTrigger _trigger;
 
+    private BaseController _currentController;
+
+    private void Start() {
+        EventManager.PlayerEvent.OnControllerOverride.AddListener((NewController, Uninteruptable) => {
+            if (NewController != null) {
+                if (NewController != _currentController) {
+                    NewController.Resume();
+                    if (_currentController != null)
+                        _currentController.Suspend();
+                }
+
+                _currentController = NewController;
+                print("Switching PlayerController To: " + _currentController);
+            }
+            else
+                EventManager.PlayerEvent.OnControllerOverride.Invoke(this.Controller, false);
+
+        });
+
+        if (EventManager.PlayerEvent.OnControllerOverride != null)
+            EventManager.PlayerEvent.OnControllerOverride.Invoke(Controller, false);
+    }
+
     private void Update() {
-        
+        if (_currentController == null)
+            _currentController = Controller;
+
+        _currentController.Step();
     }
 
     public PlayerController Controller {

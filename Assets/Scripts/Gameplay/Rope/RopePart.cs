@@ -18,6 +18,7 @@ public class RopePart : MonoBehaviour
     private void Awake() {
         _joint = GetComponent<CharacterJoint>();
         _collider = GetComponent<CapsuleCollider>();
+        _body = GetComponent<Rigidbody>();
 
         playerHolder = transform.GetChild(0);
     }
@@ -45,6 +46,14 @@ public class RopePart : MonoBehaviour
             if (_joint == null)
                 _joint = GetComponent<CharacterJoint>();
             return _joint;
+        }
+    }
+
+    public Rigidbody Rigidbody {
+        get {
+            if (_body == null)
+                _body = GetComponent<Rigidbody>();
+            return _body;
         }
     }
 

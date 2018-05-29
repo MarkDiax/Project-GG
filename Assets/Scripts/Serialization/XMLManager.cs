@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Serialization;
 using System.IO;
+using System.Globalization;
+using System;
 
 public class XMLManager : MonoSingleton<XMLManager>
 {
@@ -40,16 +42,19 @@ public class XMLManager : MonoSingleton<XMLManager>
     }
 
     public void SaveData() {
-        XmlSerializer serializer = new XmlSerializer(typeof(ItemDatabase));
-        string path = Application.dataPath + "/StreamingAssets/XML/playerdata.player_" + player + ".xml";
-        FileStream stream = new FileStream(path, FileMode.Create);
-        serializer.Serialize(stream, items);
-        Debug.Log("Saving ItemData to: " + path);
-        stream.Close();
-    }
+        for (int i = 0; i < items.data.Count; i++) 
+            items.data[i].timeInSeconds = (float)Math.Round((double)items.data[i].timeInSeconds, 2);
 
-    private void OnApplicationQuit() {
-        if (_recordCurrentSession)
-            SaveData();
-    }
-}
+         XmlSerializer serializer = new XmlSerializer(typeof(ItemDatabase));
+         string path = Application.dataPath + "/StreamingAssets/XML/playerdata.player_" + player + ".xml";
+         FileStream stream = new FileStream(path, FileMode.Create);
+         serializer.Serialize(stream, items);
+         Debug.Log("Saving ItemData to: " + path);
+         stream.Close();
+     }
+
+     private void OnApplicationQuit() {
+         if (_recordCurrentSession)
+             SaveData();
+     }
+ }

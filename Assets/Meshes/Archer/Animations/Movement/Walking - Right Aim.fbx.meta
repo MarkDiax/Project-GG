@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 7b43fcda0a7b9b445a1e4acc1911c654
-timeCreated: 1519212721
+guid: 3937c5bf7b4f5584b8da397778b236a4
+timeCreated: 1519212718
 licenseType: Free
 ModelImporter:
   serializedVersion: 22
@@ -154,7 +154,7 @@ ModelImporter:
     bakeSimulation: 0
     resampleCurves: 1
     optimizeGameObjects: 0
-    motionNodeName: <Root Transform>
+    motionNodeName: 
     rigImportErrors: 
     rigImportWarnings: 
     animationImportErrors: 
@@ -174,22 +174,22 @@ ModelImporter:
       name: Walking - Right Aim
       takeName: mixamo.com
       firstFrame: 0
-      lastFrame: 78
+      lastFrame: 72
       wrapMode: 0
-      orientationOffsetY: 0
+      orientationOffsetY: -61.7
       level: 0
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
       loopTime: 1
       loopBlend: 0
-      loopBlendOrientation: 0
-      loopBlendPositionY: 0
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
       loopBlendPositionXZ: 0
       keepOriginalOrientation: 0
-      keepOriginalPositionY: 1
+      keepOriginalPositionY: 0
       keepOriginalPositionXZ: 0
-      heightFromFeet: 0
+      heightFromFeet: 1
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []

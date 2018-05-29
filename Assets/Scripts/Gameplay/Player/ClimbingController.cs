@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.Events;
-public class ClimbingController : MonoBehaviour
+public class ClimbingController : BaseController
 {
     [SerializeField]
     private float _maxSpeed, _acceleration, _deceleration;
@@ -9,26 +9,63 @@ public class ClimbingController : MonoBehaviour
 
     [SerializeField]
     private Transform _leftHand, _rightHand;
+    [SerializeField]
+    private Transform _rightHandRopePos;
 
-    private Player _player;
-    private RopePart _currentPart;
+    [SerializeField]
+    private float _swingRopeForce;
+
+    private RopePart _currentClimbingNode;
+    private RopePart _currentGrabbedNode;
     private RopeBehaviour _currentRope;
 
     private Coroutine _switchHandFocus;
 
-    private float _moveDir;
+    private float _moveY;
     private bool _holdRope;
 
     private Coroutine _interactRoutine;
     private Coroutine _climbRoutine;
 
-    private void Start() {
-        _player = Player.Instance;
+    //movement
+    private Vector3 _moveDir;
+    private Vector2 _inputDir;
+    private Vector2 _animSpeed;
+    private float _targetSpeed = 3f;
 
-        EventManager.RopeEvent.OnHandSwitch += OnHandSwitch;
-        EventManager.RopeEvent.OnRopeHold += () => _holdRope = true;
+    protected override void Start() {
+        base.Start();
+
         EventManager.RopeEvent.OnRopeTrigger.AddListener(OnRopeTrigger);
-        EventManager.RopeEvent.OnRopeBreak.AddListener((Part) => ReleaseRope());
+        HandleListeners(true);
+    }
+
+    public override void Resume() {
+        base.Resume();
+        HandleListeners(true);
+    }
+
+    public override void Suspend() {
+        base.Suspend();
+        HandleListeners(false);
+    }
+
+    private void HandleListeners(bool Activate) {
+        if (Activate) {
+            EventManager.RopeEvent.OnRopeClimb.AddListener(OnRopeClimb);
+            EventManager.RopeEvent.OnRopeHold.AddListener(() => _holdRope = true);
+            EventManager.RopeEvent.OnRopeBreak.AddListener((Part) => OnRopeBreak());
+        }
+        else {
+            EventManager.RopeEvent.OnRopeClimb.RemoveListener(OnRopeClimb);
+            EventManager.RopeEvent.OnRopeHold.RemoveListener(() => _holdRope = true);
+            EventManager.RopeEvent.OnRopeBreak.RemoveListener((Part) => OnRopeBreak());
+        }
+    }
+
+    private void OnRopeBreak() {
+        ReleaseRope();
+        DetachFromRope();
     }
 
     void OnRopeTrigger(RopePart Part) {
@@ -36,6 +73,7 @@ public class ClimbingController : MonoBehaviour
             return;
 
         if (Input.GetKeyDown(KeyCode.E) && _interactRoutine == null) {
+            EventManager.PlayerEvent.OnControllerOverride.Invoke(this, false);
             _currentRope = Part.Rope;
             IgnoreCollisionsWithRope(true);
             _interactRoutine = StartCoroutine(PullRope());
@@ -49,6 +87,7 @@ public class ClimbingController : MonoBehaviour
 
     private IEnumerator PullRope() {
         RopePart endPoint = _currentRope.ropeSegments[_currentRope.ropeSegments.Count - 1];
+        _currentGrabbedNode = endPoint;
         endPoint.transform.parent = _rightHand;
         endPoint.transform.localPosition = Vector3.zero;
 
@@ -69,24 +108,72 @@ public class ClimbingController : MonoBehaviour
     }
 
     private IEnumerator Climbing() {
+        if (EventManager.PlayerEvent.OnControllerOverride != null)
+            EventManager.PlayerEvent.OnControllerOverride.Invoke(this, true);
+
         while (true) {
+
+            //if (Physics.Raycast(player.transform.position, -player.transform.up, 2f, (int)Layers.LevelBounds)) {
+            //    ReleaseRope();
+            //    yield break;
+            //}
+
             if (InputManager.GetKey(InputKey.Jump)) {
                 ReleaseRope();
-                DetachFromRope();
-                _player.transform.position += Vector3.back * 2;
                 yield break;
             }
 
-            _moveDir = InputManager.GetAxis(InputKey.MoveVertical);
-            print(_moveDir);
-            if (_moveDir != 0) {
-                Vector3 targetPos = _currentPart.transform.position - Vector3.back * (_currentPart.Radius / 5);
-                if (_moveDir < 0)
-                    targetPos += Vector3.up * _moveDir * 3.4f;
+            _moveY = _inputDir.y;
 
-                float animSpeed = Mathf.Abs(_moveDir);
+            _currentClimbingNode.Rigidbody.AddForce(0, -200 * Time.deltaTime, 0, ForceMode.Acceleration);
 
-                if (_moveDir != 0) {
+            if (Input.GetKey(KeyCode.Q)) {
+                float _moveX = InputManager.GetAxis(InputKey.MoveHorizontal);
+
+                for (int i = _currentClimbingNode.GetRopeIndex(); i > 0; i--) {
+                    Vector3 targetDirection = new Vector3(_moveX, 0f, _moveY);
+                    targetDirection = mainCamera.transform.TransformDirection(targetDirection);
+                    targetDirection.y = 0.0f;
+
+                    float force = _swingRopeForce * (i + _currentRope.ropeSegments.Count / _currentClimbingNode.GetRopeIndex());
+
+                    _currentRope.ropeSegments[i].Rigidbody.AddForce(targetDirection * force * Time.deltaTime, ForceMode.Force);
+                }
+                _moveY = 0;
+
+                yield return new WaitForEndOfFrame();
+            }
+
+            float targetIndex = -_moveY + _currentClimbingNode.GetRopeIndex();
+            if (targetIndex < 0 || targetIndex > _currentRope.ropeSegments.Count - 1)
+                _moveY = 0;
+
+
+            //Vector3 r
+            //if (_moveY < 0) {
+            //    Vector3 target = GetClosestNode(player.transform.position).playerHolder.position;
+
+
+            //}
+
+            if (_moveY != 0) {
+                player.transform.SetParent(GetClosestNode(GetClosestHand().position).playerHolder.transform);
+
+                Vector3 targetPos = _currentClimbingNode.transform.position - Vector3.back * (_currentClimbingNode.Radius / 5);
+
+                if (_moveY < 0) {
+                    _currentClimbingNode = GetClosestNode(GetClosestHand().position);
+                    targetPos = _currentClimbingNode.transform.position - Vector3.back * (_currentClimbingNode.Radius / 5);
+
+                    //targetPos += Vector3.up * _moveY * 3.4f;
+                    targetPos += Vector3.down * 5f;
+                }
+
+
+
+                float animSpeed = Mathf.Abs(_moveY);
+
+                if (_moveY != 0) {
                     if (_currentSpeed < _maxSpeed) {
                         _currentSpeed += animSpeed * _acceleration;
                     }
@@ -100,13 +187,24 @@ public class ClimbingController : MonoBehaviour
                 }
 
                 if (_holdRope)
-                    targetPos = _player.transform.position;
+                    targetPos = player.transform.position;
 
-                _player.transform.position = Vector3.Slerp(_player.transform.position, targetPos, _currentSpeed * Time.deltaTime);
-                _player.transform.eulerAngles = new Vector3(0, _player.transform.eulerAngles.y, 0);
+                if (_moveY < 0) {
+                    targetPos += Vector3.down;
+                }
+
+
+                _currentSpeed *= 2.5f;
+
+                player.transform.position = Vector3.Slerp(player.transform.position, targetPos, _currentSpeed * Mathf.Abs(_moveY) * Time.deltaTime);
+                player.transform.eulerAngles = new Vector3(0, player.transform.eulerAngles.y, 0);
             }
+
+            float animMultiplier = 1.3f;
+
             if (EventManager.RopeEvent.OnRopeClimbing != null)
-                EventManager.RopeEvent.OnRopeClimbing.Invoke(_moveDir);
+                EventManager.RopeEvent.OnRopeClimbing.Invoke(Mathf.Clamp(_moveY * animMultiplier,0, Mathf.Infinity));
+
             yield return new WaitForEndOfFrame();
         }
     }
@@ -115,6 +213,7 @@ public class ClimbingController : MonoBehaviour
         if (_interactRoutine != null) {
             StopCoroutine(_interactRoutine);
             IgnoreCollisionsWithRope(false);
+            _currentGrabbedNode = null;
             _interactRoutine = null;
         }
 
@@ -123,38 +222,20 @@ public class ClimbingController : MonoBehaviour
             _climbRoutine = null;
             IgnoreCollisionsWithRope(false);
             DetachFromRope();
-            _player.transform.position += Vector3.back * 2;
         }
+
+        if (EventManager.PlayerEvent.OnControllerOverride != null)
+            EventManager.PlayerEvent.OnControllerOverride.Invoke(null, false);
     }
 
-    private void OnHandSwitch() {
-        if (_currentPart == null)
+    //updates the currentNode based on hand position
+    private void OnRopeClimb() {
+        if (_currentClimbingNode == null)
             return;
 
-        Transform hand = _leftHand.position.y > _rightHand.position.y ? _leftHand : _rightHand;
-        if (_moveDir < 1)
-            hand = _leftHand.position.y < _rightHand.position.y ? _leftHand : _rightHand;
+        _currentClimbingNode = GetClosestNode(GetClosestHand().position);
 
-        //float oldDistance = Vector3.Distance(_currentPart.transform.position, hand.position);
-        //RopePart oldPart = _currentPart;
-
-        float range = float.MaxValue;
-        for (int i = 0; i < _currentRope.ropeSegments.Count; i++) {
-            float distance = Vector3.Distance(_currentRope.ropeSegments[i].transform.position, hand.position);
-
-            if (distance < range) {
-                range = distance;
-                _currentPart = _currentRope.ropeSegments[i];
-            }
-        }
-        //if (oldDistance <= range) {
-        //    _currentPart = oldPart;
-        //    print("olddistance < range");
-        //}
-
-        print(_currentPart);
         _holdRope = false;
-        _player.transform.SetParent(_currentPart.playerHolder);
     }
 
     void IgnoreCollisionsWithRope(bool Ignore) {
@@ -164,14 +245,14 @@ public class ClimbingController : MonoBehaviour
     }
 
     void AttachToRope(RopePart Part) {
-        _currentPart = Part;
-        _currentRope = Part.Rope;
-
         EventManager.RopeEvent.OnRopeTrigger.RemoveListener(OnRopeTrigger);
 
-        _player.Controller.UseGravity(false);
-        _player.Controller.usePhysics = false;
-        _player.transform.SetParent(Part.playerHolder);
+        _currentClimbingNode = Part;
+        _currentRope = Part.Rope;
+
+        UseGravity(false);
+        usePhysics = false;
+        player.transform.SetParent(GetClosestNode(GetClosestHand().position).playerHolder.transform);
 
         if (EventManager.RopeEvent.OnRope != null)
             EventManager.RopeEvent.OnRope.Invoke(true);
@@ -180,29 +261,158 @@ public class ClimbingController : MonoBehaviour
     }
 
     private IEnumerator MoveToPart(RopePart Part) {
-        while (Vector3.Distance(_player.transform.position, Part.transform.position) > Part.Radius) {
-            _player.transform.position = Vector3.Lerp(_player.transform.position, Part.transform.position, 5 * Time.deltaTime);
+        while (Vector3.Distance(player.transform.position, Part.transform.position) > Part.Radius) {
+            player.transform.position = Vector3.Lerp(player.transform.position, Part.transform.position, 5 * Time.deltaTime);
+            player.transform.eulerAngles = new Vector3(0, player.transform.eulerAngles.y, 0);
+
             yield return new WaitForEndOfFrame();
         }
     }
 
     void DetachFromRope() {
-        _player.Controller.UseGravity(true);
-        _player.Controller.usePhysics = true;
-        _player.transform.parent = null;
+        UseGravity(true);
+        usePhysics = true;
+        player.transform.parent = null;
+        player.transform.localScale = new Vector3(1, 1, 1);
 
         if (_currentRope != null) {
             for (int i = 0; i < _currentRope.ropeSegments.Count; i++) {
                 _currentRope.ropeSegments[i].IsTrigger(false);
             }
         }
-        _currentPart = null;
+        _currentClimbingNode = null;
         _currentRope = null;
 
         EventManager.RopeEvent.OnRopeTrigger.AddListener(OnRopeTrigger);
 
         if (EventManager.RopeEvent.OnRope != null)
             EventManager.RopeEvent.OnRope.Invoke(false);
+    }
 
+    protected override void Rotate() {
+        if (_climbRoutine != null)
+            return;
+
+        Quaternion targetRotation = Quaternion.Euler(player.transform.eulerAngles.x, mainCamera.transform.eulerAngles.y, player.transform.eulerAngles.z);
+
+        //if (_currentGrabbedNode != null) {
+        //    Quaternion lookRotation = Quaternion.LookRotation(_currentGrabbedNode.transform.position - player.transform.position);
+        //    targetRotation = Quaternion.Euler(player.transform.eulerAngles.x, lookRotation.eulerAngles.y, player.transform.eulerAngles.z);
+        //}
+
+        player.transform.rotation = Quaternion.Lerp(player.transform.rotation, targetRotation, 12 + 10 * _moveDir.magnitude * Time.deltaTime);
+    }
+
+    protected override void UpdateInput() {
+        _inputDir = new Vector2(InputManager.GetAxis(InputKey.MoveHorizontal), InputManager.GetAxis(InputKey.MoveVertical));
+    }
+
+    private void OnDrawGizmos() {
+
+        //Gizmos.DrawLine(player.transform.position, player.transform.position + -transform.up * 2f);
+
+        //if (_currentGrabbedNode != null) {
+
+        //    int index = Mathf.FloorToInt(_currentRope.ropeSegments.Count / 2);
+        //    Gizmos.DrawSphere(_currentRope.ropeSegments[index].transform.position, 2);
+        //}
+    }
+
+
+    private void LateUpdate() {
+        if (_currentGrabbedNode != null)
+            _rightHand.parent.position = _rightHandRopePos.position;
+    }
+
+    protected override void Move() {
+        if (_climbRoutine != null)
+            return;
+
+        _currentSpeed = Mathf.Lerp(_currentSpeed, _targetSpeed, 5 * Time.deltaTime);
+
+        Vector2 normalizedInput = new Vector2(_inputDir.x, _inputDir.y).normalized;
+
+        _moveDir.y += gravity * Time.deltaTime;
+        _moveDir = new Vector3(normalizedInput.x, 0, normalizedInput.y) * _targetSpeed + Vector3.up * _moveDir.y;
+        _moveDir = Quaternion.Euler(0, player.transform.eulerAngles.y, 0) * _moveDir;
+
+        if (_currentGrabbedNode != null) {
+            int index = Mathf.FloorToInt(_currentRope.ropeSegments.Count / 2);
+            Collider[] sphereCollider = Physics.OverlapSphere(_currentRope.ropeSegments[index].transform.position, 2);
+
+            float lockDistance = 4f;
+
+            bool inRadius = false;
+
+            for (int i = 0; i < sphereCollider.Length; i++) {
+                if (sphereCollider[i] == player.GetComponent<Collider>()) {
+                    inRadius = true;
+                    break;
+                }
+            }
+
+            if (!inRadius) {
+                float distanceBetweenNode = Vector3.Distance(_currentRope.ropeSegments[index].transform.position, player.transform.position);
+                float nextCalculatedDistance = Vector3.Distance(player.transform.position + _moveDir * Time.deltaTime, _currentRope.ropeSegments[index].transform.position);
+
+                //if (distanceBetweenNode > nextCalculatedDistance)
+                //    print("moving forward");
+
+                if (distanceBetweenNode < nextCalculatedDistance) {
+                    _moveDir /= distanceBetweenNode / 2;
+
+                    if (distanceBetweenNode >= lockDistance) {
+                        _moveDir = Vector3.zero;
+                    }
+                }
+            }
+        }
+
+        controller.Move(_moveDir * Time.deltaTime);
+
+        _currentSpeed = new Vector2(controller.velocity.x, controller.velocity.z).magnitude;
+
+        _animSpeed = Vector2.Lerp(_animSpeed, normalizedInput, 5 * Time.deltaTime);
+
+        if (EventManager.PlayerEvent.OnMove != null)
+            EventManager.PlayerEvent.OnMove.Invoke(_animSpeed);
+    }
+
+
+    protected override void Animate() {
+        //float animationSpeed = (_running ? _currentSpeed / _runSpeed : _currentSpeed / _walkSpeed * 0.5f) * _inputDir.magnitude;
+        float animationSpeed = (_currentSpeed / _targetSpeed) * _inputDir.magnitude;
+        player.Animator.SetFloat("Speed", animationSpeed, 0.1f, Time.deltaTime);
+
+        //to fix a floating-point precision issue in the animator:
+        float PlayerMoveSpeed = player.Animator.GetFloat("Speed");
+        if (PlayerMoveSpeed < 0.3f && _inputDir.magnitude == 0)
+            PlayerMoveSpeed = 0;
+
+        player.Animator.SetFloat("Speed", PlayerMoveSpeed);
+    }
+
+    private RopePart GetClosestNode(Vector3 ToPosition) {
+        float range = float.MaxValue;
+        RopePart closestNode = _currentClimbingNode;
+
+        for (int i = 0; i < _currentRope.ropeSegments.Count; i++) {
+            float distance = Vector3.Distance(_currentRope.ropeSegments[i].transform.position, ToPosition);
+
+            if (distance < range) {
+                range = distance;
+                closestNode = _currentRope.ropeSegments[i];
+            }
+        }
+
+        return closestNode;
+    }
+
+    private Transform GetClosestHand() {
+        Transform closestHand = _leftHand.position.y > _rightHand.position.y ? _leftHand : _rightHand;
+        if (_moveY < 1)
+            closestHand = _leftHand.position.y < _rightHand.position.y ? _leftHand : _rightHand;
+
+        return closestHand;
     }
 }

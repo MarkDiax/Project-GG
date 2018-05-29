@@ -7,13 +7,13 @@ public class PlayerAnimator : CharacterAnimator
     private Player _player;
     private Transform _camera;
 
-    private bool _onRope;
-    private bool _useRootMotion;
-    private bool _drawingBow;
+    private bool _onRope, _drawingBow, _aimingBow;
+    private bool[] _useRootMotion = new bool[2];
 
     [Header("Bones")]
     [SerializeField]
     private Transform _spine;
+    private Vector2 _inputDir;
 
     protected override void Awake() {
         base.Awake();
@@ -23,67 +23,89 @@ public class PlayerAnimator : CharacterAnimator
     }
 
     private void Start() {
-        EventManager.RopeEvent.OnRopeClimbing.AddListener((ClimbSpeed) => SetFloat("climbSpeed", ClimbSpeed));
-        EventManager.PlayerEvent.OnBowDraw.AddListener((Drawing) => _drawingBow = Drawing);
-        EventManager.RopeEvent.OnRope.AddListener((OnRope) => {
-            _onRope = OnRope;
-            _useRootMotion = !_onRope;
+        AddListeners();
+    }
+
+    private void AddListeners() {
+        EventManager.AnimationEvent.UseRootMotion.AddListener(SetRootMotion);
+        EventManager.AnimationEvent.OnCombatStance.AddListener(UpdateCombatStance);
+
+        EventManager.InputEvent.OnJump.AddListener(() => SetTrigger("Jump"));
+        EventManager.InputEvent.OnCameraZoom.AddListener(OnZoom);
+        EventManager.InputEvent.OnBowDraw.AddListener(OnDrawBow);
+        EventManager.InputEvent.OnBowShoot.AddListener(() => SetTrigger("FireArrow"));
+        EventManager.PlayerEvent.OnMove.AddListener((Dir) => {
+            SetFloat("MoveX", Dir.x);
+            SetFloat("MoveY", Dir.y);
+            _inputDir = Dir;
         });
+
+        EventManager.RopeEvent.OnRope.AddListener((OnRope) => _onRope = OnRope);
+        EventManager.RopeEvent.OnRopeClimbing.AddListener((ClimbSpeed) => SetFloat("ClimbSpeed", ClimbSpeed));
+    }
+
+    private void UpdateCombatStance(bool InCombat) {
+        SetBool("InCombat", InCombat);
+    }
+
+    private void OnDealDamage() {
+        if (EventManager.AnimationEvent.OnDealDamage != null)
+            EventManager.AnimationEvent.OnDealDamage.Invoke();
     }
 
     public void OnRopeClimb() {
-        if (InputManager.GetAxis(InputKey.MoveVertical) > 0) {
-            if (EventManager.RopeEvent.OnHandSwitch != null)
-                EventManager.RopeEvent.OnHandSwitch();
-        }
-        else {
-            if (EventManager.RopeEvent.OnRopeHold != null)
-                EventManager.RopeEvent.OnRopeHold();
-        }
+        if (EventManager.RopeEvent.OnRopeClimb != null)
+            EventManager.RopeEvent.OnRopeClimb.Invoke();
     }
 
     public void OnRopeHold() {
-        if (InputManager.GetAxis(InputKey.MoveVertical) > 0) {
-            if (EventManager.RopeEvent.OnRopeHold != null)
-                EventManager.RopeEvent.OnRopeHold();
-        }
-        else {
-            if (EventManager.RopeEvent.OnHandSwitch != null)
-                EventManager.RopeEvent.OnHandSwitch();
-        }
+        if (EventManager.RopeEvent.OnRopeHold != null)
+            EventManager.RopeEvent.OnRopeHold.Invoke();
     }
 
-    private void Update() {
-        Animate();
+    private void OnZoom(bool Zooming) {
+        SetBool("AimBow", Zooming);
+        _aimingBow = Zooming;
     }
 
-    private void LateUpdate() {
-        if (_drawingBow) {
-
-            _player.transform.eulerAngles = new Vector3(_player.transform.eulerAngles.x, _camera.eulerAngles.y, _player.transform.eulerAngles.z);
-            _spine.eulerAngles = new Vector3(_spine.eulerAngles.x, _spine.eulerAngles.y, _camera.eulerAngles.x);
-        }
-    }
-
-    private void Animate() {
-        SetBool("RopeClimbing", _onRope);
-        SetBool("AimBow", InputManager.GetKey(InputKey.Aim));
-
-        SetTrigger("FireArrow", InputManager.GetKey(InputKey.Aim) && InputManager.GetKeyDown(InputKey.Shoot));
+    private void OnDrawBow(bool Drawing) {
+        SetBool("DrawBow", Drawing);
+        _drawingBow = Drawing;
     }
 
     public void JumpEvent() {
-        _player.Controller.Jump();
+        if (EventManager.AnimationEvent.OnActualJump != null)
+            EventManager.AnimationEvent.OnActualJump.Invoke();
+    }
+
+    private void Update() {
+        SetBool("RopeClimbing", _onRope);
+    }
+
+    private Quaternion _oldSpineRot;
+    private void LateUpdate() {
+        Quaternion targetSpineRot = _spine.rotation;
+
+        if (_drawingBow)
+            targetSpineRot = Quaternion.Euler(_spine.eulerAngles.x, _spine.eulerAngles.y, _camera.eulerAngles.x);
+
+        if (!_aimingBow)
+            _oldSpineRot = _spine.rotation;
+
+        _spine.rotation = Quaternion.Lerp(_oldSpineRot, targetSpineRot, 10 * Time.deltaTime);
+        _oldSpineRot = _spine.rotation;
     }
 
     private void OnAnimatorMove() {
-        if (_useRootMotion)
+        if (_useRootMotion[0])
             transform.position += GetDeltaPosition;
+        if (_useRootMotion[1])
+            transform.rotation *= GetDeltaRotation;
     }
 
-    public void ResetTransform() {
-        transform.localPosition = Vector3.zero;
-        transform.localRotation = Quaternion.identity;
+    private void SetRootMotion(bool UseRootPos, bool UseRootRot) {
+        _useRootMotion[0] = UseRootPos;
+        _useRootMotion[1] = UseRootRot;
     }
 
     public Vector3 GetDeltaPosition {

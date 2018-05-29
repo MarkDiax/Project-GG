@@ -32,7 +32,6 @@ public class RopeBehaviour : MonoBehaviour
     }
 
     private bool CheckForChildren() {
-        print(transform.childCount);
         if (transform.childCount > 1) {
             for (int i = 0; i < transform.childCount; i++) {
                 RopePart node = transform.GetChild(i).GetComponent<RopePart>();

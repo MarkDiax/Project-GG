@@ -1,7 +1,16 @@
 ﻿using UnityEngine;
-using System.Collections;
+using UnityEngine.Events;
 
 public class Interactable : MonoBehaviour
 {
-    public virtual void Interact(GameObject Object) { }
+    public UnityEvent OnInteract;
+    public bool isInteractableByPlayer = true;
+
+    public virtual void Interact(GameObject Object) {
+        if (!isInteractableByPlayer && Object == Player.Instance.gameObject)
+            return;
+
+        Debug.Log(name + " has been interacted by: " + Object.name);
+        OnInteract.Invoke();
+    }
 }

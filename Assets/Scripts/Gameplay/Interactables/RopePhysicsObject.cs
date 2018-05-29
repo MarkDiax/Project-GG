@@ -14,6 +14,10 @@ public class RopePhysicsObject : Interactable
 
     Rigidbody _rigidbody;
 
+    public override void Interact(GameObject Object) {
+        Debug.LogWarning("Interaction not implemented");
+    }
+
     private void Start() {
         _rigidbody = GetComponent<Rigidbody>();
         _radius = GetComponent<Collider>().bounds.size.y;

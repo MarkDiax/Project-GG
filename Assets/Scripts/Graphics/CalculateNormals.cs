@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CalculateNormals : MonoBehaviour {
-	
-	// Update is called once per frame
-	void Update () {
-        Mesh mesh = GetComponent<MeshFilter>().mesh;
-        mesh.RecalculateNormals(60);
+    private Mesh _mesh;
+
+    void Awake() {
+        _mesh = GetComponent<MeshFilter>().mesh;
+    }
+
+    void Update () {
+        _mesh.RecalculateNormals(60);
 	}
 }

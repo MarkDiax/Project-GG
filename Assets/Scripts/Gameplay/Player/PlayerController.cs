@@ -6,142 +6,203 @@ using UnityEngine.UI;
 using UnityEngine.Events;
 using Cinemachine;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : BaseController
 {
-    private Player _player;
-    private InputManager _input;
-    private CharacterController _controller;
-    private Transform _cameraTransform;
-
     #region Movement Control Fields
 
-    public float walkSpeed = 2;
-    public float runSpeed = 6;
+    [SerializeField]
+    private float _walkSpeed = 2, _runSpeed = 6;
 
-    public float turnSmoothTime = 0.2f;
+    [SerializeField]
+    private float _turnSmoothTime = 0.2f;
     private float _turnSmoothVelocity;
 
-    public float tiltSmoothTime = 0.1f;
+    [SerializeField]
+    private float _tiltSmoothTime = 0.1f;
     private float _tiltSmoothVelocity;
 
-    public float speedSmoothTime = 0.1f;
+    [SerializeField]
+    private float _speedSmoothTime = 0.1f;
     private float _speedSmoothVelocity;
     private float _currentSpeed;
 
-    public float jumpHeight;
-    public float gravityMod;
-    [Range(0, 1)]
-    public float airControl;
+    [SerializeField]
+    private float _jumpHeight;
+    private float _jumpForce;
 
     private Vector2 _inputDir;
     private Vector3 _moveDir;
-    private float _gravity;
     private bool _running;
 
+    [HideInInspector]
+    public bool isGrounded;
     #endregion
 
-    [HideInInspector]
-    public bool usePhysics = true;
-    private bool _onRope;
+    private float _moveDelay = 0f;
 
-    private void Start() {
-        _cameraTransform = Camera.main.transform;
-        _input = InputManager.Instance;
-        _player = Player.Instance;
-        _controller = GetComponent<CharacterController>();
+    public override void Resume() {
+        base.Resume();
 
-        UseGravity(true);
+        HandleEvents(true);
 
-        EventManager.RopeEvent.OnRope.AddListener((OnRope) => _onRope = OnRope);
+        if (EventManager.AnimationEvent.UseRootMotion != null)
+            EventManager.AnimationEvent.UseRootMotion.Invoke(true, false);
     }
 
-    private void Update() {
-        if (!_onRope) {
-            Rotate();
-            UpdateSpeed();
+    public override void Suspend() {
+        base.Suspend();
+
+        HandleEvents(false);
+
+        if (EventManager.AnimationEvent.UseRootMotion != null)
+            EventManager.AnimationEvent.UseRootMotion.Invoke(false, false);
+    }
+
+    private void HandleEvents(bool Active) {
+        if (Active)
+            EventManager.AnimationEvent.OnActualJump.AddListener(Jump);
+        else
+            EventManager.AnimationEvent.OnActualJump.RemoveListener(Jump);
+    }
+
+    protected override void UpdateInput() {
+        if (isGrounded) {
+            if (InputManager.GetKeyDown(InputKey.Melee)) {
+                if (EventManager.InputEvent.OnMelee != null)
+                    EventManager.InputEvent.OnMelee.Invoke();
+            }
+
+            if (InputManager.GetKey(InputKey.Aim)) {
+                if (EventManager.InputEvent.OnCameraZoom != null)
+                    EventManager.InputEvent.OnCameraZoom.Invoke(true);
+
+                if (InputManager.GetKey(InputKey.Shoot)) {
+                    if (EventManager.InputEvent.OnBowDraw != null)
+                        EventManager.InputEvent.OnBowDraw.Invoke(true);
+                }
+                if (InputManager.GetKeyUp(InputKey.Shoot)) {
+                    if (EventManager.InputEvent.OnBowShoot != null)
+                        EventManager.InputEvent.OnBowShoot.Invoke();
+
+                    if (EventManager.InputEvent.OnBowDraw != null)
+                        EventManager.InputEvent.OnBowDraw.Invoke(false);
+                }
+            }
+            if (InputManager.GetKeyUp(InputKey.Aim)) {
+                if (EventManager.InputEvent.OnCameraZoom != null)
+                    EventManager.InputEvent.OnCameraZoom.Invoke(false);
+
+                if (EventManager.InputEvent.OnBowDraw != null)
+                    EventManager.InputEvent.OnBowDraw.Invoke(false);
+            }
         }
 
-        UpdateInput();
-        Move();
-        Animate();
-    }
+        if (InputManager.GetKeyDown(InputKey.Interact)) {
+            Collider[] objects = Physics.OverlapSphere(player.transform.position, 1.5f);
 
-    private void UpdateInput() {
+            for (int i = 0; i < objects.Length; i++) {
+                Interactable interactable = objects[i].GetComponent<Interactable>();
+                if (interactable != null) {
+                    interactable.Interact(gameObject);
+                }
+            }
+        }
+
         Vector2 keyboardInput = new Vector2(InputManager.GetAxis(InputKey.MoveHorizontal), InputManager.GetAxis(InputKey.MoveVertical));
         _inputDir = keyboardInput.normalized;
 
         _running = InputManager.GetKey(InputKey.Run);
 
-        if (InputManager.GetKeyDown(InputKey.Jump)) {
-            if (_controller.isGrounded)
-                _player.Animator.SetTrigger("Jump");
+        if (InputManager.GetKeyDown(InputKey.Jump) && isGrounded) {
+            if (EventManager.InputEvent.OnJump != null)
+                EventManager.InputEvent.OnJump.Invoke();
+        }
+    }
+
+    protected override void Move() {
+        isGrounded = Grounded();
+
+        //float targetSpeed = (_running ? _runSpeed : _walkSpeed) * _inputDir.magnitude;
+        float targetSpeed = _runSpeed * _inputDir.magnitude;//(_running ? runSpeed : walkSpeed) * _inputDir.magnitude;
+        _currentSpeed = Mathf.SmoothDamp(_currentSpeed, targetSpeed, ref _speedSmoothVelocity, GetModifiedSmoothTime(_speedSmoothTime));
+
+        if (_moveDelay > 0f)
+            _currentSpeed = 0f;
+
+        if (isGrounded)
+            _moveDir.y = 0f;
+
+        _moveDir.y += gravity * Time.deltaTime;
+
+        if (_jumpForce > 0f) {
+            _moveDir.y = _jumpForce;
+            _jumpForce = 0f;
         }
 
-        if (InputManager.GetKey(InputKey.Aim)) {
-            if (EventManager.PlayerEvent.OnBowDraw != null)
-                EventManager.PlayerEvent.OnBowDraw.Invoke(true);
+        _moveDir = player.transform.forward * _currentSpeed + Vector3.up * _moveDir.y;
 
-            if (InputManager.GetKeyDown(InputKey.Shoot)) {
-                if (EventManager.PlayerEvent.OnBowShoot != null)
-                    EventManager.PlayerEvent.OnBowShoot.Invoke();
-            }
-        }
-        if (InputManager.GetKeyUp(InputKey.Aim))
-            if (EventManager.PlayerEvent.OnBowDraw != null)
-                EventManager.PlayerEvent.OnBowDraw.Invoke(false);
+        controller.Move(_moveDir * Time.deltaTime);
+        _currentSpeed = new Vector2(controller.velocity.x, controller.velocity.z).magnitude;
     }
 
-    private void UpdateSpeed() {
-        float targetSpeed = (_running ? runSpeed : walkSpeed) * _inputDir.magnitude;
-        _currentSpeed = Mathf.SmoothDamp(_currentSpeed, targetSpeed, ref _speedSmoothVelocity, GetModifiedSmoothTime(speedSmoothTime));
-
-        _moveDir.y += _gravity * Time.deltaTime;
-        _moveDir = _player.transform.forward * _currentSpeed + Vector3.up * _moveDir.y;
-
-        GroundCheck();
-    }
-
-    private void Move() {
-        _controller.Move(_moveDir * Time.deltaTime);
-        _currentSpeed = new Vector2(_controller.velocity.x, _controller.velocity.z).magnitude;
-    }
-
-    private void Rotate() {
-        float previousY = _player.transform.rotation.eulerAngles.y;
+    protected override void Rotate() {
+        float previousY = player.transform.rotation.eulerAngles.y;
 
         if (_inputDir != Vector2.zero) {
             //direction
-            float targetRotation = Mathf.Atan2(_inputDir.x, _inputDir.y) * Mathf.Rad2Deg + _cameraTransform.eulerAngles.y;
-            Vector3 moveVector = Vector3.up * Mathf.SmoothDampAngle(_player.transform.eulerAngles.y, targetRotation, ref _turnSmoothVelocity, GetModifiedSmoothTime(turnSmoothTime));
+            float targetRotation = Mathf.Atan2(_inputDir.x, _inputDir.y) * Mathf.Rad2Deg + mainCamera.transform.eulerAngles.y;
+            Vector3 moveVector = Vector3.up * Mathf.SmoothDampAngle(player.transform.eulerAngles.y, targetRotation, ref _turnSmoothVelocity, GetModifiedSmoothTime(_turnSmoothTime));
 
+            /**
             //z-tilt
             float zOffset = moveVector.y - previousY;
-            Vector3 tiltVector = Vector3.forward * Mathf.SmoothDampAngle(_player.transform.eulerAngles.z, -zOffset * 1.2f, ref _tiltSmoothVelocity, GetModifiedSmoothTime(tiltSmoothTime));
+            Vector3 tiltVector = Vector3.forward * Mathf.SmoothDampAngle(player.transform.eulerAngles.z, -zOffset * 1.2f, ref _tiltSmoothVelocity, GetModifiedSmoothTime(_tiltSmoothTime));
+          /**/
 
-            _player.transform.eulerAngles = moveVector + tiltVector;
+            //stop rotating when player is falling or is playing land anim
+            if (_moveDelay > 0 || DistanceToGround() > 3f)
+                moveVector = player.transform.eulerAngles;
+
+            player.transform.eulerAngles = moveVector; //+ tiltVector;
         }
         else {
-            float zAxis = Mathf.LerpAngle(_player.transform.eulerAngles.z, 0, Time.deltaTime * 50f);
-            _player.transform.eulerAngles -= Vector3.forward * zAxis;
+            float zAxis = Mathf.LerpAngle(player.transform.eulerAngles.z, 0, Time.deltaTime * 50f);
+            player.transform.eulerAngles -= Vector3.forward * zAxis;
         }
     }
 
-    private void Animate() {
-        _player.Animator.SetBool("Grounded", _controller.isGrounded);
+    protected override void Animate() {
+        float animationSpeed = (_currentSpeed / _runSpeed) * _inputDir.magnitude;
+        player.Animator.SetFloat("Speed", animationSpeed, _speedSmoothTime, Time.deltaTime);
 
-        float animationSpeed = (_running ? _currentSpeed / runSpeed : _currentSpeed / walkSpeed * 0.5f) * _inputDir.magnitude;
-        _player.Animator.SetFloat("Speed", animationSpeed, speedSmoothTime, Time.deltaTime);
+        player.Animator.SetBool("Grounded", isGrounded);
+        player.Animator.SetFloat("GroundDistance", DistanceToGround());
 
-        //to fix a floating-point precision issue in the animator:
-        float PlayerMoveSpeed = _player.Animator.GetFloat("Speed");
-        if (PlayerMoveSpeed < 0.3f && _inputDir.magnitude == 0)
-            PlayerMoveSpeed = 0;
 
-        _player.Animator.SetFloat("Speed", PlayerMoveSpeed);
+        if (_moveDelay > 0)
+            _moveDelay -= Time.deltaTime;
     }
 
-    public void Jump() {
-        _moveDir.y = Mathf.Sqrt(-2 * _gravity * jumpHeight);
+    private float DistanceToGround() {
+        RaycastHit hitInfo;
+
+        if (Physics.Raycast(transform.position, Vector3.down, out hitInfo, Mathf.Infinity))
+            return hitInfo.distance;
+
+        return Mathf.Infinity;
+    }
+
+    /// <summary>
+    /// Animator event. Used for suspending movement at Idle Jump or when landing from fall loop.
+    /// </summary>
+    /// <param name="Delay"></param>
+    public void A_OnSuspendMovement(float Delay) {
+        _moveDelay = Delay;
+    }
+
+
+    private void Jump() {
+        _jumpForce = Mathf.Sqrt(-2 * gravity * _jumpHeight);
     }
 
     private void OnControllerColliderHit(ControllerColliderHit hit) {
@@ -161,24 +222,22 @@ public class PlayerController : MonoBehaviour
     }
 
     private float GetModifiedSmoothTime(float smoothTime) {
-        if (_controller.isGrounded)
-            return smoothTime;
+        //if (isGrounded)
+        //    return smoothTime;
 
-        if (airControl == 0)
+        if (Config.airControl == 0)
             return float.MaxValue;
 
-        return smoothTime / airControl;
+        return smoothTime / Config.airControl;
     }
 
-    public void UseGravity(bool Use) {
-        _gravity = Use ? Physics.gravity.y * gravityMod : 0;
-    }
 
-    private void GroundCheck() {
-        RaycastHit hit;
+    private bool Grounded() {
+        bool rayCheck = Physics.Raycast(player.transform.position, Vector3.down, 0.1f);
 
-        if (Physics.Raycast(_player.transform.position, Vector3.down, out hit, 0.01f) && _controller.isGrounded) {
-            //_moveDir.y = 0;
-        }
+        if (controller.isGrounded || rayCheck)
+            return true;
+
+        return false;
     }
 }

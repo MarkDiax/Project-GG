@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class InputManager : Singleton<InputManager>, IManager
+public class InputManager : Singleton<InputManager>
 {
     public override void Init() { }
-
-    public void Update() { }
 
     public static bool GetKey(InputKey Key) {
         return Input.GetButton(InputMapper.Instance.customKeys[(int)Key]);

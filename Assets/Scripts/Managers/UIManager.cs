@@ -1,28 +1,20 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
 public class UIManager : MonoSingleton<UIManager>
 {
-    [SerializeField]
-    private GameObject[] _showOnLoad;
+    [SerializeField] private GameObject _crosshair;
 
-    public List<UIObject> UIStack = new List<UIObject>();
-    [SerializeField]
-    private List<UIObject> _cache = new List<UIObject>();
-
-
-    /*
-     * loadobject instantiates an object in uistack and adds it to cache
-     * 
-     * 
-     * 
-     * 
-     * */
-
-    public void LoadUI(UIObject Object) {
-        if (!_cache.Contains(Object)) {
-
-        }
+    private void Start() {
+        //EventManager.InputEvent.OnCameraZoom.AddListener((Zooming) => EnableCrosshair(Zooming));
     }
+
+    public void EnableCrosshair(bool Enable) {
+        if (_crosshair.activeSelf != Enable)
+            _crosshair.SetActive(Enable);
+    }
+
+    public GameObject Crosshair { get { return _crosshair; } }
 }

@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 5d53021ed351a2241b6f7fe6c1716f25
-timeCreated: 1519212719
+guid: f77ffc1f6ea52dd40838ef177116c185
+timeCreated: 1519212731
 licenseType: Free
 ModelImporter:
   serializedVersion: 22
@@ -154,7 +154,7 @@ ModelImporter:
     bakeSimulation: 0
     resampleCurves: 1
     optimizeGameObjects: 0
-    motionNodeName: <Root Transform>
+    motionNodeName: 
     rigImportErrors: 
     rigImportWarnings: 
     animationImportErrors: 
@@ -176,20 +176,20 @@ ModelImporter:
       firstFrame: 0
       lastFrame: 71
       wrapMode: 0
-      orientationOffsetY: 0
+      orientationOffsetY: -53
       level: 0
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
       loopTime: 1
       loopBlend: 0
-      loopBlendOrientation: 0
-      loopBlendPositionY: 0
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
       loopBlendPositionXZ: 0
       keepOriginalOrientation: 0
-      keepOriginalPositionY: 1
+      keepOriginalPositionY: 0
       keepOriginalPositionXZ: 0
-      heightFromFeet: 0
+      heightFromFeet: 1
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
