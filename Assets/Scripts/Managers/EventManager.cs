@@ -69,13 +69,11 @@ public class EventManager : Singleton<EventManager>
     {
         public static Bool2Event UseRootMotion;
         public static UnityEvent OnActualJump; //the moment the animation jumps / increases in heigtht
-        public static BoolEvent OnCombatStance;
         public static UnityEvent OnDealDamage;
 
         public static void Init() {
             UseRootMotion = new Bool2Event();
             OnActualJump = new UnityEvent();
-            OnCombatStance = new BoolEvent();
             OnDealDamage = new UnityEvent();
         }
     }

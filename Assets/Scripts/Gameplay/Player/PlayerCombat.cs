@@ -5,10 +5,6 @@ using UnityEngine.UI;
 
 public class PlayerCombat : BaseController
 {
-    [SerializeField]
-    [Tooltip("The time it takes for the player's combat stance to reset")]
-    private float _combatStanceTimer;
-
     [Header("Movement")]
     [SerializeField]
     private float _meleeMoveSpeed;
@@ -129,15 +125,15 @@ public class PlayerCombat : BaseController
 
     public override void Step() {
         base.Step();
-
+        //TODO change exit incombat
         Debugging();
 
-        EventManager.AnimationEvent.OnCombatStance.Invoke(_inCombat);
+        //EventManager.AnimationEvent.OnCombatStance.Invoke(_inCombat);
 
         if (!_inCombat) {
             EventManager.PlayerEvent.OnControllerOverride.Invoke(null, false);
             _currentController = false;
-            DisableWeapons();
+            //DisableWeapons();
         }
     }
 
@@ -232,24 +228,8 @@ public class PlayerCombat : BaseController
 
     private void ActivateBehaviour() {
         _inCombat = true;
-        EnableWeapons();
+        //EnableWeapons();
 
-        if (_idleTimer != null)
-            StopCoroutine(_idleTimer);
-        _idleTimer = StartCoroutine(IdleTimer(_combatStanceTimer));
-    }
-
-    private IEnumerator IdleTimer(float Timer) {
-        while (Timer >= 0) {
-            Timer -= Time.deltaTime;
-
-            yield return new WaitForEndOfFrame();
-        }
-
-        _idleTimer = null;
-
-        if (_targetedObject == null) //return to PlayerController if we're not targeting
-            _inCombat = false;
     }
 
     protected override void UpdateInput() {
@@ -285,23 +265,23 @@ public class PlayerCombat : BaseController
         }
     }
 
-    private void EnableWeapons(BaseWeapon Weapon = null) {
-        if (Weapon != null) {
-            Weapon.usingWeapon = true;
-            return;
-        }
+    //private void EnableWeapons(BaseWeapon Weapon = null) {
+    //    if (Weapon != null) {
+    //        Weapon.usingWeapon = true;
+    //        return;
+    //    }
 
-        for (int i = 0; i < _weapons.Length; i++)
-            _weapons[i].usingWeapon = true;
-    }
+    //    for (int i = 0; i < _weapons.Length; i++)
+    //        _weapons[i].usingWeapon = true;
+    //}
 
-    private void DisableWeapons(BaseWeapon Weapon = null) {
-        if (Weapon != null) {
-            Weapon.usingWeapon = false;
-            return;
-        }
+    //private void DisableWeapons(BaseWeapon Weapon = null) {
+    //    if (Weapon != null) {
+    //        Weapon.usingWeapon = false;
+    //        return;
+    //    }
 
-        for (int i = 0; i < _weapons.Length; i++)
-            _weapons[i].usingWeapon = false;
-    }
+    //    for (int i = 0; i < _weapons.Length; i++)
+    //        _weapons[i].usingWeapon = false;
+    //}
 }

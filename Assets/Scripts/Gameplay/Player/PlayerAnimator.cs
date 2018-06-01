@@ -28,8 +28,6 @@ public class PlayerAnimator : CharacterAnimator
 
     private void AddListeners() {
         EventManager.AnimationEvent.UseRootMotion.AddListener(SetRootMotion);
-        EventManager.AnimationEvent.OnCombatStance.AddListener(UpdateCombatStance);
-
         EventManager.InputEvent.OnJump.AddListener(() => SetTrigger("Jump"));
         EventManager.InputEvent.OnCameraZoom.AddListener(OnZoom);
         EventManager.InputEvent.OnBowDraw.AddListener(OnDrawBow);
@@ -44,14 +42,10 @@ public class PlayerAnimator : CharacterAnimator
         EventManager.RopeEvent.OnRopeClimbing.AddListener((ClimbSpeed) => SetFloat("ClimbSpeed", ClimbSpeed));
     }
 
-    private void UpdateCombatStance(bool InCombat) {
-        SetBool("InCombat", InCombat);
-    }
-
-    private void OnDealDamage() {
-        if (EventManager.AnimationEvent.OnDealDamage != null)
-            EventManager.AnimationEvent.OnDealDamage.Invoke();
-    }
+    //private void OnDealDamage() {
+    //    if (EventManager.AnimationEvent.OnDealDamage != null)
+    //        EventManager.AnimationEvent.OnDealDamage.Invoke();
+    //}
 
     public void OnRopeClimb() {
         if (EventManager.RopeEvent.OnRopeClimb != null)

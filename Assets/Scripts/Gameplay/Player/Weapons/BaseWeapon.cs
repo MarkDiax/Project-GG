@@ -4,35 +4,32 @@ using System.Collections.Generic;
 
 public abstract class BaseWeapon : MonoBehaviour
 {
-    [SerializeField]
-    private int _damage;
+    [SerializeField] int _damage;
 
     protected bool processingCollisions;
-    protected List<Collider> activeColliders = new List<Collider>();
-    private List<Collider> hasHitDuringAttack = new List<Collider>();
-
-    public bool usingWeapon; // extend so only one weapon is used at a time
+    List<Collider> _activeColliders = new List<Collider>();
+    List<Collider> _hasHitDuringAttack = new List<Collider>();
 
     protected virtual void Start() { }
 
     protected virtual void OnTriggerEnter(Collider Other) {
-        if (!activeColliders.Contains(Other))
-            activeColliders.Add(Other);
+        if (!_activeColliders.Contains(Other))
+            _activeColliders.Add(Other);
     }
 
     protected virtual void OnTriggerStay(Collider Other) {
-        if (!activeColliders.Contains(Other))
-            activeColliders.Add(Other);
+        if (!_activeColliders.Contains(Other))
+            _activeColliders.Add(Other);
     }
 
     protected virtual void OnTriggerExit(Collider Other) {
-        if (activeColliders.Contains(Other)) {
-            activeColliders.Remove(Other);
+        if (_activeColliders.Contains(Other)) {
+            _activeColliders.Remove(Other);
         }
     }
 
     private void Update() {
-        if (activeColliders.Count == 0)
+        if (_activeColliders.Count == 0)
             processingCollisions = false;
 
         if (processingCollisions) {
@@ -41,34 +38,28 @@ public abstract class BaseWeapon : MonoBehaviour
     }
 
     protected virtual void ProcessCollisions() {
-        for (int i = 0; i < activeColliders.Count; i++) {
-            BaseEnemy enemy = activeColliders[i].GetComponent<BaseEnemy>();
+        for (int i = 0; i < _activeColliders.Count; i++) {
+            BaseEnemy enemy = _activeColliders[i].GetComponent<BaseEnemy>();
 
-            if (enemy != null && !hasHitDuringAttack.Contains(activeColliders[i])) {
+            if (enemy != null && !_hasHitDuringAttack.Contains(_activeColliders[i])) {
                 OnEnemyHit(_damage, enemy);
-                hasHitDuringAttack.Add(activeColliders[i]);
-                activeColliders.Remove(activeColliders[i]);
+                _hasHitDuringAttack.Add(_activeColliders[i]);
+                _activeColliders.Remove(_activeColliders[i]);
+                continue;
             }
 
-            InteractableLock iLock = activeColliders[i].GetComponent<InteractableLock>();
+            InteractableLock interactableLock = _activeColliders[i].GetComponent<InteractableLock>();
 
-            if (iLock != null)
-                iLock.Unlock();
+            if (interactableLock != null)
+                interactableLock.Unlock();
         }
     }
 
     protected void ClearStoredHits() {
-        hasHitDuringAttack.Clear();
+        _hasHitDuringAttack.Clear();
     }
 
     protected abstract void OnEnemyHit(int Damage, BaseEnemy Enemy);
 
-    public void Deactivate() {
-        usingWeapon = false;
-        processingCollisions = false;
-        activeColliders.Clear();
-    }
-    public void Activate() {
-        usingWeapon = true;
-    }
+    public abstract void Attack();
 }
