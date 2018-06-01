@@ -34,11 +34,34 @@ public class PlayerController : BaseController
     private Vector3 _moveDir;
     private bool _running;
 
-    [HideInInspector]
-    public bool isGrounded;
     #endregion
 
-    private float _moveDelay = 0f;
+    #region Combat Fields
+    [SerializeField]
+    Transform _bowHolder, _swordHolder;
+    bool _equippedSword, _equippedBow;
+    #endregion
+
+    bool _isGrounded;
+    float _moveDelay = 0f;
+
+    #region Animation Events
+    /// <summary>
+    /// Animator events don't support boolean parameters, so i'm using ints. 1 = true, 0 = false. 
+    /// </summary>
+    /// <param name="Equipped"></param>
+    public void A_OnEquipSword(int Equipped) {
+        _equippedSword = (Equipped == 1);
+    }
+
+    /// <summary>
+    /// Animator events don't support boolean parameters, so i'm using ints. 1 = true, 0 = false. 
+    /// </summary>
+    /// <param name="Equipped"></param>
+    public void A_OnEquipBow(int Equipped) {
+        _equippedBow = (Equipped == 1);
+    }
+    #endregion
 
     public override void Resume() {
         base.Resume();
@@ -66,7 +89,7 @@ public class PlayerController : BaseController
     }
 
     protected override void UpdateInput() {
-        if (isGrounded) {
+        if (_isGrounded) {
             if (InputManager.GetKeyDown(InputKey.Melee)) {
                 if (EventManager.InputEvent.OnMelee != null)
                     EventManager.InputEvent.OnMelee.Invoke();
@@ -108,19 +131,25 @@ public class PlayerController : BaseController
             }
         }
 
+        //FOR TESTING ONLY
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+            player.Animator.SetTrigger("EquipSword");
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+            player.Animator.SetTrigger("EquipBow");
+
         Vector2 keyboardInput = new Vector2(InputManager.GetAxis(InputKey.MoveHorizontal), InputManager.GetAxis(InputKey.MoveVertical));
         _inputDir = keyboardInput.normalized;
 
         _running = InputManager.GetKey(InputKey.Run);
 
-        if (InputManager.GetKeyDown(InputKey.Jump) && isGrounded) {
+        if (InputManager.GetKeyDown(InputKey.Jump) && _isGrounded) {
             if (EventManager.InputEvent.OnJump != null)
                 EventManager.InputEvent.OnJump.Invoke();
         }
     }
 
     protected override void Move() {
-        isGrounded = Grounded();
+        _isGrounded = Grounded();
 
         //float targetSpeed = (_running ? _runSpeed : _walkSpeed) * _inputDir.magnitude;
         float targetSpeed = _runSpeed * _inputDir.magnitude;//(_running ? runSpeed : walkSpeed) * _inputDir.magnitude;
@@ -129,7 +158,7 @@ public class PlayerController : BaseController
         if (_moveDelay > 0f)
             _currentSpeed = 0f;
 
-        if (isGrounded)
+        if (_isGrounded)
             _moveDir.y = 0f;
 
         _moveDir.y += gravity * Time.deltaTime;
@@ -175,9 +204,10 @@ public class PlayerController : BaseController
         float animationSpeed = (_currentSpeed / _runSpeed) * _inputDir.magnitude;
         player.Animator.SetFloat("Speed", animationSpeed, _speedSmoothTime, Time.deltaTime);
 
-        player.Animator.SetBool("Grounded", isGrounded);
+        player.Animator.SetBool("Grounded", _isGrounded);
         player.Animator.SetFloat("GroundDistance", DistanceToGround());
-
+        player.Animator.SetBool("HasSwordEquipped", _equippedSword);
+        player.Animator.SetBool("HasBowEquipped", _equippedBow);
 
         if (_moveDelay > 0)
             _moveDelay -= Time.deltaTime;
