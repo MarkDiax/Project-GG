@@ -195,14 +195,14 @@ ModelImporter:
       curves: []
       events:
       - time: 0.49299064
-        functionName: OnDealDamage
+        functionName: A_OnSwordImpact
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
       - time: 1
-        functionName: A_OnAnimationEnd
+        functionName: A_OnMeleeEnd
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0

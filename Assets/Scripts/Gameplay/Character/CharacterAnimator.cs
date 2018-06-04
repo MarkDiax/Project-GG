@@ -31,7 +31,7 @@ public class CharacterAnimator : MonoBehaviour
         Animator.SetBool(State, true);
     }
 
-    public bool CheckBool(string State) {
+    public bool GetBool(string State) {
         return Animator.GetBool(State);
     }
 

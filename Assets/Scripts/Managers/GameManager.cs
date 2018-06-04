@@ -10,10 +10,9 @@ using System.Collections;
 /// </summary>
 public class GameManager : MonoSingleton<GameManager>
 {
-    [SerializeField]
-    private bool _lockMouse = true;
+    [SerializeField] bool _lockMouse = true;
 
-    private Coroutine _slowdownRoutine;
+    Coroutine _slowdownRoutine;
 
     public override void Init() {
         LockMouse(_lockMouse);
