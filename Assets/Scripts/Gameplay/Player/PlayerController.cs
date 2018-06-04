@@ -24,8 +24,10 @@ public class PlayerController : BaseController
     float _speedSmoothVelocity;
     float _currentSpeed;
 
-    [SerializeField] float _gravityMod;
+    [Space]
+    [SerializeField] Transform[] _groundCastPoints;
     [SerializeField] float _jumpHeight;
+    [SerializeField] float _gravityMod;
     [SerializeField] [Range(0, 1)] float _airControl;
     float _jumpForce;
 
@@ -250,7 +252,7 @@ public class PlayerController : BaseController
         return closestEnemy;
     }
 
-    private void DefaultMove() {
+    private void Move_Default() {
         _targetSpeed = _runSpeed * _inputDir.magnitude;
         _currentSpeed = Mathf.SmoothDamp(_currentSpeed, _targetSpeed, ref _speedSmoothVelocity, GetModifiedSmoothTime(_speedSmoothTime));
 
@@ -269,7 +271,7 @@ public class PlayerController : BaseController
 
     }
 
-    private void CombatMove() {
+    private void Move_Combat() {
         _inputDir = new Vector2(InputManager.GetAxis(InputKey.MoveHorizontal), InputManager.GetAxis(InputKey.MoveVertical));
         _currentSpeed = Mathf.Lerp(_currentSpeed, _targetSpeed, 5 * Time.deltaTime);
 
@@ -284,7 +286,9 @@ public class PlayerController : BaseController
     }
 
     public override void Step() {
-        _isGrounded = Grounded(); //ground check before the main loop for accurate input
+        if (_jumpForce == 0) 
+            _isGrounded = Grounded(); //ground check before the main loop for accurate input
+        print("Grounded: " + _isGrounded);
 
         base.Step();
     }
@@ -293,16 +297,16 @@ public class PlayerController : BaseController
         _moveDir.y += gravity * Time.deltaTime;
 
         if (!_inCombat)
-            DefaultMove();
+            Move_Default();
         else
-            CombatMove();
+            Move_Combat();
 
         controller.Move(_moveDir * Time.deltaTime);
         _currentSpeed = new Vector2(controller.velocity.x, controller.velocity.z).magnitude;
     }
 
 
-    private void DefaultRotate() {
+    private void Rotate_Default() {
         float previousY = player.transform.rotation.eulerAngles.y;
 
         if (_inputDir != Vector2.zero) {
@@ -329,7 +333,7 @@ public class PlayerController : BaseController
 
     }
 
-    private void CombatRotate() {
+    private void Rotate_Combat() {
         Quaternion targetRotation = Quaternion.Euler(player.transform.eulerAngles.x, mainCamera.transform.eulerAngles.y, player.transform.eulerAngles.z);
 
         if (_targetedObject != null) {
@@ -343,9 +347,9 @@ public class PlayerController : BaseController
 
     protected override void Rotate() {
         if (!_inCombat)
-            DefaultRotate();
+            Rotate_Default();
         else
-            CombatRotate();
+            Rotate_Combat();
     }
 
     private void MeleeAttack() {
@@ -448,9 +452,8 @@ public class PlayerController : BaseController
     }
 
     private float GetModifiedSmoothTime(float smoothTime) {
-        //TODO: needs improvement to isGrounded before used
-        //if (isGrounded)
-        //    return smoothTime;
+        if (_isGrounded)
+            return smoothTime;
 
         if (_airControl == 0)
             return float.MaxValue;
@@ -460,21 +463,18 @@ public class PlayerController : BaseController
 
 
     private bool Grounded() {
-        DebugLines();
-        RaycastHit hit;
-
-        bool rayCheck = Physics.Raycast(player.transform.position + Vector3.up * 0.1f, Vector3.down, out hit, 0.2f);
-
-        //if (rayCheck && !controller.isGrounded)
-        //    player.transform.position = Vector3.Lerp(player.transform.position, player.transform.position + Vector3.down * 0.1f, 10 * Time.deltaTime);
-
         if (controller.isGrounded)
             return true;
 
-        return false;
-    }
+        RaycastHit hit;
 
-    private void DebugLines() {
-        Debug.DrawLine(transform.position + Vector3.up * 0.2f, transform.position + Vector3.down * 0.2f, Color.red);
+        for (int i = 0; i < _groundCastPoints.Length; i++) {
+            if (Physics.Raycast(_groundCastPoints[i].position, Vector3.down, out hit, 0.1f)) {
+                controller.Move(Vector3.down * hit.distance);
+                return true;
+            }
+        }
+
+        return false;
     }
 }
