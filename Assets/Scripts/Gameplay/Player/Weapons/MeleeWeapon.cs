@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class MeleeWeapon : BaseWeapon
+public class MeleeWeapon : Weapon
 {
     [SerializeField] [Header("Slowmotion Effect")] float _slowmoTimescale = 0.1f;
     [SerializeField] float _slowmoDuration = 0.2f;

@@ -22,7 +22,6 @@ public class AttachBox : MonoBehaviour {
             player.eulerAngles = new Vector3(0, pRotation, 0);
             transform.root.parent = player.transform;
             Playersc.GetComponent<Animator>().enabled = false;
-            Playersc.GetComponent<PlayerCombat>().enabled = false;
             Playersc.GetComponent<PlayerController>().enabled = false;
             Playersc.GetComponent<PlayerAnimator>().enabled = false;
             Playersc.GetComponent<ClimbingController>().enabled = false;

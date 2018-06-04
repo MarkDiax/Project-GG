@@ -54,7 +54,6 @@ public class MoveBox : MonoBehaviour {
             attachedBox.parent = null;
 
             transform.GetComponent<Animator>().enabled = true;
-            transform.GetComponent<PlayerCombat>().enabled = true;
             transform.GetComponent<PlayerController>().enabled = true;
             transform.GetComponent<PlayerAnimator>().enabled = true;
             transform.GetComponent<ClimbingController>().enabled = true;

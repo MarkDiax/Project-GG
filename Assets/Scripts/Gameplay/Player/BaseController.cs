@@ -1,11 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[RequireComponent((typeof(Player)))]
 public abstract class BaseController : MonoBehaviour
 {
-    [SerializeField]
-    protected PlayerControllerConfig Config;
-
     protected Player player;
     protected Camera mainCamera;
     protected InputManager input;
@@ -23,12 +21,8 @@ public abstract class BaseController : MonoBehaviour
         usePhysics = true;
     }
 
-    protected virtual void Start() {
-        UseGravity(true);
-    }
-
-    public virtual void Resume() { }
-    public virtual void Suspend() { }
+    public abstract void Resume();
+    public abstract void Suspend();
 
     /// <summary>
     /// Runs outside the step loop, is updated regardless if the controller is active or not.
@@ -50,8 +44,4 @@ public abstract class BaseController : MonoBehaviour
     protected abstract void Rotate();
     protected abstract void Move();
     protected virtual void Animate() { }
-
-    public void UseGravity(bool Use) {
-        gravity = Use ? Physics.gravity.y * Config.gravityMod : 0;
-    }
 }

@@ -14,35 +14,35 @@ public class PlayerController : BaseController
     float _runSpeed = 6;
     float _targetSpeed;
 
-    [SerializeField]
-    private float _turnSmoothTime = 0.2f;
-    private float _turnSmoothVelocity;
+    [SerializeField] float _turnSmoothTime = 0.2f;
+    float _turnSmoothVelocity;
 
-    [SerializeField]
-    private float _tiltSmoothTime = 0.1f;
-    private float _tiltSmoothVelocity;
+    [SerializeField] float _tiltSmoothTime = 0.1f;
+    float _tiltSmoothVelocity;
 
-    [SerializeField]
-    private float _speedSmoothTime = 0.1f;
-    private float _speedSmoothVelocity;
-    private float _currentSpeed;
+    [SerializeField] float _speedSmoothTime = 0.1f;
+    float _speedSmoothVelocity;
+    float _currentSpeed;
 
-    [SerializeField]
-    private float _jumpHeight;
-    private float _jumpForce;
+    [SerializeField] float _gravityMod;
+    [SerializeField] float _jumpHeight;
+    [SerializeField] [Range(0, 1)] float _airControl;
+    float _jumpForce;
 
-    private Vector2 _inputDir;
-    private Vector3 _moveDir;
-    private bool _running;
+    Vector2 _inputDir;
+    Vector3 _moveDir;
+    bool _running;
     #endregion
 
     #region Combat Fields
     [SerializeField] [Header("Combat Movement Settings")] float _meleeMoveSpeed;
     [SerializeField] float _walkZoomSpeed, _walkDrawSpeed;
 
-    [SerializeField] [Header("Combat Weapons")] Transform _bowHolder;
-    [SerializeField] Transform _swordHolder;
-    [SerializeField] BaseWeapon _swordObject;
+    [SerializeField] [Header("Combat Weapons")] Weapon _swordObject;
+    [SerializeField] Weapon _bowObject;
+    [SerializeField] Transform _bowTransformParent, _swordTransformParent;
+    [SerializeField] Transform _bowTransformSheathed, _swordTransformSheathed;
+    bool _hasSwordEquipped, _hasBowEquipped;
 
     [SerializeField] [Header("Other Arrow Properties")] Arrow _arrowPrefab;
     [SerializeField] Transform _arrowSpawnPoint;
@@ -50,98 +50,105 @@ public class PlayerController : BaseController
     float _currentArrowForce;
 
     bool _drawingBow;
-    bool _inCombat, _currentController;
+    bool _inCombat;
     Vector2 _animSpeed;
-    bool _eventListening;
     GameObject _targetedObject;
 
-    bool _equippedSword, _equippedBow;
     #endregion
 
     bool _isGrounded;
     float _moveDelay = 0f;
 
     #region Animation Events
-    /// <summary>
-    /// Animator events don't support boolean parameters, so i'm using ints. 1 = true, 0 = false. 
-    /// </summary>
-    /// <param name="Equipped"></param>
-    public void A_OnEquipSword(int Equipped) {
-        _equippedSword = (Equipped == 1);
+    // Animator events don't support boolean parameters, so i'm using ints. 1 = true, 0 = false. 
+    void A_OnEquipSword(int Equipped) {
+        _hasSwordEquipped = (Equipped == 1);
+
+        if (_hasSwordEquipped) {
+            _swordObject.transform.parent = _swordTransformParent;
+            _swordObject.transform.localPosition = Vector3.zero;
+            _swordObject.transform.localRotation = Quaternion.identity;
+        }
+        else
+            _swordObject.transform.parent = _swordTransformSheathed;
+
+        player.Animator.SetBool("HasSwordEquipped", _hasSwordEquipped);
     }
 
-    /// <summary>
-    /// Animator events don't support boolean parameters, so i'm using ints. 1 = true, 0 = false. 
-    /// </summary>
-    /// <param name="Equipped"></param>
-    public void A_OnEquipBow(int Equipped) {
-        _equippedBow = (Equipped == 1);
+    // Animator events don't support boolean parameters, so i'm using ints. 1 = true, 0 = false. 
+    void A_OnEquipBow(int Equipped) {
+        _hasBowEquipped = (Equipped == 1);
+
+        if (_hasBowEquipped) {
+            _bowObject.transform.parent = _bowTransformParent;
+            _bowObject.transform.localPosition = Vector3.zero;
+        }
+        else
+            _bowObject.transform.parent = _bowTransformSheathed;
+
+        _bowObject.transform.localRotation = Quaternion.identity;
+        player.Animator.SetBool("HasBowEquipped", _hasBowEquipped);
     }
 
-    /// <summary>
-    /// Moment when the melee animation ends and the player exits combat.
-    /// </summary>
-    public void A_OnMeleeEnd() {
+    // The moment the animation looks like it is about to hit the enemy.
+    void A_OnSwordImpact() {
+        _swordObject.Attack();
+    }
+
+    // Moment when the melee animation ends and the player exits combat.
+    void A_OnMeleeEnd() {
         if (_targetedObject == null) {
             _targetSpeed = _runSpeed;
             _inCombat = false;
         }
     }
 
-    /// <summary>
-    /// Used for suspending movement at Idle Jump or when landing from fall loop.
-    /// </summary>
-    /// <param name="Delay"></param>
-    public void A_OnSuspendMovement(float Delay) {
-        _moveDelay = Delay;
+    // The moment the player starts jumping in the animation.
+    void A_OnJump() {
+        _jumpForce = Mathf.Sqrt(-2 * gravity * _jumpHeight);
     }
 
-    /// <summary>
-    /// The moment the animation looks like it is about to hit the enemy.
-    /// </summary>
-    private void A_OnSwordImpact() {
-        _swordObject.Attack();
+    // Used for suspending movement at Idle Jump or when landing from fall loop.
+    void A_OnSuspendMovement(float Delay) {
+        _moveDelay = Delay;
     }
     #endregion
 
+    protected override void Awake() {
+        base.Awake();
+
+        usePhysics = true;
+        gravity = Physics.gravity.y * _gravityMod;
+    }
+
     public override void Resume() {
-        base.Resume();
-
         HandleEvents(true);
-
-        if (EventManager.AnimationEvent.UseRootMotion != null)
-            EventManager.AnimationEvent.UseRootMotion.Invoke(true, false);
+        player.Animator.SetRootMotion(true, false);
+        A_OnEquipSword(0);
+        A_OnEquipBow(0);
     }
 
     public override void Suspend() {
-        base.Suspend();
-
         HandleEvents(false);
-
-        if (EventManager.AnimationEvent.UseRootMotion != null)
-            EventManager.AnimationEvent.UseRootMotion.Invoke(false, false);
+        player.Animator.SetRootMotion(false, false);
+        A_OnEquipSword(0);
+        A_OnEquipBow(0);
     }
 
     private void HandleEvents(bool Active) {
         if (Active) {
-            EventManager.AnimationEvent.OnActualJump.AddListener(Jump);
             EventManager.InputEvent.OnBowDraw.AddListener(OnBowDraw);
-            EventManager.InputEvent.OnBowShoot.AddListener(OnBowShoot);
-            EventManager.InputEvent.OnMelee.AddListener(OnMelee);
             EventManager.InputEvent.OnCameraZoom.AddListener(OnCameraZoom);
         }
         else {
-            EventManager.AnimationEvent.OnActualJump.RemoveListener(Jump);
             EventManager.InputEvent.OnBowDraw.RemoveListener(OnBowDraw);
-            EventManager.InputEvent.OnBowShoot.RemoveListener(OnBowShoot);
-            EventManager.InputEvent.OnMelee.RemoveListener(OnMelee);
             EventManager.InputEvent.OnCameraZoom.RemoveListener(OnCameraZoom);
         }
     }
 
     protected override void UpdateInput() {
         if (_isGrounded) {
-            if (InputManager.GetKey(InputKey.Aim)) {
+            if (InputManager.GetKey(InputKey.Aim) && _hasBowEquipped) {
                 if (EventManager.InputEvent.OnCameraZoom != null)
                     EventManager.InputEvent.OnCameraZoom.Invoke(true);
 
@@ -150,17 +157,14 @@ public class PlayerController : BaseController
                         EventManager.InputEvent.OnBowDraw.Invoke(true);
                 }
                 if (InputManager.GetKeyUp(InputKey.Shoot)) {
-                    if (EventManager.InputEvent.OnBowShoot != null)
-                        EventManager.InputEvent.OnBowShoot.Invoke();
+                    FireArrow();
 
                     if (EventManager.InputEvent.OnBowDraw != null)
                         EventManager.InputEvent.OnBowDraw.Invoke(false);
                 }
             }
-            else if (InputManager.GetKeyDown(InputKey.Melee)) {
-                if (EventManager.InputEvent.OnMelee != null)
-                    EventManager.InputEvent.OnMelee.Invoke();
-            }
+            else if (InputManager.GetKeyDown(InputKey.Melee) && _hasSwordEquipped)
+                MeleeAttack();
 
             if (InputManager.GetKeyUp(InputKey.Aim)) {
                 if (EventManager.InputEvent.OnCameraZoom != null)
@@ -190,20 +194,20 @@ public class PlayerController : BaseController
             _running = InputManager.GetKey(InputKey.Run);
 
             if (InputManager.GetKeyDown(InputKey.Jump) && _isGrounded) {
-                if (EventManager.InputEvent.OnJump != null)
-                    EventManager.InputEvent.OnJump.Invoke();
-            }
+                player.Animator.SetTrigger("Jump");
 
-            //FOR TESTING ONLY
-            if (Input.GetKeyDown(KeyCode.Alpha2))
-                player.Animator.SetTrigger("EquipSword");
-            if (Input.GetKeyDown(KeyCode.Alpha1))
-                player.Animator.SetTrigger("EquipBow");
-            //
+            }
         }
+
+        //FOR TESTING ONLY
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+            player.Animator.SetTrigger("EquipSword");
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+            player.Animator.SetTrigger("EquipBow");
+        //
     }
 
-    void TargetEnemy() {
+    private void TargetEnemy() {
         if (InputManager.GetKeyDown(InputKey.Target)) {
             if (_targetedObject != null) {
                 _targetedObject = null;
@@ -220,7 +224,7 @@ public class PlayerController : BaseController
         }
     }
 
-    GameObject GetNextTarget() {
+    private GameObject GetNextTarget() {
         List<BaseEnemy> visibleEnemies = new List<BaseEnemy>();
 
         for (int i = 0; i < AIManager.Instance.Enemies.Count; i++) {
@@ -246,7 +250,7 @@ public class PlayerController : BaseController
         return closestEnemy;
     }
 
-    void DefaultMove() {
+    private void DefaultMove() {
         _targetSpeed = _runSpeed * _inputDir.magnitude;
         _currentSpeed = Mathf.SmoothDamp(_currentSpeed, _targetSpeed, ref _speedSmoothVelocity, GetModifiedSmoothTime(_speedSmoothTime));
 
@@ -265,7 +269,7 @@ public class PlayerController : BaseController
 
     }
 
-    void CombatMove() {
+    private void CombatMove() {
         _inputDir = new Vector2(InputManager.GetAxis(InputKey.MoveHorizontal), InputManager.GetAxis(InputKey.MoveVertical));
         _currentSpeed = Mathf.Lerp(_currentSpeed, _targetSpeed, 5 * Time.deltaTime);
 
@@ -277,9 +281,6 @@ public class PlayerController : BaseController
         _currentSpeed = new Vector2(controller.velocity.x, controller.velocity.z).magnitude;
 
         _animSpeed = Vector2.Lerp(_animSpeed, normalizedInput, 5 * Time.deltaTime);
-
-        if (EventManager.PlayerEvent.OnMove != null)
-            EventManager.PlayerEvent.OnMove.Invoke(_animSpeed);
     }
 
     public override void Step() {
@@ -301,7 +302,7 @@ public class PlayerController : BaseController
     }
 
 
-    void DefaultRotate() {
+    private void DefaultRotate() {
         float previousY = player.transform.rotation.eulerAngles.y;
 
         if (_inputDir != Vector2.zero) {
@@ -328,7 +329,7 @@ public class PlayerController : BaseController
 
     }
 
-    void CombatRotate() {
+    private void CombatRotate() {
         Quaternion targetRotation = Quaternion.Euler(player.transform.eulerAngles.x, mainCamera.transform.eulerAngles.y, player.transform.eulerAngles.z);
 
         if (_targetedObject != null) {
@@ -347,10 +348,10 @@ public class PlayerController : BaseController
             CombatRotate();
     }
 
-    void OnMelee() {
+    private void MeleeAttack() {
         _inCombat = true;
         _targetSpeed = 0;
-        EventManager.AnimationEvent.UseRootMotion.Invoke(true, true);
+        player.Animator.SetRootMotion(true, true);
         player.Animator.SetTrigger("MeleeLight");
     }
 
@@ -366,7 +367,9 @@ public class PlayerController : BaseController
         _currentArrowForce = Mathf.Clamp(_currentArrowForce + (_arrowForceAddOnDraw * Time.deltaTime), 0, _arrowForceMax);
     }
 
-    private void OnBowShoot() {
+    private void FireArrow() {
+        player.Animator.SetTrigger("FireArrow");
+
         GameObject arrow = Instantiate(_arrowPrefab).gameObject;
         arrow.transform.position = _arrowSpawnPoint.position;
 
@@ -386,8 +389,8 @@ public class PlayerController : BaseController
         }
         else {
             _inCombat = true;
-            EventManager.AnimationEvent.UseRootMotion.Invoke(false, false);
             _targetSpeed = _walkZoomSpeed;
+            player.Animator.SetRootMotion(false, false);
 
             if (player.Animator.Animator.GetCurrentAnimatorStateInfo(0).IsTag("AT_Combat_Move"))
                 UIManager.Instance.EnableCrosshair(true);
@@ -397,15 +400,26 @@ public class PlayerController : BaseController
     protected override void Animate() {
         float animationSpeed = (_currentSpeed / _runSpeed) * _inputDir.magnitude;
         player.Animator.SetFloat("Speed", animationSpeed, _speedSmoothTime, Time.deltaTime);
+        player.Animator.SetFloat("Move_Combat_X", _animSpeed.x);
+        player.Animator.SetFloat("Move_Combat_Y", _animSpeed.y);
 
         player.Animator.SetBool("Grounded", _isGrounded);
         player.Animator.SetFloat("GroundDistance", DistanceToGround());
-        player.Animator.SetBool("HasSwordEquipped", _equippedSword);
-        player.Animator.SetBool("HasBowEquipped", _equippedBow);
         player.Animator.SetBool("InCombat", _inCombat);
 
         if (_moveDelay > 0)
             _moveDelay -= Time.deltaTime;
+    }
+
+    private void LateUpdate() {
+        if (!_hasSwordEquipped) {
+            _swordObject.transform.localPosition = Vector3.Lerp(_swordObject.transform.localPosition, Vector3.zero, 10 * Time.deltaTime);
+            _swordObject.transform.localRotation = Quaternion.Lerp(_swordObject.transform.localRotation, Quaternion.identity, 10 * Time.deltaTime);
+        }
+
+        if (!_hasBowEquipped) {
+            _bowObject.transform.localPosition = Vector3.Lerp(_bowObject.transform.localPosition, Vector3.zero, 10 * Time.deltaTime);
+        }
     }
 
     private float DistanceToGround() {
@@ -415,10 +429,6 @@ public class PlayerController : BaseController
             return hitInfo.distance;
 
         return Mathf.Infinity;
-    }
-
-    private void Jump() {
-        _jumpForce = Mathf.Sqrt(-2 * gravity * _jumpHeight);
     }
 
     private void OnControllerColliderHit(ControllerColliderHit hit) {
@@ -438,22 +448,33 @@ public class PlayerController : BaseController
     }
 
     private float GetModifiedSmoothTime(float smoothTime) {
+        //TODO: needs improvement to isGrounded before used
         //if (isGrounded)
         //    return smoothTime;
 
-        if (Config.airControl == 0)
+        if (_airControl == 0)
             return float.MaxValue;
 
-        return smoothTime / Config.airControl;
+        return smoothTime / _airControl;
     }
 
 
     private bool Grounded() {
-        bool rayCheck = Physics.Raycast(player.transform.position, Vector3.down, 0.1f);
+        DebugLines();
+        RaycastHit hit;
 
-        if (controller.isGrounded || rayCheck)
+        bool rayCheck = Physics.Raycast(player.transform.position + Vector3.up * 0.1f, Vector3.down, out hit, 0.2f);
+
+        //if (rayCheck && !controller.isGrounded)
+        //    player.transform.position = Vector3.Lerp(player.transform.position, player.transform.position + Vector3.down * 0.1f, 10 * Time.deltaTime);
+
+        if (controller.isGrounded)
             return true;
 
         return false;
+    }
+
+    private void DebugLines() {
+        Debug.DrawLine(transform.position + Vector3.up * 0.2f, transform.position + Vector3.down * 0.2f, Color.red);
     }
 }

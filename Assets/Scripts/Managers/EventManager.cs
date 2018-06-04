@@ -19,17 +19,11 @@ public class EventManager : Singleton<EventManager>
     public static class InputEvent
     {
         public static BoolEvent OnBowDraw;
-        public static UnityEvent OnBowShoot;
-        public static UnityEvent OnMelee;
         public static BoolEvent OnCameraZoom;
-        public static UnityEvent OnJump;
 
         public static void Init() {
             OnBowDraw = new BoolEvent();
-            OnBowShoot = new UnityEvent();
-            OnMelee = new UnityEvent();
             OnCameraZoom = new BoolEvent();
-            OnJump = new UnityEvent();
         }
     }
 
@@ -48,7 +42,6 @@ public class EventManager : Singleton<EventManager>
     {
         public static BoolEvent OnRope;
         public static RopePartEvent OnRopeTrigger;
-        public static FloatEvent OnRopeClimbing;
         public static RopeTypeEvent OnRopeBreak;
 
         public static UnityEvent OnRopeClimb;
@@ -56,7 +49,6 @@ public class EventManager : Singleton<EventManager>
 
         public static void Init() {
             OnRope = new BoolEvent();
-            OnRopeClimbing = new FloatEvent();
             OnRopeTrigger = new RopePartEvent();
             OnRopeBreak = new RopeTypeEvent();
 
@@ -64,24 +56,10 @@ public class EventManager : Singleton<EventManager>
             OnRopeHold = new UnityEvent();
         }
     }
-   
-    public static class AnimationEvent
-    {
-        public static Bool2Event UseRootMotion;
-        public static UnityEvent OnActualJump; //the moment the animation jumps / increases in heigtht
-        public static UnityEvent OnDealDamage;
-
-        public static void Init() {
-            UseRootMotion = new Bool2Event();
-            OnActualJump = new UnityEvent();
-            OnDealDamage = new UnityEvent();
-        }
-    }
 
     public override void Init() {
         InputEvent.Init();
         PlayerEvent.Init();
         RopeEvent.Init();
-        AnimationEvent.Init();
     }
 }
