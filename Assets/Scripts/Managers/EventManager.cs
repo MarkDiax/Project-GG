@@ -29,10 +29,14 @@ public class EventManager : Singleton<EventManager>
 
     public static class PlayerEvent
     {
+        public static BoolEvent OnEquipBow;
+        public static BoolEvent OnEquipSword;
         public static ControllerEvent OnControllerOverride;
         public static Vec2Event OnMove;
 
         public static void Init() {
+            OnEquipBow = new BoolEvent();
+            OnEquipSword = new BoolEvent();
             OnMove = new Vec2Event();
             OnControllerOverride = new ControllerEvent();
         }

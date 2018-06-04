@@ -75,6 +75,9 @@ public class PlayerController : BaseController
             _swordObject.transform.parent = _swordTransformSheathed;
 
         player.Animator.SetBool("HasSwordEquipped", _hasSwordEquipped);
+
+        if (EventManager.PlayerEvent.OnEquipSword != null)
+            EventManager.PlayerEvent.OnEquipSword.Invoke(_hasSwordEquipped);
     }
 
     // Animator events don't support boolean parameters, so i'm using ints. 1 = true, 0 = false. 
@@ -90,6 +93,9 @@ public class PlayerController : BaseController
 
         _bowObject.transform.localRotation = Quaternion.identity;
         player.Animator.SetBool("HasBowEquipped", _hasBowEquipped);
+
+        if (EventManager.PlayerEvent.OnEquipBow != null)
+            EventManager.PlayerEvent.OnEquipBow.Invoke(_hasBowEquipped);
     }
 
     // The moment the animation looks like it is about to hit the enemy.

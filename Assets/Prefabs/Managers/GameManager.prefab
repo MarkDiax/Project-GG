@@ -104,6 +104,8 @@ MonoBehaviour:
   - input: Interact
     key: 8
   - input: Pause
+    key: 10
+  - input: Target
     key: 9
 --- !u!114 &114587141791299636
 MonoBehaviour:
