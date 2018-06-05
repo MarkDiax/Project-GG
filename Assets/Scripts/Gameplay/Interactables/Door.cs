@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.Events;
 
 public class Door : Interactable
 {
@@ -17,4 +18,6 @@ public class Door : Interactable
             //destroys door behaviour on unlock.
         }
     }
+
+
 }

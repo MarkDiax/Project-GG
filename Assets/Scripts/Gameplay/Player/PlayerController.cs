@@ -293,7 +293,7 @@ public class PlayerController : BaseController
     public override void Step() {
         if (_jumpForce == 0)
             _isGrounded = Grounded(); //ground check before the main loop for accurate input
-        print("Grounded: " + _isGrounded);
+        //print("Grounded: " + _isGrounded);
 
         base.Step();
     }
