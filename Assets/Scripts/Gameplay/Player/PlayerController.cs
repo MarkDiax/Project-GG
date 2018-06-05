@@ -25,7 +25,8 @@ public class PlayerController : BaseController
     float _currentSpeed;
 
     [Space]
-    [SerializeField] Transform[] _groundCastPoints;
+    [SerializeField]
+    Transform[] _groundCastPoints;
     [SerializeField] float _jumpHeight;
     [SerializeField] float _gravityMod;
     [SerializeField] [Range(0, 1)] float _airControl;
@@ -216,18 +217,16 @@ public class PlayerController : BaseController
     }
 
     private void TargetEnemy() {
-        if (InputManager.GetKeyDown(InputKey.Target)) {
-            if (_targetedObject != null) {
-                _targetedObject = null;
-                _inCombat = false;
-            }
-            else {
-                _targetedObject = GetNextTarget();
+        if (_targetedObject != null) {
+            _targetedObject = null;
+            _inCombat = false;
+        }
+        else {
+            _targetedObject = GetNextTarget();
 
-                if (_targetedObject != null) {
-                    _inCombat = true;
-                    _targetSpeed = _meleeMoveSpeed;
-                }
+            if (_targetedObject != null) {
+                _inCombat = true;
+                _targetSpeed = _meleeMoveSpeed;
             }
         }
     }
@@ -292,7 +291,7 @@ public class PlayerController : BaseController
     }
 
     public override void Step() {
-        if (_jumpForce == 0) 
+        if (_jumpForce == 0)
             _isGrounded = Grounded(); //ground check before the main loop for accurate input
         print("Grounded: " + _isGrounded);
 

@@ -5,6 +5,7 @@ public class Interactable : MonoBehaviour
 {
     public UnityEvent OnInteract;
     public bool isInteractableByPlayer = true;
+    public bool useButtonPrompt = true;
 
     public virtual void Interact(GameObject Object) {
         if (!isInteractableByPlayer && Object == Player.Instance.gameObject)
@@ -13,4 +14,9 @@ public class Interactable : MonoBehaviour
         Debug.Log(name + " has been interacted by: " + Object.name);
         OnInteract.Invoke();
     }
+
+    protected virtual void Update() {
+
+    }
+
 }
