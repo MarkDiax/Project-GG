@@ -64,6 +64,12 @@ public class ClimbingController : BaseController
         DetachFromRope();
     }
 
+    protected override void UpdateInput() {
+        _inputDir = new Vector2(InputManager.GetAxis(InputKey.MoveHorizontal), InputManager.GetAxis(InputKey.MoveVertical));
+
+
+    }
+
     void OnRopeTrigger(RopePart Part) {
         if (_interactRoutine != null || _climbRoutine != null)
             return;
@@ -293,9 +299,6 @@ public class ClimbingController : BaseController
         player.transform.rotation = Quaternion.Lerp(player.transform.rotation, targetRotation, 12 + 10 * _moveDir.magnitude * Time.deltaTime);
     }
 
-    protected override void UpdateInput() {
-        _inputDir = new Vector2(InputManager.GetAxis(InputKey.MoveHorizontal), InputManager.GetAxis(InputKey.MoveVertical));
-    }
 
     private void OnDrawGizmos() {
 

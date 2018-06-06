@@ -186,7 +186,7 @@ public class PlayerController : BaseController
             if (InputManager.GetKeyDown(InputKey.Target))
                 TargetEnemy();
 
-            if (InputManager.GetKeyDown(InputKey.Interact)) {
+            if (InputManager.GetKeyDown(InputKey.Interact1)) {
                 Collider[] objects = Physics.OverlapSphere(player.transform.position, 1.5f);
 
                 for (int i = 0; i < objects.Length; i++) {

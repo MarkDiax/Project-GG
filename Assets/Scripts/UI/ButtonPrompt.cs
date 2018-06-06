@@ -14,6 +14,8 @@ public class ButtonPrompt : UIObject
     [SerializeField] float _nearDistance, _farDistance;
     [SerializeField] float _nearScale, _farScale;
 
+    [SerializeField] float _disappearTime;
+
     Transform _mainCamera;
     Interactable _parent;
     TextMeshProUGUI _textMesh;
@@ -22,7 +24,7 @@ public class ButtonPrompt : UIObject
         _mainCamera = Camera.main.transform;
         _parent = GetComponentInParent<Interactable>();
         _textMesh = GetComponentInChildren<TextMeshProUGUI>();
-        _parent.OnInteract.AddListener(DestroySelf);
+        _parent.OnInteract.AddListener(OnInteract);
 
         if (!UsingCustomImage) {
             _textMesh.gameObject.SetActive(true);
@@ -33,11 +35,25 @@ public class ButtonPrompt : UIObject
             _textMesh.gameObject.SetActive(false);
             _customImageObject.gameObject.SetActive(true);
         }
-
-        //SetAlpha(0f);
     }
 
-    private void DestroySelf() {
+    private void OnInteract() {
+        StartCoroutine(EndBehaviour());
+    }
+
+    IEnumerator EndBehaviour() {
+        float timer = _disappearTime;
+
+        while (timer > 0) {
+            float timePercent = timer / _disappearTime;
+
+            SetAlpha(timePercent);
+            transform.localScale = LerpByPercent(Vector3.zero, transform.localScale, timePercent);
+
+            timer -= Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+
         Destroy(gameObject);
     }
 
@@ -45,15 +61,17 @@ public class ButtonPrompt : UIObject
         transform.LookAt(_mainCamera);
         transform.localRotation *= Quaternion.Euler(Vector3.up * 180);
 
-        float distance = Vector3.Distance(Player.Instance.transform.position, _parent.transform.position);
-        float percentToNear = (_nearDistance / distance);
+        if (_parent != null) {
+            float distance = Vector3.Distance(Player.Instance.transform.position, _parent.transform.position);
+            float percentToNear = (_nearDistance / distance);
 
-        if (distance < _farDistance) {
-            SetAlpha(percentToNear);
-            transform.localScale = LerpByPercent(Vector3.one * _farScale, Vector3.one * _nearScale, Mathf.Clamp01(percentToNear));
-        }
-        else {
-            SetAlpha(0f);
+            if (distance < _farDistance) {
+                SetAlpha(percentToNear);
+                transform.localScale = LerpByPercent(Vector3.one * _farScale, Vector3.one * _nearScale, Mathf.Clamp01(percentToNear));
+            }
+            else {
+                SetAlpha(0f);
+            }
         }
     }
 
