@@ -101,11 +101,13 @@ MonoBehaviour:
     key: 6
   - input: Fire1
     key: 7
-  - input: Interact
+  - input: Interact1
     key: 8
   - input: Pause
-    key: 10
+    key: 11
   - input: Target
+    key: 10
+  - input: Interact2
     key: 9
 --- !u!114 &114587141791299636
 MonoBehaviour:

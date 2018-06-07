@@ -33,7 +33,6 @@ public abstract class BaseController : MonoBehaviour
     /// Step is updated in Player.cs and is only updated when the controller is active.
     /// </summary>
     public virtual void Step() {
-        //print("Step(): " + this);
         UpdateInput();
         Rotate();
         Move();

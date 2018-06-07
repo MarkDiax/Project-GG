@@ -66,7 +66,7 @@ public class StandardEnemy : BaseEnemy
     protected override void Attack() {
         base.Attack();
 
-        print("attacking player");
+        //print("attacking player");
     }
 
 

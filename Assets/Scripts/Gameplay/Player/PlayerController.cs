@@ -25,7 +25,8 @@ public class PlayerController : BaseController
     float _currentSpeed;
 
     [Space]
-    [SerializeField] Transform[] _groundCastPoints;
+    [SerializeField]
+    Transform[] _groundCastPoints;
     [SerializeField] float _jumpHeight;
     [SerializeField] float _gravityMod;
     [SerializeField] [Range(0, 1)] float _airControl;
@@ -185,7 +186,7 @@ public class PlayerController : BaseController
             if (InputManager.GetKeyDown(InputKey.Target))
                 TargetEnemy();
 
-            if (InputManager.GetKeyDown(InputKey.Interact)) {
+            if (InputManager.GetKeyDown(InputKey.Interact1)) {
                 Collider[] objects = Physics.OverlapSphere(player.transform.position, 1.5f);
 
                 for (int i = 0; i < objects.Length; i++) {
@@ -216,18 +217,16 @@ public class PlayerController : BaseController
     }
 
     private void TargetEnemy() {
-        if (InputManager.GetKeyDown(InputKey.Target)) {
-            if (_targetedObject != null) {
-                _targetedObject = null;
-                _inCombat = false;
-            }
-            else {
-                _targetedObject = GetNextTarget();
+        if (_targetedObject != null) {
+            _targetedObject = null;
+            _inCombat = false;
+        }
+        else {
+            _targetedObject = GetNextTarget();
 
-                if (_targetedObject != null) {
-                    _inCombat = true;
-                    _targetSpeed = _meleeMoveSpeed;
-                }
+            if (_targetedObject != null) {
+                _inCombat = true;
+                _targetSpeed = _meleeMoveSpeed;
             }
         }
     }
@@ -292,9 +291,9 @@ public class PlayerController : BaseController
     }
 
     public override void Step() {
-        if (_jumpForce == 0) 
+        if (_jumpForce == 0)
             _isGrounded = Grounded(); //ground check before the main loop for accurate input
-        print("Grounded: " + _isGrounded);
+        //print("Grounded: " + _isGrounded);
 
         base.Step();
     }
