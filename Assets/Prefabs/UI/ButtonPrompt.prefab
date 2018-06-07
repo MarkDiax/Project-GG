@@ -94,10 +94,10 @@ MonoBehaviour:
   _outline: {fileID: 114566774188847572}
   _customImageObject: {fileID: 114853680836736668}
   _textMeshText: e
-  _customButtonSprite: {fileID: 0}
+  _useCustomButton: 0
   _nearDistance: 2.5
   _farDistance: 10
-  _nearScale: 0.3
+  _nearScale: 0.4
   _farScale: 0.05
   _disappearTime: 2
 --- !u!114 &114566774188847572
@@ -370,8 +370,8 @@ RectTransform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1650993748575304}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.384}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0, z: 0.358}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children:
   - {fileID: 224193290300218004}
@@ -379,9 +379,9 @@ RectTransform:
   - {fileID: 224037874810021928}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.374, y: 0.218}
+  m_AnchoredPosition: {x: 0.24, y: 0.166}
   m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}

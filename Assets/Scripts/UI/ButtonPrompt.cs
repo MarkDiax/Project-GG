@@ -9,26 +9,32 @@ public class ButtonPrompt : UIObject
     [SerializeField] Image _customImageObject;
 
     [SerializeField] [Space] string _textMeshText;
-    [SerializeField] Sprite _customButtonSprite;
+    [SerializeField] bool _useCustomButton;
 
-    [SerializeField] float _nearDistance, _farDistance;
+    [SerializeField] [Space] float _nearDistance;
+    [SerializeField] float _farDistance;
     [SerializeField] float _nearScale, _farScale;
 
-    [SerializeField] float _disappearTime;
+    [SerializeField] [Space] float _disappearTime;
 
     Transform _mainCamera;
-    Interactable _parent;
+    Transform _parent;
     TextMeshProUGUI _textMesh;
+    Coroutine _endingRoutine;
 
     private void Start() {
         _mainCamera = Camera.main.transform;
-        _parent = GetComponentInParent<Interactable>();
-        _textMesh = GetComponentInChildren<TextMeshProUGUI>();
-        _parent.OnInteract.AddListener(OnInteract);
+        _parent = transform.parent;
+        _textMesh = GetComponentInChildren<TextMeshProUGUI>(true);
+
+        Interactable interactable = _parent.GetComponent<Interactable>();
+        if (interactable != null)
+            interactable.OnInteract.AddListener(OnInteract);
 
         if (!UsingCustomImage) {
             _textMesh.gameObject.SetActive(true);
             _textMesh.SetText(_textMeshText);
+            _customImageObject.gameObject.SetActive(false);
         }
 
         else {
@@ -38,40 +44,25 @@ public class ButtonPrompt : UIObject
     }
 
     private void OnInteract() {
-        StartCoroutine(EndBehaviour());
-    }
-
-    IEnumerator EndBehaviour() {
-        float timer = _disappearTime;
-
-        while (timer > 0) {
-            float timePercent = timer / _disappearTime;
-
-            SetAlpha(timePercent);
-            transform.localScale = LerpByPercent(Vector3.zero, transform.localScale, timePercent);
-
-            timer -= Time.deltaTime;
-            yield return new WaitForEndOfFrame();
-        }
-
-        Destroy(gameObject);
+        _endingRoutine = StartCoroutine(EndBehaviour());
     }
 
     private void Update() {
         transform.LookAt(_mainCamera);
         transform.localRotation *= Quaternion.Euler(Vector3.up * 180);
 
-        if (_parent != null) {
-            float distance = Vector3.Distance(Player.Instance.transform.position, _parent.transform.position);
-            float percentToNear = (_nearDistance / distance);
+        if (_endingRoutine != null)
+            return;
 
-            if (distance < _farDistance) {
-                SetAlpha(percentToNear);
-                transform.localScale = LerpByPercent(Vector3.one * _farScale, Vector3.one * _nearScale, Mathf.Clamp01(percentToNear));
-            }
-            else {
-                SetAlpha(0f);
-            }
+        float distance = Vector3.Distance(Player.Instance.transform.position, _parent.position);
+        float percentToNear = (_nearDistance / distance);
+
+        if (distance < _farDistance) {
+            SetAlpha(percentToNear);
+            transform.localScale = LerpByPercent(Vector3.one * _farScale, Vector3.one * _nearScale, Mathf.Clamp01(percentToNear));
+        }
+        else {
+            SetAlpha(0f);
         }
     }
 
@@ -88,9 +79,29 @@ public class ButtonPrompt : UIObject
             _textMesh.color = new Color(_textMesh.color.r, _textMesh.color.g, _textMesh.color.b, Alpha);
     }
 
+    private IEnumerator EndBehaviour() {
+        float timer = _disappearTime;
+
+        while (timer > 0) {
+            float timePercent = timer / _disappearTime;
+
+            SetAlpha(timePercent);
+            transform.localScale = LerpByPercent(Vector3.zero, transform.localScale, timePercent);
+
+            timer -= Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+
+        Destroy(gameObject);
+    }
+
     private bool UsingCustomImage {
         get {
-            return (_customButtonSprite != null && _customImageObject != null);
+            return (_useCustomButton && _customImageObject != null);
         }
+    }
+
+    public void DestroySelf() {
+        Destroy(gameObject);
     }
 }
