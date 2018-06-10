@@ -187,15 +187,18 @@ public class PlayerController : BaseController
                 TargetEnemy();
 
             if (InputManager.GetKeyDown(InputKey.Interact1)) {
-                Collider[] objects = Physics.OverlapSphere(player.transform.position, 1.5f);
+                Collider[] objects = Physics.OverlapSphere(player.transform.position, 2f, 1 << (int)Layers.Interactable);
 
                 for (int i = 0; i < objects.Length; i++) {
                     Interactable interactable = objects[i].GetComponent<Interactable>();
                     if (interactable != null) {
                         interactable.Interact(gameObject);
+                        break;
                     }
                 }
             }
+            if (InputManager.GetKeyDown(InputKey.Interact2))
+                InteractWithRope();
 
             Vector2 keyboardInput = new Vector2(InputManager.GetAxis(InputKey.MoveHorizontal), InputManager.GetAxis(InputKey.MoveVertical));
             _inputDir = keyboardInput.normalized;
@@ -204,7 +207,6 @@ public class PlayerController : BaseController
 
             if (InputManager.GetKeyDown(InputKey.Jump) && _isGrounded) {
                 player.Animator.SetTrigger("Jump");
-
             }
         }
 
@@ -214,6 +216,43 @@ public class PlayerController : BaseController
         if (Input.GetKeyDown(KeyCode.Alpha1))
             player.Animator.SetTrigger("EquipBow");
         //
+    }
+
+    private void InteractWithRope() {
+        Collider[] ropeParts = Physics.OverlapSphere(transform.position, 2.5f, 1 << (int)Layers.Rope);
+        print(ropeParts.Length);
+
+        if (ropeParts.Length > 0) {
+            Transform closestCollider = GetClosestCollider(ropeParts, 5f);
+            RopePart closestNode = closestCollider.GetComponent<RopePart>();
+
+            if (closestNode == null) {
+                Debug.LogWarning("RopePart: " + closestCollider + " does not have behaviour 'RopePart'!");
+                return;
+            }
+
+            EventManager.PlayerEvent.OnGrabRope.Invoke(closestNode);
+        }
+    }
+
+    public Transform GetClosestCollider(Collider[] Colliders, float MaxRange) {
+        Transform closestTransform = null;
+        float range = MaxRange;
+
+        for (int i = 0; i < Colliders.Length; i++) {
+
+            if (Colliders[i].CompareTag("Player"))
+                continue;
+            print(Colliders[i].name);
+            float distance = Vector3.Distance(Colliders[i].transform.position, transform.position);
+
+            if (distance < range) {
+                range = distance;
+                closestTransform = Colliders[i].transform;
+            }
+        }
+
+        return closestTransform;
     }
 
     private void TargetEnemy() {

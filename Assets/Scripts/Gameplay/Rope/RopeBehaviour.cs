@@ -123,4 +123,21 @@ public class RopeBehaviour : MonoBehaviour
         SetupJoints();
         SetupRendering();
     }
+
+
+    public RopePart GetClosestNode(Transform FromTransform) {
+        float range = float.MaxValue;
+        RopePart closestNode = null;
+
+        for (int i = 0; i < ropeSegments.Count; i++) {
+            float distance = Vector3.Distance(ropeSegments[i].transform.position, FromTransform.position);
+
+            if (distance < range) {
+                range = distance;
+                closestNode = ropeSegments[i];
+            }
+        }
+
+        return closestNode;
+    }
 }

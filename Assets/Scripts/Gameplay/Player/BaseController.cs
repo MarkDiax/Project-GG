@@ -43,4 +43,5 @@ public abstract class BaseController : MonoBehaviour
     protected abstract void Rotate();
     protected abstract void Move();
     protected virtual void Animate() { }
+
 }

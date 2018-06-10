@@ -34,7 +34,7 @@ public class ClimbingController : BaseController
     private float _targetSpeed = 3f;
 
     void Start() {
-        EventManager.RopeEvent.OnRopeTrigger.AddListener(OnRopeTrigger);
+        //EventManager.RopeEvent.OnRopeTrigger.AddListener(OnRopeTrigger);
         HandleListeners(true);
     }
 
@@ -51,12 +51,20 @@ public class ClimbingController : BaseController
             EventManager.RopeEvent.OnRopeClimb.AddListener(OnRopeClimb);
             EventManager.RopeEvent.OnRopeHold.AddListener(() => _holdRope = true);
             EventManager.RopeEvent.OnRopeBreak.AddListener((Part) => OnRopeBreak());
+            EventManager.PlayerEvent.OnGrabRope.AddListener(OnGrabRope);
+
         }
         else {
             EventManager.RopeEvent.OnRopeClimb.RemoveListener(OnRopeClimb);
             EventManager.RopeEvent.OnRopeHold.RemoveListener(() => _holdRope = true);
             EventManager.RopeEvent.OnRopeBreak.RemoveListener((Part) => OnRopeBreak());
         }
+    }
+
+    void OnGrabRope(RopePart Part) {
+        AttachToRope(Part);
+        IgnoreCollisionsWithRope(true);
+        _climbRoutine = StartCoroutine(Climbing());
     }
 
     private void OnRopeBreak() {
@@ -71,20 +79,20 @@ public class ClimbingController : BaseController
     }
 
     void OnRopeTrigger(RopePart Part) {
-        if (_interactRoutine != null || _climbRoutine != null)
-            return;
+        //if (_interactRoutine != null || _climbRoutine != null)
+        //    return;
 
-        if (Input.GetKeyDown(KeyCode.E) && _interactRoutine == null) {
-            EventManager.PlayerEvent.OnControllerOverride.Invoke(this, false);
-            _currentRope = Part.Rope;
-            IgnoreCollisionsWithRope(true);
-            _interactRoutine = StartCoroutine(PullRope());
-        }
-        else if (Input.GetKeyDown(KeyCode.F) && _climbRoutine == null) {
-            AttachToRope(Part);
-            IgnoreCollisionsWithRope(true);
-            _climbRoutine = StartCoroutine(Climbing());
-        }
+        //if (Input.GetKeyDown(KeyCode.E) && _interactRoutine == null) {
+        //    EventManager.PlayerEvent.OnControllerOverride.Invoke(this, false);
+        //    _currentRope = Part.Rope;
+        //    IgnoreCollisionsWithRope(true);
+        //    _interactRoutine = StartCoroutine(PullRope());
+        //}
+        //else if (Input.GetKeyDown(KeyCode.F) && _climbRoutine == null) {
+        //    AttachToRope(Part);
+        //    IgnoreCollisionsWithRope(true);
+        //    _climbRoutine = StartCoroutine(Climbing());
+        //}
     }
 
     private IEnumerator PullRope() {
@@ -243,16 +251,14 @@ public class ClimbingController : BaseController
     }
 
     void AttachToRope(RopePart Part) {
-        EventManager.RopeEvent.OnRopeTrigger.RemoveListener(OnRopeTrigger);
+        //EventManager.RopeEvent.OnRopeTrigger.RemoveListener(OnRopeTrigger);
 
         _currentClimbingNode = Part;
         _currentRope = Part.Rope;
 
         usePhysics = false;
         player.transform.SetParent(GetClosestNode(GetClosestHand().position).playerHolder.transform);
-
-        if (EventManager.RopeEvent.OnRope != null)
-            EventManager.RopeEvent.OnRope.Invoke(true);
+        player.Animator.SetBool("RopeClimbing", true);
 
         StartCoroutine(MoveToPart(Part));
     }
@@ -279,10 +285,9 @@ public class ClimbingController : BaseController
         _currentClimbingNode = null;
         _currentRope = null;
 
-        EventManager.RopeEvent.OnRopeTrigger.AddListener(OnRopeTrigger);
+        //EventManager.RopeEvent.OnRopeTrigger.AddListener(OnRopeTrigger);
 
-        if (EventManager.RopeEvent.OnRope != null)
-            EventManager.RopeEvent.OnRope.Invoke(false);
+        player.Animator.SetBool("RopeClimbing", false);
     }
 
     protected override void Rotate() {

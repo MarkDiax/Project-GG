@@ -33,7 +33,6 @@ public class PlayerAnimator : CharacterAnimator
             SetFloat("Move_Combat_Y", Dir.y);
         });
 
-        EventManager.RopeEvent.OnRope.AddListener((OnRope) => _onRope = OnRope);
     }
 
     public void OnRopeClimb() {
@@ -54,10 +53,6 @@ public class PlayerAnimator : CharacterAnimator
     private void OnDrawBow(bool Drawing) {
         SetBool("DrawBow", Drawing);
         _drawingBow = Drawing;
-    }
-
-    private void Update() {
-        SetBool("RopeClimbing", _onRope);
     }
 
     private Quaternion _oldSpineRot;

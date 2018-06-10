@@ -31,29 +31,27 @@ public class EventManager : Singleton<EventManager>
     {
         public static BoolEvent OnEquipBow;
         public static BoolEvent OnEquipSword;
+        public static RopePartEvent OnGrabRope;
         public static ControllerEvent OnControllerOverride;
         public static Vec2Event OnMove;
 
         public static void Init() {
             OnEquipBow = new BoolEvent();
             OnEquipSword = new BoolEvent();
-            OnMove = new Vec2Event();
+            OnGrabRope = new RopePartEvent();
             OnControllerOverride = new ControllerEvent();
+            OnMove = new Vec2Event();
         }
     }
 
     public static class RopeEvent
     {
-        public static BoolEvent OnRope;
-        public static RopePartEvent OnRopeTrigger;
         public static RopeTypeEvent OnRopeBreak;
 
         public static UnityEvent OnRopeClimb;
         public static UnityEvent OnRopeHold;
 
         public static void Init() {
-            OnRope = new BoolEvent();
-            OnRopeTrigger = new RopePartEvent();
             OnRopeBreak = new RopeTypeEvent();
 
             OnRopeClimb = new UnityEvent();

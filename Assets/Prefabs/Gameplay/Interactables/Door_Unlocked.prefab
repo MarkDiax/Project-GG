@@ -122,7 +122,7 @@ GameObject:
   - component: {fileID: 95470761480892234}
   - component: {fileID: 114163236470542590}
   - component: {fileID: 136602642404762148}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Door_Unlocked
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -581,11 +581,12 @@ MonoBehaviour:
   _outline: {fileID: 114416141837938732}
   _customImageObject: {fileID: 114238153051975294}
   _textMeshText: e
-  _customButtonSprite: {fileID: 0}
+  _useCustomButton: 0
   _nearDistance: 2.5
   _farDistance: 10
   _nearScale: 0.3
   _farScale: 0.05
+  _disappearTime: 0
 --- !u!136 &136602642404762148
 CapsuleCollider:
   m_ObjectHideFlags: 1
