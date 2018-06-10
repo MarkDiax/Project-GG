@@ -6,16 +6,20 @@ using UnityEngine.AI;
 
 public class StandardEnemy : BaseEnemy
 {
-    private int _patrolIndex;
+    [SerializeField] [Header("Movement")] float _maxSpeed;
+    [SerializeField] float _acceleration, deceleration;
+    [SerializeField] float _rotationSpeed;
+    float _velocity, _currentSpeed;
+    Transform _target;
 
-    [SerializeField] [Tooltip("The range within the AI stops near a waypoint")]
-    private float _waypointPrecision = 0.5f;
-
-    [Header("Combat")]
+    [Tooltip("The range within the AI stops near a waypoint")]
     [SerializeField]
-    private float _attackRange;
+    float _waypointPrecision = 0.5f;
+    int _patrolIndex;
 
-    private Coroutine _idleRoutine;
+    [SerializeField] [Header("Combat")] float _attackRange;
+
+    Coroutine _idleRoutine;
 
     protected override void Start() {
         base.Start();
@@ -37,11 +41,21 @@ public class StandardEnemy : BaseEnemy
 
         DetectPlayer();
 
-        navAgent.destination = waypoints[_patrolIndex].position;
+        RotateTowards(waypoints[_patrolIndex].position, _rotationSpeed);
+        transform.position += transform.forward * (_maxSpeed * Time.deltaTime);
+
         if (Vector3.Distance(transform.position, waypoints[_patrolIndex].position) < _waypointPrecision) {
             SwitchState(EnemyState.Idle);
             _patrolIndex = GetRandomIndex(_patrolIndex, waypoints.Length);
+            //_target = waypoints[_patrolIndex];
         }
+    }
+
+    private void RotateTowards(Vector3 TargetPos, float Speed) {
+        Vector3 direction = TargetPos - transform.position;
+        direction.y = 0f;
+
+        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), Speed * Time.deltaTime);
     }
 
     private int GetRandomIndex(int CurrentIndex, int MaxIndex) {
@@ -56,7 +70,9 @@ public class StandardEnemy : BaseEnemy
 
     protected override void Move() {
         base.Move();
-        navAgent.destination = player.transform.position;
+
+        RotateTowards(player.transform.position, _rotationSpeed);
+        transform.position += transform.forward * (_maxSpeed * Time.deltaTime);
 
         if (Vector3.Distance(transform.position, player.transform.position) <= _attackRange) {
             SwitchState(EnemyState.Attack);
@@ -65,8 +81,6 @@ public class StandardEnemy : BaseEnemy
 
     protected override void Attack() {
         base.Attack();
-
-        //print("attacking player");
     }
 
 
@@ -81,8 +95,6 @@ public class StandardEnemy : BaseEnemy
     }
 
     protected override bool DetectPlayer() {
-        // TODO: CHANGE COLOR BASED ON ALERT STATE!
-
         if (base.DetectPlayer()) {
             SwitchState(EnemyState.Move);
             return true;

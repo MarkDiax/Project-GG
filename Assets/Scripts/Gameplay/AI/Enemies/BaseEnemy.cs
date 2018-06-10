@@ -23,8 +23,8 @@ public class BaseEnemy : MonoBehaviour
     [Tooltip("Angle in which the enemy is able to detect the player")]
     private float _fovCone = 120;
 
-    protected NavMeshAgent navAgent;
     protected Player player;
+    protected float velocity;
 
     protected enum EnemyState
     {
@@ -40,11 +40,12 @@ public class BaseEnemy : MonoBehaviour
         AIManager.Instance.Enemies.Remove(this);
     }
     protected virtual void Start() {
-        navAgent = GetComponent<NavMeshAgent>();
         player = Player.Instance;
     }
 
     protected virtual void Update() {
+        Vector3 oldPos = transform.position;
+
         switch (currentState) {
             case EnemyState.Idle:
             Idle(idleTime);
@@ -60,6 +61,8 @@ public class BaseEnemy : MonoBehaviour
             break;
             //etc
         }
+
+        velocity = Vector3.Distance(transform.position, oldPos);
     }
 
     protected virtual void Idle(float TimeInSeconds) { }
