@@ -21,10 +21,15 @@ public class StandardEnemy : BaseEnemy
     float _currentSpeed;
     int _patrolIndex;
     bool _attacking;
+    float _attackDamage;
 
     Coroutine _idleRoutine;
 
     #region Animation Events
+
+    void A_OnAttackImpact(float Damage) {
+        _attackDamage = Damage;
+    }
 
     void A_OnAttackEnd() {
         _attacking = false;
@@ -67,7 +72,7 @@ public class StandardEnemy : BaseEnemy
         }
 
 
-        if (!MathX.Float_NearlyEqual(_currentSpeed, _patrolData.movementSpeed, 0.01f)) {
+        if (!MathX.Float.NearlyEqual(_currentSpeed, _patrolData.movementSpeed, 0.01f)) {
 
             if (_currentSpeed < _patrolData.movementSpeed)
                 _currentSpeed += _patrolData.acceleration * deltaTime;
@@ -168,6 +173,16 @@ public class StandardEnemy : BaseEnemy
     public override void TakeDamage(int pDamage) {
         base.TakeDamage(pDamage);
 
-        SwitchState(EnemyState.Attack);
+        SwitchState(EnemyState.MoveToAttack);
+    }
+
+
+    private void OnTriggerEnter(Collider other) {
+        if (other.gameObject == player.gameObject) {
+            if (_attackDamage > 0f) {
+                player.Controller.TakeDamage(_attackDamage, (player.transform.position - transform.position).normalized, 0.2f);
+                _attackDamage = 0f;
+            }
+        }
     }
 }

@@ -28,36 +28,4 @@ public class PlayerEquipmentUI : UIObject
         else
             IconParent.SwapImages();
     }
-
-
-    //void OnEquipBow(bool Equipped) {
-    //    _hasBowEquipped = Equipped;
-
-    //    if (_activeIconSet != _bowIconParent.gameObject) {
-    //        _activeIconSet.SetActive(false);
-    //        _activeIconSet = _bowIconParent.gameObject;
-    //        _activeIconSet.SetActive(true);
-    //    }
-
-    //    if (_hasBowEquipped)
-    //        _bowIconParent.ResetImages();
-    //    else
-    //        _bowIconParent.SwapImages();
-    //}
-
-    //void OnEquipSword(bool Equipped) {
-    //    _hasSwordEquipped = Equipped;
-
-    //    if (_activeIconSet != _swordIconParent.gameObject) {
-    //        _activeIconSet.SetActive(false);
-    //        _activeIconSet = _swordIconParent.gameObject;
-    //        _activeIconSet.SetActive(true);
-    //    }
-
-    //    if (_hasSwordEquipped)
-    //        _swordIconParent.ResetImages();
-    //    else
-    //        _swordIconParent.SwapImages();
-
-//}
 }

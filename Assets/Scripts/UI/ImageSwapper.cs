@@ -7,6 +7,7 @@ public class ImageSwapper : UIObject
     [SerializeField] bool _awakeAtSecondImage;
     [SerializeField] Image _image1, _image2;
 
+
     public void SwapImages() {
         _image1.gameObject.SetActive(!_image1.gameObject.activeInHierarchy);
         _image2.gameObject.SetActive(!_image2.gameObject.activeInHierarchy);

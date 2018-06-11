@@ -39,6 +39,8 @@ public class PlayerController : BaseController
     #endregion
 
     #region Combat Fields
+    [SerializeField] [Header("Combat")] float _health;
+
     [SerializeField] [Header("Combat Movement Settings")] float _meleeMoveSpeed;
     [SerializeField] float _walkZoomSpeed, _walkDrawSpeed;
 
@@ -352,7 +354,7 @@ public class PlayerController : BaseController
             Move_Combat();
 
         controller.Move(_moveDir * Time.deltaTime);
-        _currentSpeed = new Vector2(controller.velocity.x, controller.velocity.z).magnitude;
+        _currentSpeed = new Vector2(_moveDir.x, _moveDir.z).magnitude;
     }
 
 
@@ -476,6 +478,23 @@ public class PlayerController : BaseController
         }
     }
 
+    public void TakeDamage(float Damage, Vector3 HitDirection, float HitForce) {
+        _health -= Damage;
+
+        StartCoroutine(Internal_AddForce(HitDirection, HitForce));
+    }
+
+    private IEnumerator Internal_AddForce(Vector3 HitDirection, float Force, float Timer = 0.5f) {
+        float timer = Timer;
+
+        while (timer > 0) {
+            timer -= Time.deltaTime;
+            transform.position += HitDirection * Force * timer;
+
+            yield return new WaitForEndOfFrame();
+        }
+    }
+
     private float DistanceToGround() {
         RaycastHit hitInfo;
 
@@ -510,7 +529,6 @@ public class PlayerController : BaseController
 
         return smoothTime / _airControl;
     }
-
 
     private bool Grounded() {
         if (controller.isGrounded)
