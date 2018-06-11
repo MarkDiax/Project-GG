@@ -4,22 +4,33 @@ using System.Collections.Generic;
 using UnityEngine.Events;
 using UnityEngine.AI;
 
+[System.Serializable]
+public class EnemyData
+{
+    public float movementSpeed;
+    public float rotationSpeed;
+    public float acceleration, deceleration;
+    public float targetPrecision;
+}
+
 public class StandardEnemy : BaseEnemy
 {
-    [SerializeField] [Header("Movement")] float _maxSpeed;
-    [SerializeField] float _acceleration, deceleration;
-    [SerializeField] float _rotationSpeed;
-    float _velocity, _currentSpeed;
-    Transform _target;
+    [SerializeField] EnemyData _patrolData;
+    [SerializeField] EnemyData _attackData;
 
-    [Tooltip("The range within the AI stops near a waypoint")]
-    [SerializeField]
-    float _waypointPrecision = 0.5f;
+    float _currentSpeed;
     int _patrolIndex;
-
-    [SerializeField] [Header("Combat")] float _attackRange;
+    bool _attacking;
 
     Coroutine _idleRoutine;
+
+    #region Animation Events
+
+    void A_OnAttackEnd() {
+        _attacking = false;
+    }
+
+    #endregion
 
     protected override void Start() {
         base.Start();
@@ -41,21 +52,61 @@ public class StandardEnemy : BaseEnemy
 
         DetectPlayer();
 
-        RotateTowards(waypoints[_patrolIndex].position, _rotationSpeed);
-        transform.position += transform.forward * (_maxSpeed * Time.deltaTime);
+        float targetDistance = Vector3.Distance(transform.position, waypoints[_patrolIndex].position);
 
-        if (Vector3.Distance(transform.position, waypoints[_patrolIndex].position) < _waypointPrecision) {
-            SwitchState(EnemyState.Idle);
-            _patrolIndex = GetRandomIndex(_patrolIndex, waypoints.Length);
-            //_target = waypoints[_patrolIndex];
+        if (targetDistance < _patrolData.targetPrecision) {
+            _currentSpeed -= _patrolData.deceleration * deltaTime;
+
+            if (_currentSpeed < 0.15f) {
+                _currentSpeed = 0f;
+                SwitchState(EnemyState.Idle);
+                _patrolIndex = GetRandomIndex(_patrolIndex, waypoints.Length);
+            }
+
+            return;
         }
+
+
+        if (!MathX.Float_NearlyEqual(_currentSpeed, _patrolData.movementSpeed, 0.01f)) {
+
+            if (_currentSpeed < _patrolData.movementSpeed)
+                _currentSpeed += _patrolData.acceleration * deltaTime;
+            else
+                _currentSpeed -= _patrolData.deceleration * deltaTime;
+        }
+
+        if (_currentSpeed > _patrolData.movementSpeed / 2)
+            RotateTowards(waypoints[_patrolIndex].position, _patrolData.rotationSpeed);
+    }
+
+
+    protected override void MoveToAttack() {
+        base.MoveToAttack();
+
+        DetectPlayer();
+
+        float targetDistance = Vector3.Distance(transform.position, player.transform.position);
+
+        if (targetDistance < _attackData.targetPrecision) {
+            SwitchState(EnemyState.Attack);
+            return;
+        }
+
+        if (targetDistance > 10)
+            SwitchState(EnemyState.Patrol);
+
+        if (_currentSpeed < _attackData.movementSpeed)
+            _currentSpeed += _attackData.acceleration * deltaTime;
+
+        if (_currentSpeed > _attackData.movementSpeed / 4)
+            RotateTowards(player.transform.position, _attackData.rotationSpeed);
     }
 
     private void RotateTowards(Vector3 TargetPos, float Speed) {
         Vector3 direction = TargetPos - transform.position;
         direction.y = 0f;
 
-        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), Speed * Time.deltaTime);
+        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), Speed * deltaTime);
     }
 
     private int GetRandomIndex(int CurrentIndex, int MaxIndex) {
@@ -68,21 +119,32 @@ public class StandardEnemy : BaseEnemy
         return index;
     }
 
-    protected override void Move() {
-        base.Move();
-
-        RotateTowards(player.transform.position, _rotationSpeed);
-        transform.position += transform.forward * (_maxSpeed * Time.deltaTime);
-
-        if (Vector3.Distance(transform.position, player.transform.position) <= _attackRange) {
-            SwitchState(EnemyState.Attack);
-        }
-    }
 
     protected override void Attack() {
         base.Attack();
+        if (!_attacking && DetectPlayer()) {
+            _attacking = true;
+            animator.SetTrigger("Melee1");
+            transform.LookAt(player.transform);
+            //_currentSpeed = 0f;
+        }
+        else {
+            float targetDistance = Vector3.Distance(transform.position, player.transform.position);
+
+            if (targetDistance > _attackData.targetPrecision) {
+                if (DetectPlayer())
+                    SwitchState(EnemyState.MoveToAttack);
+                else
+                    SwitchState(EnemyState.Patrol);
+            }
+        }
     }
 
+    protected override void Animate() {
+        base.Animate();
+
+        animator.SetFloat("MoveDir", _currentSpeed);
+    }
 
     IEnumerator IdleTimer(float TimeInSeconds) {
         while (TimeInSeconds >= 0) {
@@ -95,8 +157,8 @@ public class StandardEnemy : BaseEnemy
     }
 
     protected override bool DetectPlayer() {
-        if (base.DetectPlayer()) {
-            SwitchState(EnemyState.Move);
+        if (currentState != EnemyState.MoveToAttack && base.DetectPlayer()) {
+            SwitchState(EnemyState.MoveToAttack);
             return true;
         }
 

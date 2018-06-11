@@ -35,3 +35,5 @@ project-gg\.sln
 *.csproj
 
 *.sln
+
+Assets/AutoSave/

@@ -31,6 +31,7 @@ public class PlayerController : BaseController
     [SerializeField] float _gravityMod;
     [SerializeField] [Range(0, 1)] float _airControl;
     float _jumpForce;
+    bool _isJumping;
 
     Vector2 _inputDir;
     Vector3 _moveDir;
@@ -114,7 +115,13 @@ public class PlayerController : BaseController
 
     // The moment the player starts jumping in the animation.
     void A_OnJump() {
+        _isJumping = true;
+        _isGrounded = false;
         _jumpForce = Mathf.Sqrt(-2 * gravity * _jumpHeight);
+    }
+
+    void A_OnJumpLand() {
+        _isJumping = false;
     }
 
     // Used for suspending movement at Idle Jump or when landing from fall loop.
@@ -330,9 +337,8 @@ public class PlayerController : BaseController
     }
 
     public override void Step() {
-        if (_jumpForce == 0)
+        if (!_isJumping)
             _isGrounded = Grounded(); //ground check before the main loop for accurate input
-        //print("Grounded: " + _isGrounded);
 
         base.Step();
     }

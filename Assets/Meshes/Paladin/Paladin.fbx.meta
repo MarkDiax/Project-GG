@@ -665,7 +665,7 @@ ModelImporter:
       scale: {x: 1, y: 1, z: 1}
     - name: Hips
       parentName: Paladin(Clone)
-      position: {x: -0.0003427926, y: 0.9557946, z: 0.0046594837}
+      position: {x: -0.0003427926, y: 0.9557947, z: 0.0046594837}
       rotation: {x: -1.7347235e-16, y: 2.7755576e-15, z: -1.4952993e-16, w: 1}
       scale: {x: 1, y: 1, z: 1}
     - name: LeftUpLeg

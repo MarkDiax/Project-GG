@@ -2125,7 +2125,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: 6bd875f5056767a459e23a3398449ed2, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
-  m_ApplyRootMotion: 0
+  m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
@@ -2149,11 +2149,19 @@ MonoBehaviour:
   - {fileID: 0}
   _lookRange: 10
   _fovCone: 120
-  _maxSpeed: 1.5
-  _acceleration: 0.1
-  deceleration: 0.2
-  _rotationSpeed: 0.5
-  _waypointPrecision: 0.1
+  _patrolData:
+    movementSpeed: 0.5
+    rotationSpeed: 1
+    acceleration: 0.5
+    deceleration: 0.6
+    targetPrecision: 1.2
+  _attackData:
+    movementSpeed: 0.5
+    rotationSpeed: 2
+    acceleration: 0.5
+    deceleration: 0.6
+    targetPrecision: 0
+  _waypointPrecision: 2
   _attackRange: 2
 --- !u!136 &136861738997984022
 CapsuleCollider:
@@ -2163,7 +2171,7 @@ CapsuleCollider:
   m_GameObject: {fileID: 1241588141631792}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   m_Radius: 0.4
   m_Height: 1.8
   m_Direction: 1

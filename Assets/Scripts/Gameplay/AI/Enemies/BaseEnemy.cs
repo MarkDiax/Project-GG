@@ -24,11 +24,13 @@ public class BaseEnemy : MonoBehaviour
     private float _fovCone = 120;
 
     protected Player player;
+    protected Animator animator;
     protected float velocity;
+    protected float deltaTime;
 
     protected enum EnemyState
     {
-        Idle, Patrol, Move, Attack, Scared, Hide, Taunt, Jump, Climb
+        Idle, Patrol, MoveToAttack, Attack, Scared, Hide, Taunt, Jump, Climb
     }
     protected EnemyState currentState;
 
@@ -41,17 +43,19 @@ public class BaseEnemy : MonoBehaviour
     }
     protected virtual void Start() {
         player = Player.Instance;
+        animator = GetComponent<Animator>();
     }
 
     protected virtual void Update() {
+        deltaTime = Time.deltaTime;
         Vector3 oldPos = transform.position;
 
         switch (currentState) {
             case EnemyState.Idle:
             Idle(idleTime);
             break;
-            case EnemyState.Move:
-            Move();
+            case EnemyState.MoveToAttack:
+            MoveToAttack();
             break;
             case EnemyState.Patrol:
             Patrol();
@@ -63,12 +67,15 @@ public class BaseEnemy : MonoBehaviour
         }
 
         velocity = Vector3.Distance(transform.position, oldPos);
+
+        Animate();
     }
 
     protected virtual void Idle(float TimeInSeconds) { }
-    protected virtual void Move() { }
+    protected virtual void MoveToAttack() { }
     protected virtual void Patrol() { }
     protected virtual void Attack() { }
+    protected virtual void Animate() { }
 
     protected void SwitchState(EnemyState NewState) {
         currentState = NewState;

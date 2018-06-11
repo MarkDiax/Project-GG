@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: c84cbf0e40b41d54fb457cb7ee46dc33
-timeCreated: 1524487285
+guid: eb4202918ed191248bd61b6c5594f004
+timeCreated: 1524487291
 licenseType: Free
 ModelImporter:
   serializedVersion: 22
@@ -141,7 +141,7 @@ ModelImporter:
     400130: Spine1
     400132: Spine2
     400134: //RootNode
-    7400000: mixamo.com
+    7400000: Paladin_Run_Fwd
     9500000: //RootNode
   externalObjects: {}
   materials:
@@ -156,7 +156,13 @@ ModelImporter:
     optimizeGameObjects: 0
     motionNodeName: 
     rigImportErrors: 
-    rigImportWarnings: 
+    rigImportWarnings: "Copied Avatar Rig Configuration mis-match. Bone length in
+      copied configuration does not match position in animation file:\n\t'LeftUpLeg'
+      : position error = 20.486332 mm\n\t'LeftLeg' : position error = 26.559563 mm\n\t'LeftFoot'
+      : position error = 74.609550 mm\n\t'LeftToeBase' : position error = 29.813646
+      mm\n\t'RightUpLeg' : position error = 21.346947 mm\n\t'RightLeg' : position
+      error = 26.485859 mm\n\t'RightFoot' : position error = 74.478233 mm\n\t'RightToeBase'
+      : position error = 30.672426 mm\n"
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
@@ -169,7 +175,35 @@ ModelImporter:
     animationWrapMode: 0
     extraExposedTransformPaths: []
     extraUserProperties: []
-    clipAnimations: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Paladin_Run_Fwd
+      takeName: mixamo.com
+      firstFrame: 0
+      lastFrame: 42
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0.1
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 0
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 1
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
     isReadable: 1
   meshes:
     lODScreenPercentages: []
