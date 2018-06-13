@@ -63,7 +63,7 @@ public class PlayerController : BaseController
     #endregion
 
     bool _isGrounded;
-    float _moveDelay = 0f;
+    float _moveDelay;
 
     #region Animation Events
     // Animator events don't support boolean parameters, so i'm using ints. 1 = true, 0 = false. 

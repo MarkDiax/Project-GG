@@ -37,6 +37,12 @@ public class StandardEnemy : BaseEnemy
 
     #endregion
 
+    #region Animation Properties
+    const string AP_AttackMelee = "AttackMelee";
+    const string AP_MoveDirection = "MoveDir";
+    const string AP_PlayerDistance = "PlayerDistance";
+    #endregion
+
     protected override void Start() {
         base.Start();
 
@@ -129,9 +135,11 @@ public class StandardEnemy : BaseEnemy
         base.Attack();
         if (!_attacking && DetectPlayer()) {
             _attacking = true;
-            animator.SetTrigger("Melee1");
-            transform.LookAt(player.transform);
-            //_currentSpeed = 0f;
+            animator.SetTrigger(AP_AttackMelee);
+
+            Vector3 lookDirection = player.transform.position - transform.position;
+            lookDirection.y = 0f;
+            transform.rotation = Quaternion.LookRotation(lookDirection);
         }
         else {
             float targetDistance = Vector3.Distance(transform.position, player.transform.position);
@@ -148,7 +156,8 @@ public class StandardEnemy : BaseEnemy
     protected override void Animate() {
         base.Animate();
 
-        animator.SetFloat("MoveDir", _currentSpeed);
+        animator.SetFloat(AP_MoveDirection, _currentSpeed);
+        animator.SetFloat(AP_PlayerDistance, Vector3.Distance(transform.position, player.transform.position));
     }
 
     IEnumerator IdleTimer(float TimeInSeconds) {
