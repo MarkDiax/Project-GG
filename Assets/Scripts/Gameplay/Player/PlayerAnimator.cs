@@ -56,6 +56,7 @@ public class PlayerAnimator : CharacterAnimator
     }
 
     private Quaternion _oldSpineRot;
+
     private void LateUpdate() {
         Quaternion targetSpineRot = _spine.rotation;
 

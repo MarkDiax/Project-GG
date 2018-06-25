@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public static class MathX
 {
@@ -23,5 +22,29 @@ public static class MathX
             }
         }
 
+    }
+
+    public static class Int
+    {
+    /// <summary>
+    /// Returns an int between 0 and MaxIndex and will never return CurrentIndex.
+    /// </summary>
+    /// <param name="CurrentIndex"></param>
+    /// <param name="MaxIndex"></param>
+    /// <returns></returns>
+        public static int GetRandomIndex(int CurrentIndex, int MaxIndex) {
+            System.Random rnd = new System.Random();
+
+            int index = rnd.Next(MaxIndex);
+            if (index == CurrentIndex)
+                return GetRandomIndex(index, MaxIndex);
+
+            return index;
+        }
+
+        public static int GetRandomIndex(int MaxIndex) {
+            System.Random rnd = new System.Random();
+            return rnd.Next(MaxIndex);
+        }
     }
 }

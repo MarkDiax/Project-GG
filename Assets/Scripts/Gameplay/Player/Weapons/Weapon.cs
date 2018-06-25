@@ -16,7 +16,7 @@ public abstract class Weapon: MonoBehaviour
         if (!_activeColliders.Contains(Other))
             _activeColliders.Add(Other);
     }
-
+  
     protected virtual void OnTriggerStay(Collider Other) {
         if (!_activeColliders.Contains(Other))
             _activeColliders.Add(Other);
@@ -29,10 +29,7 @@ public abstract class Weapon: MonoBehaviour
     }
 
     private void Update() {
-        if (_activeColliders.Count == 0)
-            processingCollisions = false;
-
-        if (processingCollisions) {
+        if (processingCollisions && _activeColliders.Count > 0) {
             ProcessCollisions();
         }
     }
@@ -56,6 +53,7 @@ public abstract class Weapon: MonoBehaviour
     }
 
     protected void ClearStoredHits() {
+        _activeColliders.Clear();
         _hasHitDuringAttack.Clear();
     }
 

@@ -1,38 +1,41 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.Events;
-using UnityEngine.AI;
-
-[System.Serializable]
-public class EnemyData
-{
-    public float movementSpeed;
-    public float rotationSpeed;
-    public float acceleration, deceleration;
-    public float targetPrecision;
-}
+using EnemyData;
+using Cinemachine;
 
 public class StandardEnemy : BaseEnemy
 {
-    [SerializeField] EnemyData _patrolData;
-    [SerializeField] EnemyData _attackData;
+    [SerializeField] PatrolData _patrolData;
+    [SerializeField] AttackData _attackData;
 
     float _currentSpeed;
     int _patrolIndex;
     bool _attacking;
-    float _attackDamage;
 
     Coroutine _idleRoutine;
+    Coroutine _leapRoutine;
+    Coroutine _lookAtRoutine;
 
+    EnemyWeapon _sword;
     #region Animation Events
 
-    void A_OnAttackImpact(float Damage) {
-        _attackDamage = Damage;
+    void A_OnAttackImpact(int Damage) {
+        if (Damage == 0)
+            Damage = _attackData.fallbackAttackDamage;
+
+        _sword.Attack(Damage);
+    }
+
+    void A_OnAttackStartLeap(float Duration) {
+        LeapTowards(player.transform, Duration);
     }
 
     void A_OnAttackEnd() {
         _attacking = false;
+    }
+
+    void A_OnSuspendMovement(float Time) {
+        moveDelay += Time;
     }
 
     #endregion
@@ -41,18 +44,36 @@ public class StandardEnemy : BaseEnemy
     const string AP_AttackMelee = "AttackMelee";
     const string AP_MoveDirection = "MoveDir";
     const string AP_PlayerDistance = "PlayerDistance";
+    const string AP_RND = "RND"; //random generator between values 0 and 10
+    const string AP_Impact = "Impact";
+    const string AP_Death = "Die";
+    const string AP_IsDead = "IsDead";
     #endregion
 
     protected override void Start() {
         base.Start();
 
+        _sword = GetComponentInChildren<EnemyWeapon>();
+
         SwitchState(EnemyState.Idle);
+        StartCoroutine(RandomGenerator());
+    }
+
+    private IEnumerator RandomGenerator() {
+        System.Random rnd = new System.Random();
+
+        while (true) {
+            yield return new WaitForSeconds(2f);
+            animator.SetInteger(AP_RND, rnd.Next(0, 10));
+            yield return new WaitForEndOfFrame();
+        }
     }
 
     protected override void Idle(float TimeInSeconds) {
         base.Idle(TimeInSeconds);
 
-        DetectPlayer();
+        if (DetectPlayer())
+            SwitchState(EnemyState.MoveToAttack);
 
         if (_idleRoutine == null)
             _idleRoutine = StartCoroutine(IdleTimer(TimeInSeconds));
@@ -61,11 +82,15 @@ public class StandardEnemy : BaseEnemy
     protected override void Patrol() {
         base.Patrol();
 
-        DetectPlayer();
+        if (DetectPlayer())
+            SwitchState(EnemyState.MoveToAttack);
+
+        if (waypoints.Length == 0)
+            SwitchState(EnemyState.Idle);
 
         float targetDistance = Vector3.Distance(transform.position, waypoints[_patrolIndex].position);
 
-        if (targetDistance < _patrolData.targetPrecision) {
+        if (targetDistance < _patrolData.waypointPrecision) {
             _currentSpeed -= _patrolData.deceleration * deltaTime;
 
             if (_currentSpeed < 0.15f) {
@@ -76,7 +101,6 @@ public class StandardEnemy : BaseEnemy
 
             return;
         }
-
 
         if (!MathX.Float.NearlyEqual(_currentSpeed, _patrolData.movementSpeed, 0.01f)) {
 
@@ -93,17 +117,14 @@ public class StandardEnemy : BaseEnemy
 
     protected override void MoveToAttack() {
         base.MoveToAttack();
-
         DetectPlayer();
 
-        float targetDistance = Vector3.Distance(transform.position, player.transform.position);
-
-        if (targetDistance < _attackData.targetPrecision) {
+        if (playerDistance < _attackData.minimumAttackDistance) {
             SwitchState(EnemyState.Attack);
             return;
         }
 
-        if (targetDistance > 10)
+        if (playerDistance > playerSearchRange)
             SwitchState(EnemyState.Patrol);
 
         if (_currentSpeed < _attackData.movementSpeed)
@@ -120,6 +141,20 @@ public class StandardEnemy : BaseEnemy
         transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), Speed * deltaTime);
     }
 
+    private IEnumerator LookAt(Quaternion TargetRotation, float MaximumTime, float RotationSpeed) {
+        while (MaximumTime > 0) {
+            float deltaTime = Time.deltaTime;
+            MaximumTime -= deltaTime;
+
+            transform.rotation = Quaternion.Slerp(transform.rotation, TargetRotation, RotationSpeed * deltaTime);
+
+            yield return new WaitForEndOfFrame();
+        }
+
+        transform.rotation = TargetRotation;
+        _lookAtRoutine = null;
+    }
+
     private int GetRandomIndex(int CurrentIndex, int MaxIndex) {
         System.Random rnd = new System.Random();
 
@@ -130,21 +165,26 @@ public class StandardEnemy : BaseEnemy
         return index;
     }
 
-
     protected override void Attack() {
         base.Attack();
+
         if (!_attacking && DetectPlayer()) {
             _attacking = true;
+            _currentSpeed = 0.5f;
             animator.SetTrigger(AP_AttackMelee);
 
             Vector3 lookDirection = player.transform.position - transform.position;
             lookDirection.y = 0f;
-            transform.rotation = Quaternion.LookRotation(lookDirection);
+
+            if (_lookAtRoutine != null)
+                StopCoroutine(_lookAtRoutine);
+
+            _lookAtRoutine = StartCoroutine(LookAt(Quaternion.LookRotation(lookDirection), 0.2f, 5f));
         }
         else {
-            float targetDistance = Vector3.Distance(transform.position, player.transform.position);
+            _attacking = false;
 
-            if (targetDistance > _attackData.targetPrecision) {
+            if (playerDistance > _attackData.minimumAttackDistance) {
                 if (DetectPlayer())
                     SwitchState(EnemyState.MoveToAttack);
                 else
@@ -158,9 +198,22 @@ public class StandardEnemy : BaseEnemy
 
         animator.SetFloat(AP_MoveDirection, _currentSpeed);
         animator.SetFloat(AP_PlayerDistance, Vector3.Distance(transform.position, player.transform.position));
+        animator.SetBool(AP_IsDead, IsDead);
     }
 
-    IEnumerator IdleTimer(float TimeInSeconds) {
+    protected override void DeadState() {
+        base.DeadState();
+
+        print("StandardEnemy::DeadState()");
+    }
+
+    private void LeapTowards(Transform Target, float LeapDuration) {
+        if (_leapRoutine != null)
+            StopCoroutine(_leapRoutine);
+
+        _leapRoutine = StartCoroutine(Internal_Leap(Target, LeapDuration));
+    }
+    private IEnumerator IdleTimer(float TimeInSeconds) {
         while (TimeInSeconds >= 0) {
             TimeInSeconds -= Time.deltaTime;
             yield return new WaitForEndOfFrame();
@@ -170,28 +223,39 @@ public class StandardEnemy : BaseEnemy
         _idleRoutine = null;
     }
 
-    protected override bool DetectPlayer() {
-        if (currentState != EnemyState.MoveToAttack && base.DetectPlayer()) {
-            SwitchState(EnemyState.MoveToAttack);
-            return true;
+    private IEnumerator Internal_Leap(Transform Target, float LeapDuration) {
+        while (LeapDuration > 0) {
+            float deltaTime = Time.deltaTime;
+
+            if (playerDistance < 1.2f)
+                yield break;
+
+            if (playerDistance <= _attackData.minimumAttackDistance) {
+                Vector3 lookDirection = Target.position - transform.position;
+                lookDirection.y = 0f;
+
+                transform.position = Vector3.Slerp(transform.position, Target.position, 2.5f * deltaTime);
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(lookDirection), 4 * deltaTime);
+            }
+
+            LeapDuration -= Time.deltaTime;
+
+            yield return new WaitForEndOfFrame();
         }
 
-        return false;
+        _leapRoutine = null;
     }
 
     public override void TakeDamage(int pDamage) {
         base.TakeDamage(pDamage);
 
+        animator.SetTrigger(AP_Impact);
         SwitchState(EnemyState.MoveToAttack);
     }
 
+    public override void Die() {
+        base.Die();
 
-    private void OnTriggerEnter(Collider other) {
-        if (other.gameObject == player.gameObject) {
-            if (_attackDamage > 0f) {
-                player.Controller.TakeDamage(_attackDamage, (player.transform.position - transform.position).normalized, 0.2f);
-                _attackDamage = 0f;
-            }
-        }
+        animator.SetTrigger(AP_Death);
     }
 }

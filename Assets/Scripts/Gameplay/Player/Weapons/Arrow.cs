@@ -19,7 +19,7 @@ public class Arrow : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision) {
         BaseEnemy enemy = collision.collider.GetComponent<BaseEnemy>();
-        if (enemy != null) {
+        if (enemy != null && !enemy.IsDead) {
             enemy.TakeDamage(_damage);
             GameManager.Instance.SlowdownTime(_slowmoTimescale, _slowmoDuration);
             Destroy(gameObject);

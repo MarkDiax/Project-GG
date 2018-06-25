@@ -4,107 +4,139 @@ using UnityEngine.AI;
 
 public class BaseEnemy : MonoBehaviour
 {
-    private bool _Debugging;
+	[SerializeField]
+	private bool _Debugging, _Static;
 
-    [SerializeField]
-    private int _health;
+	[SerializeField]
+	private int _health;
 
-    [Header("Traversal")]
-    [SerializeField]
-    protected float idleTime;
-    [SerializeField]
-    protected Transform[] waypoints;
+	[Header("Traversal")]
+	[SerializeField]
+	protected float idleTime;
+	[SerializeField]
+	protected Transform[] waypoints;
 
-    [Header("Player Detection")]
-    [SerializeField]
-    [Tooltip("The range in which the enemy is able to detect the player")]
-    private float _lookRange = 10;
-    [SerializeField]
-    [Tooltip("Angle in which the enemy is able to detect the player")]
-    private float _fovCone = 120;
+	[Header("Player Detection")]
+	[SerializeField]
+	[Tooltip("The range in which the enemy is able to detect the player")]
+	protected float playerSearchRange = 10;
+	[SerializeField]
+	[Tooltip("The range in which the enemy instantly detects the player, regardless if the enemy is seeing the player")]
+	private float _instantDetectionRange = 4;
+	[SerializeField]
+	[Tooltip("Angle in which the enemy is able to detect the player")]
+	private float _fovCone = 120;
 
-    protected Player player;
-    protected Animator animator;
-    protected float velocity;
-    protected float deltaTime;
+	protected Player player;
+	protected Animator animator;
+	protected float velocity;
+	protected float deltaTime;
+	protected float playerDistance;
+	protected float moveDelay;
+	protected bool isDead;
 
-    protected enum EnemyState
-    {
-        Idle, Patrol, MoveToAttack, Attack, Scared, Hide, Taunt, Jump, Climb
-    }
-    protected EnemyState currentState;
+	public enum EnemyState
+	{
+		Idle, Patrol, MoveToAttack, Attack, Scared, Hide, Taunt, Jump, Climb, Dead,
+	}
+	protected EnemyState currentState;
 
-    protected virtual void Awake() {
-        AIManager.Instance.Enemies.Add(this);
-    }
+	protected virtual void Awake() {
+		AIManager.Instance.Enemies.Add(this);
+	}
 
-    protected virtual void OnDestroy() {
-        AIManager.Instance.Enemies.Remove(this);
-    }
-    protected virtual void Start() {
-        player = Player.Instance;
-        animator = GetComponent<Animator>();
-    }
+	protected virtual void OnDestroy() {
+		AIManager.Instance.Enemies.Remove(this);
+	}
+	protected virtual void Start() {
+		player = Player.Instance;
+		animator = GetComponent<Animator>();
+	}
 
-    protected virtual void Update() {
-        deltaTime = Time.deltaTime;
-        Vector3 oldPos = transform.position;
+	protected virtual void Update() {
+		if (_Static) {
+			Animate();
+			return;
+		}
 
-        switch (currentState) {
-            case EnemyState.Idle:
-            Idle(idleTime);
-            break;
-            case EnemyState.MoveToAttack:
-            MoveToAttack();
-            break;
-            case EnemyState.Patrol:
-            Patrol();
-            break;
-            case EnemyState.Attack:
-            Attack();
-            break;
-            //etc
-        }
+		deltaTime = Time.deltaTime;
+		Vector3 oldPos = transform.position;
 
-        velocity = Vector3.Distance(transform.position, oldPos);
+		if (moveDelay > 0)
+			moveDelay -= deltaTime;
+		else {
+			switch (currentState) {
+				case EnemyState.Idle:
+				Idle(idleTime);
+				break;
+				case EnemyState.MoveToAttack:
+				MoveToAttack();
+				break;
+				case EnemyState.Patrol:
+				Patrol();
+				break;
+				case EnemyState.Attack:
+				Attack();
+				break;
+				case EnemyState.Dead:
+				DeadState();
+				break;
+				//etc
+			}
+		}
 
-        Animate();
-    }
+		velocity = Vector3.Distance(transform.position, oldPos);
 
-    protected virtual void Idle(float TimeInSeconds) { }
-    protected virtual void MoveToAttack() { }
-    protected virtual void Patrol() { }
-    protected virtual void Attack() { }
-    protected virtual void Animate() { }
+		Animate();
+	}
 
-    protected void SwitchState(EnemyState NewState) {
-        currentState = NewState;
+	protected virtual void Idle(float TimeInSeconds) { }
+	protected virtual void MoveToAttack() { }
+	protected virtual void Patrol() { }
+	protected virtual void Attack() { }
+	protected virtual void DeadState() { }
+	protected virtual void Animate() { }
 
-        if (_Debugging)
-            print(name + ": switching to AI state " + currentState);
-    }
+	public void SwitchState(EnemyState NewState) {
+		currentState = NewState;
 
-    protected virtual bool DetectPlayer() {
-        Vector3 dir = player.transform.position - transform.position;
-        float angle = Vector3.Angle(transform.forward, dir.normalized);
+		if (_Debugging)
+			print(name + ": switching to AI state " + currentState);
+	}
 
-        if (angle <= (_fovCone / 2)) {
-            if (Vector3.Distance(transform.position, player.transform.position) <= _lookRange) {
-                return true;
-            }
-        }
+	protected virtual bool DetectPlayer() {
+		Vector3 dir = player.transform.position - transform.position;
+		float angle = Vector3.Angle(transform.forward, dir.normalized);
+		playerDistance = Vector3.Distance(transform.position, player.transform.position);
 
-        return false;
-    }
+		if (angle <= (_fovCone / 2)) {
+			if (Vector3.Distance(transform.position, player.transform.position) <= playerSearchRange) {
+				return true;
+			}
+		}
 
-    public virtual void TakeDamage(int pDamage) {
-        _health -= pDamage;
+		if (playerDistance < _instantDetectionRange)
+			return true;
 
-        if (_health <= 0)
-            Die();
-    }
+		return false;
+	}
 
-    public virtual void Die() {
-        Destroy(gameObject);
-    }
+	public virtual void TakeDamage(int pDamage) {
+		_health -= pDamage;
+
+		if (_health <= 0)
+			Die();
+	}
+
+	public virtual void Die() {
+		isDead = true;
+		SwitchState(EnemyState.Dead);
+
+		if (EventManager.AIEvent.OnEnemyDeath != null)
+			EventManager.AIEvent.OnEnemyDeath.Invoke(gameObject);
+	}
+
+	public bool IsDead {
+		get { return isDead; }
+	}
 }

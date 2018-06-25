@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.Events;
 using System.Collections;
 
 /// <summary>
@@ -13,6 +11,7 @@ public class GameManager : MonoSingleton<GameManager>
     [SerializeField] bool _lockMouse = true;
 
     Coroutine _slowdownRoutine;
+    Cinemachine.CinemachineBrain _cinemachine;
 
     public override void Init() {
         LockMouse(_lockMouse);
@@ -47,5 +46,14 @@ public class GameManager : MonoSingleton<GameManager>
     private IEnumerator Internal_SlowdownTime(float Duration) {
         yield return new WaitForSecondsRealtime(Duration);
         Time.timeScale = 1f;
+    }
+
+    public Cinemachine.CinemachineBrain GetCinemachineBrain {
+        get {
+            if (_cinemachine == null)
+                _cinemachine = FindObjectOfType<Cinemachine.CinemachineBrain>();
+
+            return _cinemachine;
+        }
     }
 }
