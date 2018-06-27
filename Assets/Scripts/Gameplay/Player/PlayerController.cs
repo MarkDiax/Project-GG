@@ -431,7 +431,7 @@ public class PlayerController : BaseController
 	private void Rotate_Combat() {
 		Quaternion targetRotation;
 
-		if (_targetedEnemy != null) {
+		if (_targetedEnemy != null && !_drawingBow) {
 			if (_isDodgeing) {
 				if (_dodgeRotation == Quaternion.identity) {
 					float targetYAngle = Mathf.Atan2(_inputDir.x, _inputDir.y) * Mathf.Rad2Deg + mainCamera.transform.eulerAngles.y;
@@ -450,7 +450,11 @@ public class PlayerController : BaseController
 		else
 			targetRotation = Quaternion.Euler(player.transform.eulerAngles.x, mainCamera.transform.eulerAngles.y, player.transform.eulerAngles.z);
 
-		player.transform.rotation = Quaternion.Lerp(player.transform.rotation, targetRotation,/*12+ 10*/ 5f * _moveDir.magnitude * Time.deltaTime);
+		float rotateSpeed = 5 * _moveDir.magnitude;
+		if (_drawingBow)
+			rotateSpeed = 12 + 2 * rotateSpeed;
+
+		player.transform.rotation = Quaternion.Lerp(player.transform.rotation, targetRotation, rotateSpeed * Time.deltaTime);
 	}
 
 	protected override void Rotate() {
@@ -540,6 +544,9 @@ public class PlayerController : BaseController
 
 		if (_health <= 0)
 			Die();
+
+		if (EventManager.PlayerEvent.OnHealthChanged != null)
+			EventManager.PlayerEvent.OnHealthChanged.Invoke(_health);
 	}
 
 	private IEnumerator Internal_AddForce(Vector3 HitDirection, float Force, float Timer = 0.5f) {
@@ -606,5 +613,9 @@ public class PlayerController : BaseController
 		}
 
 		return false;
+	}
+
+	public float GetHealth {
+		get { return _health; }
 	}
 }

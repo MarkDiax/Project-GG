@@ -34,6 +34,7 @@ public class EventManager : Singleton<EventManager>
 		public static RopePartEvent OnGrabRope;
 		public static ControllerEvent OnControllerOverride;
 		public static Vec2Event OnMove;
+		public static FloatEvent OnHealthChanged;
 
 		public static void Init() {
 			OnEquipBow = new BoolEvent();
@@ -41,6 +42,7 @@ public class EventManager : Singleton<EventManager>
 			OnGrabRope = new RopePartEvent();
 			OnControllerOverride = new ControllerEvent();
 			OnMove = new Vec2Event();
+			OnHealthChanged = new FloatEvent();
 		}
 	}
 

@@ -5,257 +5,260 @@ using Cinemachine;
 
 public class StandardEnemy : BaseEnemy
 {
-    [SerializeField] PatrolData _patrolData;
-    [SerializeField] AttackData _attackData;
+	[SerializeField] PatrolData _patrolData;
+	[SerializeField] AttackData _attackData;
 
-    float _currentSpeed;
-    int _patrolIndex;
-    bool _attacking;
+	float _currentSpeed;
+	int _patrolIndex;
+	bool _attacking;
 
-    Coroutine _idleRoutine;
-    Coroutine _leapRoutine;
-    Coroutine _lookAtRoutine;
+	Coroutine _idleRoutine;
+	Coroutine _leapRoutine;
+	Coroutine _lookAtRoutine;
 
-    EnemyWeapon _sword;
-    #region Animation Events
+	EnemyWeapon _sword;
+	#region Animation Events
 
-    void A_OnAttackImpact(int Damage) {
-        if (Damage == 0)
-            Damage = _attackData.fallbackAttackDamage;
+	void A_OnAttackImpact(int Damage) {
+		if (Damage == 0)
+			Damage = _attackData.fallbackAttackDamage;
 
-        _sword.Attack(Damage);
-    }
+		_sword.Attack(Damage);
+	}
 
-    void A_OnAttackStartLeap(float Duration) {
-        LeapTowards(player.transform, Duration);
-    }
+	void A_OnAttackStartLeap(float Duration) {
+		LeapTowards(player.transform, Duration);
+	}
 
-    void A_OnAttackEnd() {
-        _attacking = false;
-    }
+	void A_OnAttackEnd() {
+		_attacking = false;
+	}
 
-    void A_OnSuspendMovement(float Time) {
-        moveDelay += Time;
-    }
+	void A_OnSuspendMovement(float Time) {
+		moveDelay += Time;
+	}
 
-    #endregion
+	#endregion
 
-    #region Animation Properties
-    const string AP_AttackMelee = "AttackMelee";
-    const string AP_MoveDirection = "MoveDir";
-    const string AP_PlayerDistance = "PlayerDistance";
-    const string AP_RND = "RND"; //random generator between values 0 and 10
-    const string AP_Impact = "Impact";
-    const string AP_Death = "Die";
-    const string AP_IsDead = "IsDead";
-    #endregion
+	#region Animation Properties
+	const string AP_AttackMelee = "AttackMelee";
+	const string AP_MoveDirection = "MoveDir";
+	const string AP_PlayerDistance = "PlayerDistance";
+	const string AP_RND = "RND"; //random generator between values 0 and 10
+	const string AP_Impact = "Impact";
+	const string AP_Death = "Die";
+	const string AP_IsDead = "IsDead";
+	#endregion
 
-    protected override void Start() {
-        base.Start();
+	protected override void Start() {
+		base.Start();
 
-        _sword = GetComponentInChildren<EnemyWeapon>();
+		_sword = GetComponentInChildren<EnemyWeapon>();
 
-        SwitchState(EnemyState.Idle);
-        StartCoroutine(RandomGenerator());
-    }
+		SwitchState(EnemyState.Idle);
+		StartCoroutine(RandomGenerator());
+	}
 
-    private IEnumerator RandomGenerator() {
-        System.Random rnd = new System.Random();
+	private IEnumerator RandomGenerator() {
+		System.Random rnd = new System.Random();
 
-        while (true) {
-            yield return new WaitForSeconds(2f);
-            animator.SetInteger(AP_RND, rnd.Next(0, 10));
-            yield return new WaitForEndOfFrame();
-        }
-    }
+		while (true) {
+			yield return new WaitForSeconds(2f);
+			animator.SetInteger(AP_RND, rnd.Next(0, 10));
+			yield return new WaitForEndOfFrame();
+		}
+	}
 
-    protected override void Idle(float TimeInSeconds) {
-        base.Idle(TimeInSeconds);
+	protected override void Idle(float TimeInSeconds) {
+		base.Idle(TimeInSeconds);
 
-        if (DetectPlayer())
-            SwitchState(EnemyState.MoveToAttack);
+		if (DetectPlayer())
+			SwitchState(EnemyState.MoveToAttack);
 
-        if (_idleRoutine == null)
-            _idleRoutine = StartCoroutine(IdleTimer(TimeInSeconds));
-    }
+		if (_idleRoutine == null)
+			_idleRoutine = StartCoroutine(IdleTimer(TimeInSeconds));
+	}
 
-    protected override void Patrol() {
-        base.Patrol();
+	protected override void Patrol() {
+		base.Patrol();
 
-        if (DetectPlayer())
-            SwitchState(EnemyState.MoveToAttack);
+		if (DetectPlayer())
+			SwitchState(EnemyState.MoveToAttack);
 
-        if (waypoints.Length == 0)
-            SwitchState(EnemyState.Idle);
+		if (waypoints.Length == 0)
+			SwitchState(EnemyState.Idle);
 
-        float targetDistance = Vector3.Distance(transform.position, waypoints[_patrolIndex].position);
+		float targetDistance = Vector3.Distance(transform.position, waypoints[_patrolIndex].position);
 
-        if (targetDistance < _patrolData.waypointPrecision) {
-            _currentSpeed -= _patrolData.deceleration * deltaTime;
+		if (targetDistance < _patrolData.waypointPrecision) {
+			_currentSpeed -= _patrolData.deceleration * deltaTime;
 
-            if (_currentSpeed < 0.15f) {
-                _currentSpeed = 0f;
-                SwitchState(EnemyState.Idle);
-                _patrolIndex = GetRandomIndex(_patrolIndex, waypoints.Length);
-            }
+			if (_currentSpeed < 0.15f) {
+				_currentSpeed = 0f;
+				SwitchState(EnemyState.Idle);
+				_patrolIndex = GetRandomIndex(_patrolIndex, waypoints.Length);
+			}
 
-            return;
-        }
+			return;
+		}
 
-        if (!MathX.Float.NearlyEqual(_currentSpeed, _patrolData.movementSpeed, 0.01f)) {
+		if (!MathX.Float.NearlyEqual(_currentSpeed, _patrolData.movementSpeed, 0.01f)) {
 
-            if (_currentSpeed < _patrolData.movementSpeed)
-                _currentSpeed += _patrolData.acceleration * deltaTime;
-            else
-                _currentSpeed -= _patrolData.deceleration * deltaTime;
-        }
+			if (_currentSpeed < _patrolData.movementSpeed)
+				_currentSpeed += _patrolData.acceleration * deltaTime;
+			else
+				_currentSpeed -= _patrolData.deceleration * deltaTime;
+		}
 
-        if (_currentSpeed > _patrolData.movementSpeed / 2)
-            RotateTowards(waypoints[_patrolIndex].position, _patrolData.rotationSpeed);
-    }
+		if (_currentSpeed > _patrolData.movementSpeed / 2)
+			RotateTowards(waypoints[_patrolIndex].position, _patrolData.rotationSpeed);
+	}
 
 
-    protected override void MoveToAttack() {
-        base.MoveToAttack();
-        DetectPlayer();
-
-        if (playerDistance < _attackData.minimumAttackDistance) {
-            SwitchState(EnemyState.Attack);
-            return;
-        }
+	protected override void MoveToAttack() {
+		base.MoveToAttack();
+		DetectPlayer();
 
-        if (playerDistance > playerSearchRange)
-            SwitchState(EnemyState.Patrol);
-
-        if (_currentSpeed < _attackData.movementSpeed)
-            _currentSpeed += _attackData.acceleration * deltaTime;
+		if (playerDistance < _attackData.minimumAttackDistance) {
+			SwitchState(EnemyState.Attack);
+			return;
+		}
 
-        if (_currentSpeed > _attackData.movementSpeed / 4)
-            RotateTowards(player.transform.position, _attackData.rotationSpeed);
-    }
+		if (playerDistance > playerSearchRange)
+			SwitchState(EnemyState.Patrol);
 
-    private void RotateTowards(Vector3 TargetPos, float Speed) {
-        Vector3 direction = TargetPos - transform.position;
-        direction.y = 0f;
+		if (_currentSpeed < _attackData.movementSpeed)
+			_currentSpeed += _attackData.acceleration * deltaTime;
 
-        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), Speed * deltaTime);
-    }
+		if (_currentSpeed > _attackData.movementSpeed / 4)
+			RotateTowards(player.transform.position, _attackData.rotationSpeed);
+	}
 
-    private IEnumerator LookAt(Quaternion TargetRotation, float MaximumTime, float RotationSpeed) {
-        while (MaximumTime > 0) {
-            float deltaTime = Time.deltaTime;
-            MaximumTime -= deltaTime;
+	private void RotateTowards(Vector3 TargetPos, float Speed) {
+		Vector3 direction = TargetPos - transform.position;
+		direction.y = 0f;
 
-            transform.rotation = Quaternion.Slerp(transform.rotation, TargetRotation, RotationSpeed * deltaTime);
+		transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), Speed * deltaTime);
+	}
 
-            yield return new WaitForEndOfFrame();
-        }
+	private IEnumerator LookAt(Quaternion TargetRotation, float MaximumTime, float RotationSpeed) {
+		while (MaximumTime > 0) {
+			float deltaTime = Time.deltaTime;
+			MaximumTime -= deltaTime;
 
-        transform.rotation = TargetRotation;
-        _lookAtRoutine = null;
-    }
+			transform.rotation = Quaternion.Slerp(transform.rotation, TargetRotation, RotationSpeed * deltaTime);
 
-    private int GetRandomIndex(int CurrentIndex, int MaxIndex) {
-        System.Random rnd = new System.Random();
+			yield return new WaitForEndOfFrame();
+		}
 
-        int index = rnd.Next(MaxIndex);
-        if (index == CurrentIndex)
-            return GetRandomIndex(index, MaxIndex);
+		transform.rotation = TargetRotation;
+		_lookAtRoutine = null;
+	}
 
-        return index;
-    }
+	private int GetRandomIndex(int CurrentIndex, int MaxIndex) {
+		System.Random rnd = new System.Random();
 
-    protected override void Attack() {
-        base.Attack();
+		int index = rnd.Next(MaxIndex);
+		if (index == CurrentIndex)
+			return GetRandomIndex(index, MaxIndex);
 
-        if (!_attacking && DetectPlayer()) {
-            _attacking = true;
-            _currentSpeed = 0.5f;
-            animator.SetTrigger(AP_AttackMelee);
+		return index;
+	}
 
-            Vector3 lookDirection = player.transform.position - transform.position;
-            lookDirection.y = 0f;
+	protected override void Attack() {
+		base.Attack();
 
-            if (_lookAtRoutine != null)
-                StopCoroutine(_lookAtRoutine);
+		_currentSpeed = playerDistance <= _attackData.maximumAttackDistance ? 0f : 0.5f;
 
-            _lookAtRoutine = StartCoroutine(LookAt(Quaternion.LookRotation(lookDirection), 0.2f, 5f));
-        }
-        else {
-            _attacking = false;
+		if (!_attacking && DetectPlayer()) {
+			_attacking = true;
+			animator.SetTrigger(AP_AttackMelee);
 
-            if (playerDistance > _attackData.minimumAttackDistance) {
-                if (DetectPlayer())
-                    SwitchState(EnemyState.MoveToAttack);
-                else
-                    SwitchState(EnemyState.Patrol);
-            }
-        }
-    }
+			Vector3 lookDirection = player.transform.position - transform.position;
+			lookDirection.y = 0f;
 
-    protected override void Animate() {
-        base.Animate();
+			if (_lookAtRoutine != null)
+				StopCoroutine(_lookAtRoutine);
 
-        animator.SetFloat(AP_MoveDirection, _currentSpeed);
-        animator.SetFloat(AP_PlayerDistance, Vector3.Distance(transform.position, player.transform.position));
-        animator.SetBool(AP_IsDead, IsDead);
-    }
+			_lookAtRoutine = StartCoroutine(LookAt(Quaternion.LookRotation(lookDirection), 0.2f, 5f));
+		}
+		else {
+			_attacking = false;
 
-    protected override void DeadState() {
-        base.DeadState();
+			if (playerDistance > _attackData.minimumAttackDistance) {
+				if (DetectPlayer())
+					SwitchState(EnemyState.MoveToAttack);
+				else
+					SwitchState(EnemyState.Patrol);
+			}
+		}
+	}
 
-        print("StandardEnemy::DeadState()");
-    }
+	protected override void Animate() {
+		base.Animate();
 
-    private void LeapTowards(Transform Target, float LeapDuration) {
-        if (_leapRoutine != null)
-            StopCoroutine(_leapRoutine);
+		animator.SetFloat(AP_MoveDirection, _currentSpeed);
+		animator.SetFloat(AP_PlayerDistance, Vector3.Distance(transform.position, player.transform.position));
+		animator.SetBool(AP_IsDead, IsDead);
+	}
 
-        _leapRoutine = StartCoroutine(Internal_Leap(Target, LeapDuration));
-    }
-    private IEnumerator IdleTimer(float TimeInSeconds) {
-        while (TimeInSeconds >= 0) {
-            TimeInSeconds -= Time.deltaTime;
-            yield return new WaitForEndOfFrame();
-        }
+	protected override void DeadState() {
+		base.DeadState();
 
-        SwitchState(EnemyState.Patrol);
-        _idleRoutine = null;
-    }
+		print("StandardEnemy::DeadState()");
+	}
 
-    private IEnumerator Internal_Leap(Transform Target, float LeapDuration) {
-        while (LeapDuration > 0) {
-            float deltaTime = Time.deltaTime;
+	private void LeapTowards(Transform Target, float LeapDuration) {
+		if (_leapRoutine != null)
+			StopCoroutine(_leapRoutine);
 
-            if (playerDistance < 1.2f)
-                yield break;
+		_leapRoutine = StartCoroutine(Internal_Leap(Target, LeapDuration));
+	}
+	private IEnumerator IdleTimer(float TimeInSeconds) {
+		while (TimeInSeconds >= 0) {
+			TimeInSeconds -= Time.deltaTime;
+			yield return new WaitForEndOfFrame();
+		}
 
-            if (playerDistance <= _attackData.minimumAttackDistance) {
-                Vector3 lookDirection = Target.position - transform.position;
-                lookDirection.y = 0f;
+		SwitchState(EnemyState.Patrol);
+		_idleRoutine = null;
+	}
 
-                transform.position = Vector3.Slerp(transform.position, Target.position, 2.5f * deltaTime);
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(lookDirection), 4 * deltaTime);
-            }
+	private IEnumerator Internal_Leap(Transform Target, float LeapDuration) {
+		while (LeapDuration > 0) {
+			float deltaTime = Time.deltaTime;
 
-            LeapDuration -= Time.deltaTime;
+			if (playerDistance < 1.5f)
+				yield break;
 
-            yield return new WaitForEndOfFrame();
-        }
+			if (playerDistance <= _attackData.minimumAttackDistance) {
+				Vector3 lookDirection = Target.position - transform.position;
+				lookDirection.y = 0f;
 
-        _leapRoutine = null;
-    }
+				transform.position = Vector3.Slerp(transform.position, Target.position, 2.5f * deltaTime);
+				transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(lookDirection), 2f * deltaTime);
+			}
 
-    public override void TakeDamage(int pDamage) {
-        base.TakeDamage(pDamage);
+			LeapDuration -= Time.deltaTime;
 
-        animator.SetTrigger(AP_Impact);
-        SwitchState(EnemyState.MoveToAttack);
-    }
+			yield return new WaitForEndOfFrame();
+		}
 
-    public override void Die() {
-        base.Die();
+		_leapRoutine = null;
+	}
 
-        animator.SetTrigger(AP_Death);
-    }
+	public override void TakeDamage(int pDamage) {
+		base.TakeDamage(pDamage);
+
+		if (!isDead) {
+			animator.SetTrigger(AP_Impact);
+			SwitchState(EnemyState.MoveToAttack);
+		}
+	}
+
+	public override void Die() {
+		base.Die();
+
+		animator.SetTrigger(AP_Death);
+	}
 }
