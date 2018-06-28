@@ -35,6 +35,8 @@ public class BaseEnemy : MonoBehaviour
 	protected float moveDelay;
 	protected bool isDead;
 
+	private bool _isPlayerDead;
+
 	public enum EnemyState
 	{
 		Idle, Patrol, MoveToAttack, Attack, Scared, Hide, Taunt, Jump, Climb, Dead,
@@ -51,6 +53,13 @@ public class BaseEnemy : MonoBehaviour
 	protected virtual void Start() {
 		player = Player.Instance;
 		animator = GetComponent<Animator>();
+
+		EventManager.PlayerEvent.OnDeath.AddListener(OnPlayerDeath);
+	}
+
+	private void OnPlayerDeath() {
+		_isPlayerDead = true;
+		animator.Rebind();
 	}
 
 	protected virtual void Update() {
@@ -105,6 +114,9 @@ public class BaseEnemy : MonoBehaviour
 	}
 
 	protected virtual bool DetectPlayer() {
+		if (_isPlayerDead)
+			return false;
+
 		Vector3 dir = player.transform.position - transform.position;
 		float angle = Vector3.Angle(transform.forward, dir.normalized);
 		playerDistance = Vector3.Distance(transform.position, player.transform.position);

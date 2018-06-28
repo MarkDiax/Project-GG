@@ -86,4 +86,8 @@ public class CharacterAnimator : MonoBehaviour
     public void SetActive(bool Active) {
         Animator.enabled = Active;
     }
+
+	public void SetInt(string Name, int Value) {
+		Animator.SetInteger(Name, Value);
+	}
 }

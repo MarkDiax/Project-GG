@@ -16,6 +16,15 @@ public class EventManager : Singleton<EventManager>
 	public class RopeTypeEvent : UnityEvent<RopeBehaviour> { }
 	#endregion
 
+	public static class GameEvent
+	{
+		public static UnityEvent OnGameReload;
+
+		public static void Init() {
+			OnGameReload = new UnityEvent();
+		}
+	}
+
 	public static class InputEvent
 	{
 		public static BoolEvent OnBowDraw;
@@ -35,6 +44,7 @@ public class EventManager : Singleton<EventManager>
 		public static ControllerEvent OnControllerOverride;
 		public static Vec2Event OnMove;
 		public static FloatEvent OnHealthChanged;
+		public static UnityEvent OnDeath;
 
 		public static void Init() {
 			OnEquipBow = new BoolEvent();
@@ -43,6 +53,7 @@ public class EventManager : Singleton<EventManager>
 			OnControllerOverride = new ControllerEvent();
 			OnMove = new Vec2Event();
 			OnHealthChanged = new FloatEvent();
+			OnDeath = new UnityEvent();
 		}
 	}
 
@@ -71,6 +82,7 @@ public class EventManager : Singleton<EventManager>
 	}
 
 	public override void Init() {
+		GameEvent.Init();
 		InputEvent.Init();
 		PlayerEvent.Init();
 		RopeEvent.Init();

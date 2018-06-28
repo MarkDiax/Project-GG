@@ -4,28 +4,32 @@ using UnityEngine.UI;
 
 public class PlayerEquipmentUI : UIObject
 {
-    [SerializeField] ImageSwapper _bowIconParent, _swordIconParent;
+	[SerializeField] ImageSwapper _bowIconParent, _swordIconParent;
 
-    GameObject _activeIconSet;
-    bool _hasBowEquipped, _hasSwordEquipped;
+	GameObject _activeIconSet;
+	bool _hasBowEquipped, _hasSwordEquipped;
 
-    private void Start() {
-        EventManager.PlayerEvent.OnEquipBow.AddListener((Equipped) => { SwitchImages(_bowIconParent, Equipped); });
-        EventManager.PlayerEvent.OnEquipSword.AddListener((Equipped) => { SwitchImages(_swordIconParent, Equipped); });
-    }
+	protected override void Start() {
+		base.Start();
 
-    void SwitchImages(ImageSwapper IconParent, bool Equipped) {
-        if (_activeIconSet != IconParent.gameObject) {
-            if (_activeIconSet != null)
-                _activeIconSet.SetActive(false);
+		EventManager.PlayerEvent.OnEquipBow.AddListener((Equipped) => { SwitchImages(_bowIconParent, Equipped); });
+		EventManager.PlayerEvent.OnEquipSword.AddListener((Equipped) => { SwitchImages(_swordIconParent, Equipped); });
+	}
 
-            _activeIconSet = IconParent.gameObject;
-            _activeIconSet.SetActive(true);
-        }
+	void SwitchImages(ImageSwapper IconParent, bool Equipped) {
+		if (_activeIconSet != IconParent.gameObject) {
+			if (_activeIconSet != null)
+				_activeIconSet.SetActive(false);
 
-        if (Equipped)
-            IconParent.ResetImages();
-        else
-            IconParent.SwapImages();
-    }
+			_activeIconSet = IconParent.gameObject;
+			_activeIconSet.SetActive(true);
+		}
+
+		if (Equipped)
+			IconParent.ResetImages();
+		else
+			IconParent.SwapImages();
+	}
+
+	protected override void OnGameReload() { }
 }

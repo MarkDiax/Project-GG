@@ -63,6 +63,7 @@ public class PlayerController : BaseController
 	Vector2 _animSpeed;
 	Quaternion _dodgeRotation = Quaternion.identity;
 	BaseEnemy _targetedEnemy;
+	int _randomParam;
 
 	#endregion
 
@@ -153,6 +154,8 @@ public class PlayerController : BaseController
 
 		usePhysics = true;
 		gravity = Physics.gravity.y * _gravityMod;
+
+		StartCoroutine(RandomGenerator(2));
 	}
 
 	public override void Resume() {
@@ -387,6 +390,9 @@ public class PlayerController : BaseController
 			_isGrounded = Grounded(); //ground check before the main loop for accurate input
 
 		base.Step();
+
+		if (Input.GetKeyDown(KeyCode.G))
+			TakeDamage(100, Vector3.zero, 0f);
 	}
 
 	protected override void Move() {
@@ -523,6 +529,7 @@ public class PlayerController : BaseController
 		player.Animator.SetBool("Grounded", _isGrounded);
 		player.Animator.SetFloat("GroundDistance", DistanceToGround());
 		player.Animator.SetBool("InCombat", _inCombat);
+		player.Animator.SetInt("RND", _randomParam);
 
 		if (_moveDelay > 0)
 			_moveDelay -= Time.deltaTime;
@@ -538,10 +545,10 @@ public class PlayerController : BaseController
 			_bowObject.transform.localPosition = Vector3.Lerp(_bowObject.transform.localPosition, Vector3.zero, 10 * Time.deltaTime);
 	}
 
-	public void TakeDamage(float Damage, Vector3 HitDirection, float HitForce) {
-		StartCoroutine(Internal_AddForce(HitDirection, HitForce));
-		_health -= Damage;
+	public void TakeDamage(float Damage) {
+		player.Animator.SetTrigger("Impact");
 
+		_health -= Damage;
 		if (_health <= 0)
 			Die();
 
@@ -549,8 +556,13 @@ public class PlayerController : BaseController
 			EventManager.PlayerEvent.OnHealthChanged.Invoke(_health);
 	}
 
-	private IEnumerator Internal_AddForce(Vector3 HitDirection, float Force, float Timer = 0.5f) {
-		float timer = Timer;
+	public void TakeDamage(float Damage, Vector3 HitDirection, float HitForce = 0.4f, float ForceDuration = 0.4f) {
+		TakeDamage(Damage);
+		StartCoroutine(Internal_AddForce(HitDirection, HitForce, ForceDuration));
+	}
+
+	private IEnumerator Internal_AddForce(Vector3 HitDirection, float Force, float ForceDuration) {
+		float timer = ForceDuration;
 
 		while (timer > 0) {
 			timer -= Time.deltaTime;
@@ -561,6 +573,11 @@ public class PlayerController : BaseController
 	}
 
 	private void Die() {
+		if (EventManager.PlayerEvent.OnDeath != null)
+			EventManager.PlayerEvent.OnDeath.Invoke();
+
+		isDead = true;
+		player.Animator.SetTrigger("Die");
 		print("PlayerController::Die()");
 	}
 
@@ -613,6 +630,16 @@ public class PlayerController : BaseController
 		}
 
 		return false;
+	}
+
+	private IEnumerator RandomGenerator(int Frequency) {
+		System.Random rnd = new System.Random();
+
+		while (true) {
+			yield return new WaitForSeconds(Frequency);
+			_randomParam = rnd.Next(0, 10);
+			yield return new WaitForEndOfFrame();
+		}
 	}
 
 	public float GetHealth {

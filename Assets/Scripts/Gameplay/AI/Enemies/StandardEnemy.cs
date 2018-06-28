@@ -182,6 +182,8 @@ public class StandardEnemy : BaseEnemy
 
 			_lookAtRoutine = StartCoroutine(LookAt(Quaternion.LookRotation(lookDirection), 0.2f, 5f));
 		}
+		else if (!DetectPlayer())
+			SwitchState(EnemyState.Patrol);
 		else {
 			_attacking = false;
 

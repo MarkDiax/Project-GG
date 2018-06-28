@@ -2,11 +2,14 @@
 using System.Collections;
 
 [RequireComponent(typeof(Canvas))]
-public class UIObject : MonoBehaviour
+public abstract class UIObject : MonoBehaviour
 {
-    protected Canvas canvas;
+	protected Canvas canvas;
 
-    protected virtual void Awake() {
-        canvas = GetComponent<Canvas>();
-    }
+	protected virtual void Start() {
+		canvas = GetComponent<Canvas>();
+		EventManager.GameEvent.OnGameReload.AddListener(OnGameReload);
+	}
+
+	protected abstract void OnGameReload();
 }

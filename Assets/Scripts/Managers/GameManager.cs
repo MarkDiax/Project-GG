@@ -8,52 +8,55 @@ using System.Collections;
 /// </summary>
 public class GameManager : MonoSingleton<GameManager>
 {
-    [SerializeField] bool _lockMouse = true;
+	[SerializeField] bool _lockMouse = true;
 
-    Coroutine _slowdownRoutine;
-    Cinemachine.CinemachineBrain _cinemachine;
+	Coroutine _slowdownRoutine;
+	Cinemachine.CinemachineBrain _cinemachine;
 
-    public override void Init() {
-        LockMouse(_lockMouse);
+	public override void Init() {
+		LockMouse(_lockMouse);
 
-        EventManager.Instance.Init();
-    }
+		EventManager.Instance.Init();
+	}
 
-    private void Update() {
-        if (Input.GetKeyDown(KeyCode.R)) {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        }
+	private void Update() {
+		if (Input.GetKeyDown(KeyCode.R)) {
+			if (EventManager.GameEvent.OnGameReload != null)
+				EventManager.GameEvent.OnGameReload.Invoke();
 
-        if (Input.GetKeyDown(KeyCode.Escape))
-            Application.Quit();
-    }
+			SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+		}
 
-    public void LockMouse(bool Locked) {
-        if (Locked) {
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
-        }
-    }
+		if (Input.GetKeyDown(KeyCode.Escape))
+			Application.Quit();
+	}
 
-    public void SlowdownTime(float TimeScale, float Duration) {
-        if (_slowdownRoutine != null)
-            StopCoroutine(_slowdownRoutine);
+	public void LockMouse(bool Locked) {
+		if (Locked) {
+			Cursor.lockState = CursorLockMode.Locked;
+			Cursor.visible = false;
+		}
+	}
 
-        Time.timeScale = TimeScale;
-        _slowdownRoutine = StartCoroutine(Internal_SlowdownTime(Duration));
-    }
+	public void SlowdownTime(float TimeScale, float Duration) {
+		if (_slowdownRoutine != null)
+			StopCoroutine(_slowdownRoutine);
 
-    private IEnumerator Internal_SlowdownTime(float Duration) {
-        yield return new WaitForSecondsRealtime(Duration);
-        Time.timeScale = 1f;
-    }
+		Time.timeScale = TimeScale;
+		_slowdownRoutine = StartCoroutine(Internal_SlowdownTime(Duration));
+	}
 
-    public Cinemachine.CinemachineBrain GetCinemachineBrain {
-        get {
-            if (_cinemachine == null)
-                _cinemachine = FindObjectOfType<Cinemachine.CinemachineBrain>();
+	private IEnumerator Internal_SlowdownTime(float Duration) {
+		yield return new WaitForSecondsRealtime(Duration);
+		Time.timeScale = 1f;
+	}
 
-            return _cinemachine;
-        }
-    }
+	public Cinemachine.CinemachineBrain GetCinemachineBrain {
+		get {
+			if (_cinemachine == null)
+				_cinemachine = FindObjectOfType<Cinemachine.CinemachineBrain>();
+
+			return _cinemachine;
+		}
+	}
 }
