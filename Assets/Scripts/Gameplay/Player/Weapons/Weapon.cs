@@ -60,4 +60,5 @@ public abstract class Weapon: MonoBehaviour
     protected abstract void OnEnemyHit(int Damage, BaseEnemy Enemy);
 
     public abstract void Attack();
+	public abstract void EndAttack();
 }

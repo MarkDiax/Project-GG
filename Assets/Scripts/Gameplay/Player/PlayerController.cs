@@ -69,7 +69,6 @@ public class PlayerController : BaseController
 
 	bool _isGrounded;
 	float _moveDelay;
-	Coroutine _dodgeRoutine;
 
 	#region Animation Events
 	// Animator events don't support boolean parameters, so i'm using ints. 1 = true, 0 = false. 
@@ -119,6 +118,7 @@ public class PlayerController : BaseController
 			_inCombat = false;
 		}
 		_isAttacking = false;
+		_swordObject.EndAttack();
 	}
 
 	//Moment when the player starts moving during the dodge animations
@@ -545,8 +545,16 @@ public class PlayerController : BaseController
 			_bowObject.transform.localPosition = Vector3.Lerp(_bowObject.transform.localPosition, Vector3.zero, 10 * Time.deltaTime);
 	}
 
+	public void Stagger() {
+		if (_isDodgeing)
+			A_OnDodgeEnd();
+
+		_currentSpeed = 0f;
+	}
+
 	public void TakeDamage(float Damage) {
 		player.Animator.SetTrigger("Impact");
+		Stagger();
 
 		_health -= Damage;
 		if (_health <= 0)
@@ -558,6 +566,7 @@ public class PlayerController : BaseController
 
 	public void TakeDamage(float Damage, Vector3 HitDirection, float HitForce = 0.4f, float ForceDuration = 0.4f) {
 		TakeDamage(Damage);
+
 		StartCoroutine(Internal_AddForce(HitDirection, HitForce, ForceDuration));
 	}
 

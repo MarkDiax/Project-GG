@@ -154,3 +154,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dontDestroyOnLoad: 1
   _lockMouse: 1
+  _slowmoTimescale: 0.2
+  _slowmoDuration: 0.2

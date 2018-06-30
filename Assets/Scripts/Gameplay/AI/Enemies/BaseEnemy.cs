@@ -39,7 +39,7 @@ public class BaseEnemy : MonoBehaviour
 
 	public enum EnemyState
 	{
-		Idle, Patrol, MoveToAttack, Attack, Scared, Hide, Taunt, Jump, Climb, Dead,
+		Idle, Patrol, MoveToAttack, Attack, Tired, Scared, Hide, Taunt, Jump, Climb, Dead,
 	}
 	protected EnemyState currentState;
 
@@ -87,6 +87,9 @@ public class BaseEnemy : MonoBehaviour
 				case EnemyState.Attack:
 				Attack();
 				break;
+				case EnemyState.Tired:
+				Tired();
+				break;
 				case EnemyState.Dead:
 				DeadState();
 				break;
@@ -103,6 +106,7 @@ public class BaseEnemy : MonoBehaviour
 	protected virtual void MoveToAttack() { }
 	protected virtual void Patrol() { }
 	protected virtual void Attack() { }
+	protected virtual void Tired() { }
 	protected virtual void DeadState() { }
 	protected virtual void Animate() { }
 

@@ -3,18 +3,20 @@ using System.Collections;
 
 public class MeleeWeapon : Weapon
 {
-	[SerializeField] [Header("Slowmotion Effect")] float _slowmoTimescale = 0.1f;
-	[SerializeField] float _slowmoDuration = 0.2f;
-
 	public override void Attack() {
 		ClearStoredHits();
 		processingCollisions = true;
 	}
 
+	public override void EndAttack() {
+		ClearStoredHits();
+		processingCollisions = false;
+	}
+
 	protected override void OnEnemyHit(int Damage, BaseEnemy Enemy) {
 		if (!Enemy.IsDead) {
 			Enemy.TakeDamage(Damage);
-			GameManager.Instance.SlowdownTime(_slowmoTimescale, _slowmoDuration);
+			GameManager.Instance.TriggerSlowmotion();
 		}
 	}
 }

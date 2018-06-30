@@ -11,5 +11,6 @@ namespace EnemyData
         public float minimumAttackDistance = 3f;
 		[Tooltip("The closest distance the enemy is able to get to the player.")]
 		public float maximumAttackDistance = 1.5f;
+		public float timeBetweenAttacks = 1f;
     }
 }

@@ -10,6 +10,9 @@ public class GameManager : MonoSingleton<GameManager>
 {
 	[SerializeField] bool _lockMouse = true;
 
+	[SerializeField] [Header("Slowmotion Effect")] float _slowmoTimescale = 0.1f;
+	[SerializeField] float _slowmoDuration = 0.2f;
+
 	Coroutine _slowdownRoutine;
 	Cinemachine.CinemachineBrain _cinemachine;
 
@@ -17,9 +20,16 @@ public class GameManager : MonoSingleton<GameManager>
 		LockMouse(_lockMouse);
 
 		EventManager.Instance.Init();
+		SceneManager.sceneLoaded += SceneLoaded;
+	}
+
+	private void SceneLoaded(Scene Scene, LoadSceneMode SceneMode) {
+		if (Scene.name == "Quit")
+			Application.Quit();
 	}
 
 	private void Update() {
+
 		if (Input.GetKeyDown(KeyCode.R)) {
 			if (EventManager.GameEvent.OnGameReload != null)
 				EventManager.GameEvent.OnGameReload.Invoke();
@@ -28,7 +38,7 @@ public class GameManager : MonoSingleton<GameManager>
 		}
 
 		if (Input.GetKeyDown(KeyCode.Escape))
-			Application.Quit();
+			SceneManager.LoadScene("Quit");
 	}
 
 	public void LockMouse(bool Locked) {
@@ -36,6 +46,14 @@ public class GameManager : MonoSingleton<GameManager>
 			Cursor.lockState = CursorLockMode.Locked;
 			Cursor.visible = false;
 		}
+	}
+
+	public void TriggerSlowmotion() {
+		if (_slowdownRoutine != null)
+			StopCoroutine(_slowdownRoutine);
+
+		Time.timeScale = _slowmoTimescale;
+		_slowdownRoutine = StartCoroutine(Internal_SlowdownTime(_slowmoDuration));
 	}
 
 	public void SlowdownTime(float TimeScale, float Duration) {

@@ -7,7 +7,11 @@ public class Bow : Weapon
         Debug.LogWarning("Bow.Attack() not implemented.");
     }
 
-    protected override void OnEnemyHit(int Damage, BaseEnemy Enemy) {
+	public override void EndAttack() {
+
+	}
+
+	protected override void OnEnemyHit(int Damage, BaseEnemy Enemy) {
         Debug.LogWarning("Bow.OnEnemyHit() not implemented.");
     }
 }

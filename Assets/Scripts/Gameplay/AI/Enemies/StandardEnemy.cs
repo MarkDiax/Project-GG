@@ -11,10 +11,12 @@ public class StandardEnemy : BaseEnemy
 	float _currentSpeed;
 	int _patrolIndex;
 	bool _attacking;
+	bool _isAlerted;
 
 	Coroutine _idleRoutine;
 	Coroutine _leapRoutine;
 	Coroutine _lookAtRoutine;
+	float _currentStateTimer; // used by the current state
 
 	EnemyWeapon _sword;
 	#region Animation Events
@@ -31,7 +33,9 @@ public class StandardEnemy : BaseEnemy
 	}
 
 	void A_OnAttackEnd() {
+		SwitchState(EnemyState.Tired);
 		_attacking = false;
+		animator.ResetTrigger(AP_AttackMelee);
 	}
 
 	void A_OnSuspendMovement(float Time) {
@@ -124,7 +128,7 @@ public class StandardEnemy : BaseEnemy
 			return;
 		}
 
-		if (playerDistance > playerSearchRange)
+		if (playerDistance > playerSearchRange && !_isAlerted)
 			SwitchState(EnemyState.Patrol);
 
 		if (_currentSpeed < _attackData.movementSpeed)
@@ -173,6 +177,7 @@ public class StandardEnemy : BaseEnemy
 		if (!_attacking && DetectPlayer()) {
 			_attacking = true;
 			animator.SetTrigger(AP_AttackMelee);
+			_isAlerted = false;
 
 			Vector3 lookDirection = player.transform.position - transform.position;
 			lookDirection.y = 0f;
@@ -194,6 +199,19 @@ public class StandardEnemy : BaseEnemy
 					SwitchState(EnemyState.Patrol);
 			}
 		}
+	}
+
+	protected override void Tired() {
+		base.Tired();
+
+		if (_currentStateTimer >= _attackData.timeBetweenAttacks) {
+			_currentStateTimer = 0f;
+			SwitchState(EnemyState.MoveToAttack);
+		}
+
+		_currentSpeed = -0.5f;
+		RotateTowards(player.transform.position, 2f);
+		_currentStateTimer += deltaTime;
 	}
 
 	protected override void Animate() {
@@ -253,6 +271,7 @@ public class StandardEnemy : BaseEnemy
 		base.TakeDamage(pDamage);
 
 		if (!isDead) {
+			_isAlerted = true;
 			animator.SetTrigger(AP_Impact);
 			SwitchState(EnemyState.MoveToAttack);
 		}
