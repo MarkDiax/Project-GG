@@ -14,7 +14,7 @@ public class MeleeWeapon : Weapon
 	}
 
 	protected override void OnEnemyHit(int Damage, BaseEnemy Enemy) {
-		if (!Enemy.IsDead) {
+		if (Enemy != null && !Enemy.IsDead) {
 			Enemy.TakeDamage(Damage);
 			GameManager.Instance.TriggerSlowmotion();
 		}

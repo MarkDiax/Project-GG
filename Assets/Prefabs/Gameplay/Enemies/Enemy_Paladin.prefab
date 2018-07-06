@@ -2189,7 +2189,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e094a288cb0f2d4a846ab7fb59aa5a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _pushForce: 0.4
+  _pushForce: 0.2
   _pushDuration: 0.4
 --- !u!114 &114146599796499516
 MonoBehaviour:
@@ -2202,7 +2202,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d448cd3f785e94c4fafb902aa63524d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _Debugging: 0
+  _Debugging: 1
   _Static: 0
   _health: 100
   idleTime: 2

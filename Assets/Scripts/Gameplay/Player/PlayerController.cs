@@ -34,7 +34,7 @@ public class PlayerController : BaseController
 	bool _isJumping;
 
 	Vector2 _inputDir;
-	Vector3 _moveDir;
+	Vector3 _moveDir, _jumpDir;
 	bool _running;
 	#endregion
 
@@ -139,8 +139,9 @@ public class PlayerController : BaseController
 		_jumpForce = Mathf.Sqrt(-2 * gravity * _jumpHeight);
 	}
 
-	void A_OnJumpLand() {
+	void A_OnLanding() {
 		_isJumping = false;
+		_isGrounded = true;
 	}
 
 	// Used for suspending movement at Idle Jump or when landing from fall loop.
@@ -229,18 +230,23 @@ public class PlayerController : BaseController
 			if (InputManager.GetKeyDown(InputKey.Interact2))
 				InteractWithRope();
 
-			Vector2 keyboardInput = new Vector2(InputManager.GetAxis(InputKey.MoveHorizontal), InputManager.GetAxis(InputKey.MoveVertical));
-			_inputDir = keyboardInput.normalized;
-
 			_running = InputManager.GetKey(InputKey.Run);
 		}
+
+		Vector2 keyboardInput = new Vector2(InputManager.GetAxis(InputKey.MoveHorizontal), InputManager.GetAxis(InputKey.MoveVertical));
+		_inputDir = keyboardInput.normalized;
 
 		//FOR TESTING ONLY
 		if (Input.GetKeyDown(KeyCode.Alpha2))
 			player.Animator.SetTrigger("EquipSword");
 		if (Input.GetKeyDown(KeyCode.Alpha1))
 			player.Animator.SetTrigger("EquipBow");
+		if (Input.GetKeyDown(KeyCode.L))
+			TakeDamage(100);
+
 		//
+
+
 	}
 
 	private void InteractWithRope() {
@@ -297,7 +303,7 @@ public class PlayerController : BaseController
 	}
 
 	private void OnTargetDeath(GameObject Target) {
-		if (Target == _targetedEnemy.gameObject)
+		if (_targetedEnemy != null && Target == _targetedEnemy.gameObject)
 			_targetedEnemy = null;
 	}
 
@@ -389,10 +395,13 @@ public class PlayerController : BaseController
 		if (!_isJumping)
 			_isGrounded = Grounded(); //ground check before the main loop for accurate input
 
-		base.Step();
+		if (!_isGrounded && _jumpDir == Vector3.zero)
+			_jumpDir = _moveDir;
+		else if (_isGrounded)
+			_jumpDir = Vector3.zero;
 
-		if (Input.GetKeyDown(KeyCode.G))
-			TakeDamage(100, Vector3.zero, 0f);
+
+		base.Step();
 	}
 
 	protected override void Move() {
@@ -403,7 +412,14 @@ public class PlayerController : BaseController
 		else
 			Move_Combat();
 
+
+		if (_jumpDir != Vector3.zero) {
+			_jumpDir.y = _moveDir.y;
+			_moveDir = _jumpDir;
+		}
+
 		controller.Move(_moveDir * Time.deltaTime);
+
 		_currentSpeed = new Vector2(_moveDir.x, _moveDir.z).magnitude;
 	}
 
@@ -423,7 +439,7 @@ public class PlayerController : BaseController
           /**/
 
 			//stop rotating when player is falling or is playing land anim
-			if (_moveDelay > 0 || DistanceToGround() > 3f)
+			if (_moveDelay > 0 || DistanceToGround() > 2f)
 				moveVector = player.transform.eulerAngles;
 
 			player.transform.eulerAngles = moveVector; //+ tiltVector;
