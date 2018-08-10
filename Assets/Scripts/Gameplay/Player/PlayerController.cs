@@ -31,11 +31,11 @@ public class PlayerController : BaseController
 	[SerializeField] float _gravityMod;
 	[SerializeField] [Range(0, 1)] float _airControl;
 	float _jumpForce;
-	bool _isJumping;
+	bool _isGrounded, _isJumping, _isRunning;
 
 	Vector2 _inputDir;
 	Vector3 _moveDir, _jumpDir;
-	bool _running;
+	float _moveDelay;
 	#endregion
 
 	#region Combat Fields
@@ -66,9 +66,6 @@ public class PlayerController : BaseController
 	int _randomParam;
 
 	#endregion
-
-	bool _isGrounded;
-	float _moveDelay;
 
 	#region Animation Events
 	// Animator events don't support boolean parameters, so i'm using ints. 1 = true, 0 = false. 
@@ -150,6 +147,26 @@ public class PlayerController : BaseController
 	}
 	#endregion
 
+	#region Animation Properties
+	const string AP_RND = "RND";
+	const string AP_Jump = "Jump";
+	const string AP_MoveSpeed = "Speed";
+	const string AP_IsGrounded = "Grounded";
+	const string AP_GroundDistance = "GroundDistance";
+	//Combat:
+	const string AP_Dodge = "Dodge";
+	const string AP_InCombat = "InCombat";
+	const string AP_MoveCombat_X = "Move_Combat_X";
+	const string AP_MoveCombat_Y = "Move_Combat_Y";
+	const string AP_EquipBow = "EquipBow";
+	const string AP_EquipSword = "EquipSword";
+	const string AP_FireArrow = "FireArrow";
+	const string AP_MeleeLight = "MeleeLight";
+	const string AP_Impact = "Impact";
+	const string AP_Die = "Die";
+	//
+	#endregion
+
 	protected override void Awake() {
 		base.Awake();
 
@@ -160,28 +177,26 @@ public class PlayerController : BaseController
 	}
 
 	public override void Resume() {
-		HandleEvents(true);
+		AddListeners();
 		player.Animator.SetRootMotion(false, false);
 		A_OnEquipSword(0);
 		A_OnEquipBow(0);
 	}
 
 	public override void Suspend() {
-		HandleEvents(false);
+		RemoveListeners();
 		player.Animator.SetRootMotion(false, false);
 		A_OnEquipSword(0);
 		A_OnEquipBow(0);
 	}
 
-	private void HandleEvents(bool Active) {
-		if (Active) {
-			EventManager.InputEvent.OnBowDraw.AddListener(OnBowDraw);
-			EventManager.InputEvent.OnCameraZoom.AddListener(OnCameraZoom);
-		}
-		else {
-			EventManager.InputEvent.OnBowDraw.RemoveListener(OnBowDraw);
-			EventManager.InputEvent.OnCameraZoom.RemoveListener(OnCameraZoom);
-		}
+	private void AddListeners() {
+		EventManager.InputEvent.OnBowDraw.AddListener(OnBowDraw);
+		EventManager.InputEvent.OnCameraZoom.AddListener(OnCameraZoom);
+	}
+	private void RemoveListeners() {
+		EventManager.InputEvent.OnBowDraw.RemoveListener(OnBowDraw);
+		EventManager.InputEvent.OnCameraZoom.RemoveListener(OnCameraZoom);
 	}
 
 	protected override void UpdateInput() {
@@ -230,7 +245,7 @@ public class PlayerController : BaseController
 			if (InputManager.GetKeyDown(InputKey.Interact2))
 				InteractWithRope();
 
-			_running = InputManager.GetKey(InputKey.Run);
+			_isRunning = InputManager.GetKey(InputKey.Run);
 		}
 
 		Vector2 keyboardInput = new Vector2(InputManager.GetAxis(InputKey.MoveHorizontal), InputManager.GetAxis(InputKey.MoveVertical));
@@ -238,9 +253,9 @@ public class PlayerController : BaseController
 
 		//FOR TESTING ONLY
 		if (Input.GetKeyDown(KeyCode.Alpha2))
-			player.Animator.SetTrigger("EquipSword");
+			player.Animator.SetTrigger(AP_EquipSword);
 		if (Input.GetKeyDown(KeyCode.Alpha1))
-			player.Animator.SetTrigger("EquipBow");
+			player.Animator.SetTrigger(AP_EquipBow);
 		if (Input.GetKeyDown(KeyCode.L))
 			TakeDamage(100);
 
@@ -338,7 +353,7 @@ public class PlayerController : BaseController
 
 	private void Move_Default() {
 		if (InputManager.GetKeyDown(InputKey.Jump) && _isGrounded) {
-			player.Animator.SetTrigger("Jump");
+			player.Animator.SetTrigger(AP_Jump);
 		}
 
 		if (_moveDelay > 0f)
@@ -361,7 +376,7 @@ public class PlayerController : BaseController
 
 	private void Move_Combat() {
 		if (InputManager.GetKeyDown(InputKey.Jump) && _isGrounded)
-			player.Animator.SetTrigger("Dodge");
+			player.Animator.SetTrigger(AP_Dodge);
 
 		//if player is very close to the enemy, make sure he can't get any closer
 		if (_targetedEnemy != null) {
@@ -399,7 +414,6 @@ public class PlayerController : BaseController
 			_jumpDir = _moveDir;
 		else if (_isGrounded)
 			_jumpDir = Vector3.zero;
-
 
 		base.Step();
 	}
@@ -480,16 +494,18 @@ public class PlayerController : BaseController
 	}
 
 	protected override void Rotate() {
-		if (!_inCombat)
-			Rotate_Default();
-		else
-			Rotate_Combat();
+		if (_isGrounded) {
+			if (!_inCombat)
+				Rotate_Default();
+			else
+				Rotate_Combat();
+		}
 	}
 
 	private void MeleeAttack() {
 		_inCombat = true;
 		_isAttacking = true;
-		player.Animator.SetTrigger("MeleeLight");
+		player.Animator.SetTrigger(AP_MeleeLight);
 	}
 
 	private void OnBowDraw(bool Drawing) {
@@ -505,7 +521,7 @@ public class PlayerController : BaseController
 	}
 
 	private void FireArrow() {
-		player.Animator.SetTrigger("FireArrow");
+		player.Animator.SetTrigger(AP_FireArrow);
 
 		GameObject arrow = Instantiate(_arrowPrefab).gameObject;
 		arrow.transform.position = _arrowSpawnPoint.position;
@@ -538,14 +554,14 @@ public class PlayerController : BaseController
 
 	protected override void Animate() {
 		float animationSpeed = (_currentSpeed / _runSpeed) * _inputDir.magnitude;
-		player.Animator.SetFloat("Speed", animationSpeed, _speedSmoothTime, Time.deltaTime);
-		player.Animator.SetFloat("Move_Combat_X", _animSpeed.x);
-		player.Animator.SetFloat("Move_Combat_Y", _animSpeed.y);
+		player.Animator.SetFloat(AP_MoveSpeed, animationSpeed, _speedSmoothTime, Time.deltaTime);
+		player.Animator.SetFloat(AP_MoveCombat_X, _animSpeed.x);
+		player.Animator.SetFloat(AP_MoveCombat_Y, _animSpeed.y);
 
-		player.Animator.SetBool("Grounded", _isGrounded);
-		player.Animator.SetFloat("GroundDistance", DistanceToGround());
-		player.Animator.SetBool("InCombat", _inCombat);
-		player.Animator.SetInt("RND", _randomParam);
+		player.Animator.SetBool(AP_IsGrounded, _isGrounded);
+		player.Animator.SetFloat(AP_GroundDistance, DistanceToGround());
+		player.Animator.SetBool(AP_InCombat, _inCombat);
+		player.Animator.SetInt(AP_RND, _randomParam);
 
 		if (_moveDelay > 0)
 			_moveDelay -= Time.deltaTime;
@@ -569,7 +585,7 @@ public class PlayerController : BaseController
 	}
 
 	public void TakeDamage(float Damage) {
-		player.Animator.SetTrigger("Impact");
+		player.Animator.SetTrigger(AP_Impact);
 		Stagger();
 
 		_health -= Damage;
@@ -602,7 +618,7 @@ public class PlayerController : BaseController
 			EventManager.PlayerEvent.OnDeath.Invoke();
 
 		isDead = true;
-		player.Animator.SetTrigger("Die");
+		player.Animator.SetTrigger(AP_Die);
 		print("PlayerController::Die()");
 	}
 

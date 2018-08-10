@@ -19,6 +19,7 @@ public class StandardEnemy : BaseEnemy
 	float _currentStateTimer; // used by the current state
 
 	EnemyWeapon _sword;
+
 	#region Animation Events
 
 	void A_OnAttackImpact(int Damage) {
@@ -67,9 +68,8 @@ public class StandardEnemy : BaseEnemy
 		System.Random rnd = new System.Random();
 
 		while (true) {
-			yield return new WaitForSeconds(2f);
 			animator.SetInteger(AP_RND, rnd.Next(0, 10));
-			yield return new WaitForEndOfFrame();
+			yield return new WaitForSeconds(2f);
 		}
 	}
 
@@ -86,11 +86,15 @@ public class StandardEnemy : BaseEnemy
 	protected override void Patrol() {
 		base.Patrol();
 
-		if (DetectPlayer())
+		if (DetectPlayer()) {
 			SwitchState(EnemyState.MoveToAttack);
+			return;
+		}
 
-		if (waypoints.Length == 0)
+		if (waypoints.Length == 0) {
 			SwitchState(EnemyState.Idle);
+			return;
+		}
 
 		float targetDistance = Vector3.Distance(transform.position, waypoints[_patrolIndex].position);
 
@@ -100,7 +104,7 @@ public class StandardEnemy : BaseEnemy
 			if (_currentSpeed < 0.15f) {
 				_currentSpeed = 0f;
 				SwitchState(EnemyState.Idle);
-				_patrolIndex = GetRandomIndex(_patrolIndex, waypoints.Length);
+				_patrolIndex = MathX.Int.GetRandomIndex(_patrolIndex, waypoints.Length);
 			}
 
 			return;
@@ -159,16 +163,6 @@ public class StandardEnemy : BaseEnemy
 		_lookAtRoutine = null;
 	}
 
-	private int GetRandomIndex(int CurrentIndex, int MaxIndex) {
-		System.Random rnd = new System.Random();
-
-		int index = rnd.Next(MaxIndex);
-		if (index == CurrentIndex)
-			return GetRandomIndex(index, MaxIndex);
-
-		return index;
-	}
-
 	protected override void Attack() {
 		base.Attack();
 
@@ -222,12 +216,6 @@ public class StandardEnemy : BaseEnemy
 		animator.SetBool(AP_IsDead, IsDead);
 	}
 
-	protected override void DeadState() {
-		base.DeadState();
-
-		print("StandardEnemy::DeadState()");
-	}
-
 	private void LeapTowards(Transform Target, float LeapDuration) {
 		if (_leapRoutine != null)
 			StopCoroutine(_leapRoutine);
@@ -273,7 +261,7 @@ public class StandardEnemy : BaseEnemy
 		if (!isDead) {
 			_isAlerted = true;
 			animator.SetTrigger(AP_Impact);
-			SwitchState(EnemyState.MoveToAttack);
+			SwitchState(EnemyState.Tired);
 		}
 	}
 

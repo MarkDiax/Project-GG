@@ -249,7 +249,7 @@ GameObject:
   - component: {fileID: 95959984720212264}
   - component: {fileID: 114146599796499516}
   - component: {fileID: 54419493702968642}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Enemy_Paladin
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1655,8 +1655,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1241588141631792}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 12.92, y: 0, z: 0.986}
+  m_LocalRotation: {x: -0, y: -0.6885833, z: -0, w: 0.7251573}
+  m_LocalPosition: {x: -3.09, y: -26.33, z: 26.32}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4866189823564158}
@@ -1666,7 +1666,7 @@ Transform:
   - {fileID: 4402974841422228}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -87.036, z: 0}
 --- !u!4 &4515794718071944
 Transform:
   m_ObjectHideFlags: 1
@@ -2202,11 +2202,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d448cd3f785e94c4fafb902aa63524d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _Debugging: 1
+  _Debugging: 0
   _Static: 0
   _health: 100
   idleTime: 2
   waypoints:
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}

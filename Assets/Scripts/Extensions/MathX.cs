@@ -37,7 +37,7 @@ public static class MathX
 
             int index = rnd.Next(MaxIndex);
             if (index == CurrentIndex)
-                return GetRandomIndex(index, MaxIndex);
+                return GetRandomIndex(0, MaxIndex);
 
             return index;
         }
