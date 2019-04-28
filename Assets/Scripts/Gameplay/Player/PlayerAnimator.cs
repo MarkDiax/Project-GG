@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerAnimator : CharacterAnimator
 {
     private Player _player;
-    private Transform _camera;
+    private Camera _camera;
 
     private bool _onRope, _drawingBow, _aimingBow;
     private bool[] _useRootMotion = new bool[2];
@@ -13,13 +13,12 @@ public class PlayerAnimator : CharacterAnimator
     [Header("Bones")]
     [SerializeField]
     private Transform _spine;
-    private Vector2 _inputDir;
 
     protected override void Awake() {
         base.Awake();
 
         _player = Player.Instance;
-        _camera = Camera.main.transform;
+        _camera = Camera.main;
     }
 
     private void Start() {
@@ -27,30 +26,13 @@ public class PlayerAnimator : CharacterAnimator
     }
 
     private void AddListeners() {
-        EventManager.AnimationEvent.UseRootMotion.AddListener(SetRootMotion);
-        EventManager.AnimationEvent.OnCombatStance.AddListener(UpdateCombatStance);
-
-        EventManager.InputEvent.OnJump.AddListener(() => SetTrigger("Jump"));
         EventManager.InputEvent.OnCameraZoom.AddListener(OnZoom);
         EventManager.InputEvent.OnBowDraw.AddListener(OnDrawBow);
-        EventManager.InputEvent.OnBowShoot.AddListener(() => SetTrigger("FireArrow"));
         EventManager.PlayerEvent.OnMove.AddListener((Dir) => {
-            SetFloat("MoveX", Dir.x);
-            SetFloat("MoveY", Dir.y);
-            _inputDir = Dir;
+            SetFloat("Move_Combat_X", Dir.x);
+            SetFloat("Move_Combat_Y", Dir.y);
         });
 
-        EventManager.RopeEvent.OnRope.AddListener((OnRope) => _onRope = OnRope);
-        EventManager.RopeEvent.OnRopeClimbing.AddListener((ClimbSpeed) => SetFloat("ClimbSpeed", ClimbSpeed));
-    }
-
-    private void UpdateCombatStance(bool InCombat) {
-        SetBool("InCombat", InCombat);
-    }
-
-    private void OnDealDamage() {
-        if (EventManager.AnimationEvent.OnDealDamage != null)
-            EventManager.AnimationEvent.OnDealDamage.Invoke();
     }
 
     public void OnRopeClimb() {
@@ -73,21 +55,13 @@ public class PlayerAnimator : CharacterAnimator
         _drawingBow = Drawing;
     }
 
-    public void JumpEvent() {
-        if (EventManager.AnimationEvent.OnActualJump != null)
-            EventManager.AnimationEvent.OnActualJump.Invoke();
-    }
-
-    private void Update() {
-        SetBool("RopeClimbing", _onRope);
-    }
-
     private Quaternion _oldSpineRot;
+
     private void LateUpdate() {
         Quaternion targetSpineRot = _spine.rotation;
 
         if (_drawingBow)
-            targetSpineRot = Quaternion.Euler(_spine.eulerAngles.x, _spine.eulerAngles.y, _camera.eulerAngles.x);
+            targetSpineRot = Quaternion.Euler(_spine.eulerAngles.x, _spine.eulerAngles.y, _camera.transform.eulerAngles.x);
 
         if (!_aimingBow)
             _oldSpineRot = _spine.rotation;
@@ -103,7 +77,7 @@ public class PlayerAnimator : CharacterAnimator
             transform.rotation *= GetDeltaRotation;
     }
 
-    private void SetRootMotion(bool UseRootPos, bool UseRootRot) {
+    public void SetRootMotion(bool UseRootPos, bool UseRootRot) {
         _useRootMotion[0] = UseRootPos;
         _useRootMotion[1] = UseRootRot;
     }

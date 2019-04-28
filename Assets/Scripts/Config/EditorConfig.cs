@@ -12,6 +12,8 @@
     LevelBounds = 12,
     LevelObjects = 13,
     IgnoreRope = 14,
+    Interactable = 15,
+	AI = 16
 }
 
 public enum Tags

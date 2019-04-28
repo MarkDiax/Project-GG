@@ -11,17 +11,11 @@ public class Arrow : MonoBehaviour
     [SerializeField]
     private float _forceOnImpact;
 
-    [Header("Slowmotion Effect")]
-    [SerializeField]
-    private float _slowmoTimescale = 0.1f;
-    [SerializeField]
-    private float _slowmoDuration = 0.2f;
-
     private void OnCollisionEnter(Collision collision) {
         BaseEnemy enemy = collision.collider.GetComponent<BaseEnemy>();
-        if (enemy != null) {
+        if (enemy != null && !enemy.IsDead) {
             enemy.TakeDamage(_damage);
-            GameManager.Instance.SlowdownTime(_slowmoTimescale, _slowmoDuration);
+			GameManager.Instance.TriggerSlowmotion();
             Destroy(gameObject);
         }
 

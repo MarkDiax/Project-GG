@@ -31,7 +31,7 @@ public class CharacterAnimator : MonoBehaviour
         Animator.SetBool(State, true);
     }
 
-    public bool CheckBool(string State) {
+    public bool GetBool(string State) {
         return Animator.GetBool(State);
     }
 
@@ -86,4 +86,8 @@ public class CharacterAnimator : MonoBehaviour
     public void SetActive(bool Active) {
         Animator.enabled = Active;
     }
+
+	public void SetInt(string Name, int Value) {
+		Animator.SetInteger(Name, Value);
+	}
 }

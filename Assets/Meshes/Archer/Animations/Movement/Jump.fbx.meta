@@ -195,7 +195,14 @@ ModelImporter:
       curves: []
       events:
       - time: 0
-        functionName: JumpEvent
+        functionName: A_OnJump
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.98848575
+        functionName: A_OnLanding
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0

@@ -4,86 +4,88 @@ using UnityEngine.Events;
 
 public class EventManager : Singleton<EventManager>
 {
-    #region Base Classes
-    public class FloatEvent : UnityEvent<float> { }
-    public class BoolEvent : UnityEvent<bool> { }
-    public class Bool2Event : UnityEvent<bool, bool> { }
-    public class Vec2Event : UnityEvent<Vector2> { }
-    public class GameObjectEvent : UnityEvent<GameObject> { }
-    public class ControllerEvent : UnityEvent<BaseController, bool> { }
+	#region Base Classes
+	public class FloatEvent : UnityEvent<float> { }
+	public class BoolEvent : UnityEvent<bool> { }
+	public class Bool2Event : UnityEvent<bool, bool> { }
+	public class Vec2Event : UnityEvent<Vector2> { }
+	public class GameObjectEvent : UnityEvent<GameObject> { }
+	public class ControllerEvent : UnityEvent<BaseController, bool> { }
 
-    public class RopePartEvent : UnityEvent<RopePart> { }
-    public class RopeTypeEvent : UnityEvent<RopeBehaviour> { }
-    #endregion
+	public class RopePartEvent : UnityEvent<RopePart> { }
+	public class RopeTypeEvent : UnityEvent<RopeBehaviour> { }
+	#endregion
 
-    public static class InputEvent
-    {
-        public static BoolEvent OnBowDraw;
-        public static UnityEvent OnBowShoot;
-        public static UnityEvent OnMelee;
-        public static BoolEvent OnCameraZoom;
-        public static UnityEvent OnJump;
+	public static class GameEvent
+	{
+		public static UnityEvent OnGameReload;
 
-        public static void Init() {
-            OnBowDraw = new BoolEvent();
-            OnBowShoot = new UnityEvent();
-            OnMelee = new UnityEvent();
-            OnCameraZoom = new BoolEvent();
-            OnJump = new UnityEvent();
-        }
-    }
+		public static void Init() {
+			OnGameReload = new UnityEvent();
+		}
+	}
 
-    public static class PlayerEvent
-    {
-        public static ControllerEvent OnControllerOverride;
-        public static Vec2Event OnMove;
+	public static class InputEvent
+	{
+		public static BoolEvent OnBowDraw;
+		public static BoolEvent OnCameraZoom;
 
-        public static void Init() {
-            OnMove = new Vec2Event();
-            OnControllerOverride = new ControllerEvent();
-        }
-    }
+		public static void Init() {
+			OnBowDraw = new BoolEvent();
+			OnCameraZoom = new BoolEvent();
+		}
+	}
 
-    public static class RopeEvent
-    {
-        public static BoolEvent OnRope;
-        public static RopePartEvent OnRopeTrigger;
-        public static FloatEvent OnRopeClimbing;
-        public static RopeTypeEvent OnRopeBreak;
+	public static class PlayerEvent
+	{
+		public static BoolEvent OnEquipBow;
+		public static BoolEvent OnEquipSword;
+		public static RopePartEvent OnGrabRope;
+		public static ControllerEvent OnControllerOverride;
+		public static Vec2Event OnMove;
+		public static FloatEvent OnHealthChanged;
+		public static UnityEvent OnDeath;
 
-        public static UnityEvent OnRopeClimb;
-        public static UnityEvent OnRopeHold;
+		public static void Init() {
+			OnEquipBow = new BoolEvent();
+			OnEquipSword = new BoolEvent();
+			OnGrabRope = new RopePartEvent();
+			OnControllerOverride = new ControllerEvent();
+			OnMove = new Vec2Event();
+			OnHealthChanged = new FloatEvent();
+			OnDeath = new UnityEvent();
+		}
+	}
 
-        public static void Init() {
-            OnRope = new BoolEvent();
-            OnRopeClimbing = new FloatEvent();
-            OnRopeTrigger = new RopePartEvent();
-            OnRopeBreak = new RopeTypeEvent();
+	public static class RopeEvent
+	{
+		public static RopeTypeEvent OnRopeBreak;
 
-            OnRopeClimb = new UnityEvent();
-            OnRopeHold = new UnityEvent();
-        }
-    }
-   
-    public static class AnimationEvent
-    {
-        public static Bool2Event UseRootMotion;
-        public static UnityEvent OnActualJump; //the moment the animation jumps / increases in heigtht
-        public static BoolEvent OnCombatStance;
-        public static UnityEvent OnDealDamage;
+		public static UnityEvent OnRopeClimb;
+		public static UnityEvent OnRopeHold;
 
-        public static void Init() {
-            UseRootMotion = new Bool2Event();
-            OnActualJump = new UnityEvent();
-            OnCombatStance = new BoolEvent();
-            OnDealDamage = new UnityEvent();
-        }
-    }
+		public static void Init() {
+			OnRopeBreak = new RopeTypeEvent();
 
-    public override void Init() {
-        InputEvent.Init();
-        PlayerEvent.Init();
-        RopeEvent.Init();
-        AnimationEvent.Init();
-    }
+			OnRopeClimb = new UnityEvent();
+			OnRopeHold = new UnityEvent();
+		}
+	}
+
+	public static class AIEvent
+	{
+		public static GameObjectEvent OnEnemyDeath;
+
+		public static void Init() {
+			OnEnemyDeath = new GameObjectEvent();
+		}
+	}
+
+	public override void Init() {
+		GameEvent.Init();
+		InputEvent.Init();
+		PlayerEvent.Init();
+		RopeEvent.Init();
+		AIEvent.Init();
+	}
 }

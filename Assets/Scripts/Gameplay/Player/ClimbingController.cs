@@ -6,6 +6,7 @@ public class ClimbingController : BaseController
     [SerializeField]
     private float _maxSpeed, _acceleration, _deceleration;
     private float _currentSpeed;
+    [SerializeField] [Range(0.1f, 5f)] float _animationSpeedMultiplier = 1f;
 
     [SerializeField]
     private Transform _leftHand, _rightHand;
@@ -30,23 +31,18 @@ public class ClimbingController : BaseController
     //movement
     private Vector3 _moveDir;
     private Vector2 _inputDir;
-    private Vector2 _animSpeed;
     private float _targetSpeed = 3f;
 
-    protected override void Start() {
-        base.Start();
-
-        EventManager.RopeEvent.OnRopeTrigger.AddListener(OnRopeTrigger);
+    void Start() {
+        //EventManager.RopeEvent.OnRopeTrigger.AddListener(OnRopeTrigger);
         HandleListeners(true);
     }
 
     public override void Resume() {
-        base.Resume();
         HandleListeners(true);
     }
 
     public override void Suspend() {
-        base.Suspend();
         HandleListeners(false);
     }
 
@@ -55,6 +51,8 @@ public class ClimbingController : BaseController
             EventManager.RopeEvent.OnRopeClimb.AddListener(OnRopeClimb);
             EventManager.RopeEvent.OnRopeHold.AddListener(() => _holdRope = true);
             EventManager.RopeEvent.OnRopeBreak.AddListener((Part) => OnRopeBreak());
+            EventManager.PlayerEvent.OnGrabRope.AddListener(OnGrabRope);
+
         }
         else {
             EventManager.RopeEvent.OnRopeClimb.RemoveListener(OnRopeClimb);
@@ -63,26 +61,38 @@ public class ClimbingController : BaseController
         }
     }
 
+    void OnGrabRope(RopePart Part) {
+        AttachToRope(Part);
+        IgnoreCollisionsWithRope(true);
+        _climbRoutine = StartCoroutine(Climbing());
+    }
+
     private void OnRopeBreak() {
         ReleaseRope();
         DetachFromRope();
     }
 
-    void OnRopeTrigger(RopePart Part) {
-        if (_interactRoutine != null || _climbRoutine != null)
-            return;
+    protected override void UpdateInput() {
+        _inputDir = new Vector2(InputManager.GetAxis(InputKey.MoveHorizontal), InputManager.GetAxis(InputKey.MoveVertical));
 
-        if (Input.GetKeyDown(KeyCode.E) && _interactRoutine == null) {
-            EventManager.PlayerEvent.OnControllerOverride.Invoke(this, false);
-            _currentRope = Part.Rope;
-            IgnoreCollisionsWithRope(true);
-            _interactRoutine = StartCoroutine(PullRope());
-        }
-        else if (Input.GetKeyDown(KeyCode.F) && _climbRoutine == null) {
-            AttachToRope(Part);
-            IgnoreCollisionsWithRope(true);
-            _climbRoutine = StartCoroutine(Climbing());
-        }
+
+    }
+
+    void OnRopeTrigger(RopePart Part) {
+        //if (_interactRoutine != null || _climbRoutine != null)
+        //    return;
+
+        //if (Input.GetKeyDown(KeyCode.E) && _interactRoutine == null) {
+        //    EventManager.PlayerEvent.OnControllerOverride.Invoke(this, false);
+        //    _currentRope = Part.Rope;
+        //    IgnoreCollisionsWithRope(true);
+        //    _interactRoutine = StartCoroutine(PullRope());
+        //}
+        //else if (Input.GetKeyDown(KeyCode.F) && _climbRoutine == null) {
+        //    AttachToRope(Part);
+        //    IgnoreCollisionsWithRope(true);
+        //    _climbRoutine = StartCoroutine(Climbing());
+        //}
     }
 
     private IEnumerator PullRope() {
@@ -200,11 +210,7 @@ public class ClimbingController : BaseController
                 player.transform.eulerAngles = new Vector3(0, player.transform.eulerAngles.y, 0);
             }
 
-            float animMultiplier = 1.3f;
-
-            if (EventManager.RopeEvent.OnRopeClimbing != null)
-                EventManager.RopeEvent.OnRopeClimbing.Invoke(Mathf.Clamp(_moveY * animMultiplier,0, Mathf.Infinity));
-
+            player.Animator.SetFloat("Speed", _moveY * _animationSpeedMultiplier);
             yield return new WaitForEndOfFrame();
         }
     }
@@ -245,17 +251,14 @@ public class ClimbingController : BaseController
     }
 
     void AttachToRope(RopePart Part) {
-        EventManager.RopeEvent.OnRopeTrigger.RemoveListener(OnRopeTrigger);
+        //EventManager.RopeEvent.OnRopeTrigger.RemoveListener(OnRopeTrigger);
 
         _currentClimbingNode = Part;
         _currentRope = Part.Rope;
 
-        UseGravity(false);
         usePhysics = false;
         player.transform.SetParent(GetClosestNode(GetClosestHand().position).playerHolder.transform);
-
-        if (EventManager.RopeEvent.OnRope != null)
-            EventManager.RopeEvent.OnRope.Invoke(true);
+        player.Animator.SetBool("RopeClimbing", true);
 
         StartCoroutine(MoveToPart(Part));
     }
@@ -270,7 +273,6 @@ public class ClimbingController : BaseController
     }
 
     void DetachFromRope() {
-        UseGravity(true);
         usePhysics = true;
         player.transform.parent = null;
         player.transform.localScale = new Vector3(1, 1, 1);
@@ -283,10 +285,9 @@ public class ClimbingController : BaseController
         _currentClimbingNode = null;
         _currentRope = null;
 
-        EventManager.RopeEvent.OnRopeTrigger.AddListener(OnRopeTrigger);
+        //EventManager.RopeEvent.OnRopeTrigger.AddListener(OnRopeTrigger);
 
-        if (EventManager.RopeEvent.OnRope != null)
-            EventManager.RopeEvent.OnRope.Invoke(false);
+        player.Animator.SetBool("RopeClimbing", false);
     }
 
     protected override void Rotate() {
@@ -303,9 +304,6 @@ public class ClimbingController : BaseController
         player.transform.rotation = Quaternion.Lerp(player.transform.rotation, targetRotation, 12 + 10 * _moveDir.magnitude * Time.deltaTime);
     }
 
-    protected override void UpdateInput() {
-        _inputDir = new Vector2(InputManager.GetAxis(InputKey.MoveHorizontal), InputManager.GetAxis(InputKey.MoveVertical));
-    }
 
     private void OnDrawGizmos() {
 
@@ -371,25 +369,6 @@ public class ClimbingController : BaseController
         controller.Move(_moveDir * Time.deltaTime);
 
         _currentSpeed = new Vector2(controller.velocity.x, controller.velocity.z).magnitude;
-
-        _animSpeed = Vector2.Lerp(_animSpeed, normalizedInput, 5 * Time.deltaTime);
-
-        if (EventManager.PlayerEvent.OnMove != null)
-            EventManager.PlayerEvent.OnMove.Invoke(_animSpeed);
-    }
-
-
-    protected override void Animate() {
-        //float animationSpeed = (_running ? _currentSpeed / _runSpeed : _currentSpeed / _walkSpeed * 0.5f) * _inputDir.magnitude;
-        float animationSpeed = (_currentSpeed / _targetSpeed) * _inputDir.magnitude;
-        player.Animator.SetFloat("Speed", animationSpeed, 0.1f, Time.deltaTime);
-
-        //to fix a floating-point precision issue in the animator:
-        float PlayerMoveSpeed = player.Animator.GetFloat("Speed");
-        if (PlayerMoveSpeed < 0.3f && _inputDir.magnitude == 0)
-            PlayerMoveSpeed = 0;
-
-        player.Animator.SetFloat("Speed", PlayerMoveSpeed);
     }
 
     private RopePart GetClosestNode(Vector3 ToPosition) {
