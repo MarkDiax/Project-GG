@@ -1,3 +1,21 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:f7be2d51b3d76ae88ffd95a67040c4e55703d4a0071a1da605a484ae99917e04
-size 548
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbe028633c1ce02449cd92e65e42cfe6, type: 3}
+  m_Name: AttackData
+  m_EditorClassIdentifier: 
+  movementSpeed: 1
+  rotationSpeed: 2.2
+  acceleration: 1
+  deceleration: 1.2
+  fallbackAttackDamage: 20
+  minimumAttackDistance: 4
+  maximumAttackDistance: 1.5
+  timeBetweenAttacks: 2
