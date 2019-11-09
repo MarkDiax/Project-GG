@@ -16,7 +16,6 @@ public abstract class BaseController : MonoBehaviour
 	protected virtual void Awake() {
 		player = Player.Instance;
 		mainCamera = Camera.main;
-		input = InputManager.Instance;
 		controller = GetComponent<CharacterController>();
 
 		usePhysics = true;

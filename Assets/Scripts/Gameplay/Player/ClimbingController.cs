@@ -73,7 +73,7 @@ public class ClimbingController : BaseController
     }
 
     protected override void UpdateInput() {
-        _inputDir = new Vector2(InputManager.GetAxis(InputKey.MoveHorizontal), InputManager.GetAxis(InputKey.MoveVertical));
+        _inputDir = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
 
 
     }
@@ -128,7 +128,7 @@ public class ClimbingController : BaseController
             //    yield break;
             //}
 
-            if (InputManager.GetKey(InputKey.Jump)) {
+            if (Input.GetKey(KeyCode.Space)) {
                 ReleaseRope();
                 yield break;
             }
@@ -138,7 +138,7 @@ public class ClimbingController : BaseController
             _currentClimbingNode.Rigidbody.AddForce(0, -200 * Time.deltaTime, 0, ForceMode.Acceleration);
 
             if (Input.GetKey(KeyCode.Q)) {
-                float _moveX = InputManager.GetAxis(InputKey.MoveHorizontal);
+                float _moveX = Input.GetAxis("Horizontal");
 
                 for (int i = _currentClimbingNode.GetRopeIndex(); i > 0; i--) {
                     Vector3 targetDirection = new Vector3(_moveX, 0f, _moveY);

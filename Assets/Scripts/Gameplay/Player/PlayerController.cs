@@ -201,25 +201,25 @@ public class PlayerController : BaseController
 
 	protected override void UpdateInput() {
 		if (_isGrounded) {
-			if (InputManager.GetKey(InputKey.Aim) && _hasBowEquipped) {
+			if (Input.GetMouseButton(1) && _hasBowEquipped) {
 				if (EventManager.InputEvent.OnCameraZoom != null)
 					EventManager.InputEvent.OnCameraZoom.Invoke(true);
 
-				if (InputManager.GetKey(InputKey.Shoot)) {
+				if (Input.GetMouseButton(0)) {
 					if (EventManager.InputEvent.OnBowDraw != null)
 						EventManager.InputEvent.OnBowDraw.Invoke(true);
 				}
-				if (InputManager.GetKeyUp(InputKey.Shoot)) {
+				if (Input.GetMouseButtonUp(0)) {
 					FireArrow();
 
 					if (EventManager.InputEvent.OnBowDraw != null)
 						EventManager.InputEvent.OnBowDraw.Invoke(false);
 				}
 			}
-			else if (InputManager.GetKeyDown(InputKey.Melee) && _hasSwordEquipped)
+			else if (Input.GetMouseButton(0) && _hasSwordEquipped)
 				MeleeAttack();
 
-			if (InputManager.GetKeyUp(InputKey.Aim)) {
+			if (Input.GetMouseButtonUp(1)) {
 				if (EventManager.InputEvent.OnCameraZoom != null)
 					EventManager.InputEvent.OnCameraZoom.Invoke(false);
 
@@ -227,10 +227,12 @@ public class PlayerController : BaseController
 					EventManager.InputEvent.OnBowDraw.Invoke(false);
 			}
 
-			if (InputManager.GetKeyDown(InputKey.Target))
-				TargetEnemy();
+            if (Input.GetKeyDown(KeyCode.Tab)) {
 
-			if (InputManager.GetKeyDown(InputKey.Interact1)) {
+				TargetEnemy();
+            }
+
+			if (Input.GetKeyDown(KeyCode.E)) {
 				Collider[] objects = Physics.OverlapSphere(player.transform.position, 2f, 1 << (int)Layers.Interactable);
 
 				for (int i = 0; i < objects.Length; i++) {
@@ -242,13 +244,13 @@ public class PlayerController : BaseController
 				}
 			}
 
-			if (InputManager.GetKeyDown(InputKey.Interact2))
+			if (Input.GetKeyDown(KeyCode.E))
 				InteractWithRope();
 
-			_isRunning = InputManager.GetKey(InputKey.Run);
+			_isRunning = Input.GetKey(KeyCode.LeftShift);
 		}
 
-		Vector2 keyboardInput = new Vector2(InputManager.GetAxis(InputKey.MoveHorizontal), InputManager.GetAxis(InputKey.MoveVertical));
+		Vector2 keyboardInput = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
 		_inputDir = keyboardInput.normalized;
 
 		//FOR TESTING ONLY
@@ -352,7 +354,7 @@ public class PlayerController : BaseController
 	}
 
 	private void Move_Default() {
-		if (InputManager.GetKeyDown(InputKey.Jump) && _isGrounded) {
+		if (Input.GetKeyDown(KeyCode.Space) && _isGrounded) {
 			player.Animator.SetTrigger(AP_Jump);
 		}
 
@@ -375,7 +377,7 @@ public class PlayerController : BaseController
 	}
 
 	private void Move_Combat() {
-		if (InputManager.GetKeyDown(InputKey.Jump) && _isGrounded)
+		if (Input.GetKeyDown(KeyCode.Space) && _isGrounded)
 			player.Animator.SetTrigger(AP_Dodge);
 
 		//if player is very close to the enemy, make sure he can't get any closer

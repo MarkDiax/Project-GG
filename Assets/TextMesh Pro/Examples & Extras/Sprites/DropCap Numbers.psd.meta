@@ -1,23 +1,19 @@
 fileFormatVersion: 2
-guid: 5b32c2d36abe44540bed74c1f787033b
-timeCreated: 1454541089
+guid: 28b41fef228d6814f90e541deaf9f262
+timeCreated: 1464163332
 licenseType: Store
 TextureImporter:
   fileIDToRecycleName:
-    21300000: Default Sprite Asset_0
-    21300002: Default Sprite Asset_1
-    21300004: Default Sprite Asset_2
-    21300006: Default Sprite Asset_3
-    21300008: Default Sprite Asset_4
-    21300010: Default Sprite Asset_5
-    21300012: Default Sprite Asset_6
-    21300014: Default Sprite Asset_7
-    21300016: Default Sprite Asset_8
-    21300018: Default Sprite Asset_11
-    21300020: Default Sprite Asset_12
-    21300022: Default Sprite Asset_13
-    21300024: Default Sprite Asset_14
-    21300026: Default Sprite Asset_15
+    21300000: 0
+    21300002: 1
+    21300004: 2
+    21300006: 3
+    21300008: 4
+    21300010: 5
+    21300012: 6
+    21300014: 7
+    21300016: 8
+    21300018: 9
   externalObjects: {}
   serializedVersion: 4
   mipmaps:
@@ -124,7 +120,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Default Sprite Asset_0
+      name: 0
       rect:
         serializedVersion: 2
         x: 0
@@ -138,7 +134,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
     - serializedVersion: 2
-      name: Default Sprite Asset_1
+      name: 1
       rect:
         serializedVersion: 2
         x: 128
@@ -146,13 +142,13 @@ TextureImporter:
         width: 128
         height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: -1
     - serializedVersion: 2
-      name: Default Sprite Asset_2
+      name: 2
       rect:
         serializedVersion: 2
         x: 256
@@ -160,13 +156,13 @@ TextureImporter:
         width: 128
         height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: -1
     - serializedVersion: 2
-      name: Default Sprite Asset_3
+      name: 3
       rect:
         serializedVersion: 2
         x: 384
@@ -174,13 +170,13 @@ TextureImporter:
         width: 128
         height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: -1
     - serializedVersion: 2
-      name: Default Sprite Asset_4
+      name: 4
       rect:
         serializedVersion: 2
         x: 0
@@ -194,7 +190,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
     - serializedVersion: 2
-      name: Default Sprite Asset_5
+      name: 5
       rect:
         serializedVersion: 2
         x: 128
@@ -202,13 +198,13 @@ TextureImporter:
         width: 128
         height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: -1
     - serializedVersion: 2
-      name: Default Sprite Asset_6
+      name: 6
       rect:
         serializedVersion: 2
         x: 256
@@ -216,13 +212,13 @@ TextureImporter:
         width: 128
         height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: -1
     - serializedVersion: 2
-      name: Default Sprite Asset_7
+      name: 7
       rect:
         serializedVersion: 2
         x: 384
@@ -230,13 +226,13 @@ TextureImporter:
         width: 128
         height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: -1
     - serializedVersion: 2
-      name: Default Sprite Asset_8
+      name: 8
       rect:
         serializedVersion: 2
         x: 0
@@ -250,71 +246,15 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
     - serializedVersion: 2
-      name: Default Sprite Asset_11
+      name: 9
       rect:
         serializedVersion: 2
         x: 128
         y: 128
-        width: 384
+        width: 128
         height: 128
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-    - serializedVersion: 2
-      name: Default Sprite Asset_12
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 0
-        width: 128
-        height: 128
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-    - serializedVersion: 2
-      name: Default Sprite Asset_13
-      rect:
-        serializedVersion: 2
-        x: 128
-        y: 0
-        width: 128
-        height: 128
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-    - serializedVersion: 2
-      name: Default Sprite Asset_14
-      rect:
-        serializedVersion: 2
-        x: 256
-        y: 0
-        width: 128
-        height: 128
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-    - serializedVersion: 2
-      name: Default Sprite Asset_15
-      rect:
-        serializedVersion: 2
-        x: 384
-        y: 0
-        width: 128
-        height: 128
-      alignment: 0
-      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
