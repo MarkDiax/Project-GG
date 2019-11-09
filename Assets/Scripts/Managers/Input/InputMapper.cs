@@ -1,6 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
+//Do not use!
+//This class was an early attempt to make a input mapper that would work with keyboard and controller.
+//In coherence with InputManager.cs
+/*
 [System.Serializable]
 public class KeyBind
 {
@@ -41,3 +45,4 @@ public class InputMapper : MonoSingleton<InputMapper>
     }
 }
 
+*/

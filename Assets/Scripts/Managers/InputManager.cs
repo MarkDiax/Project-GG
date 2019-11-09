@@ -3,6 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
+
+//Do not use!
+//This class was an early attempt to make a input manager that would work with keyboard and controller.
+//In coherence with InputMapper.cs
+
+    /*
 public class InputManager : Singleton<InputManager>
 {
     public override void Init() { }
@@ -27,3 +33,4 @@ public class InputManager : Singleton<InputManager>
         return Input.GetAxis(InputMapper.Instance.customKeys[(int)Key]);
     }
 }
+*/

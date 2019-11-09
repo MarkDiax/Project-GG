@@ -6,7 +6,7 @@ public abstract class BaseController : MonoBehaviour
 {
 	protected Player player;
 	protected Camera mainCamera;
-	protected InputManager input;
+	//protected InputManager input;
 	protected CharacterController controller;
 
 	protected bool usePhysics;

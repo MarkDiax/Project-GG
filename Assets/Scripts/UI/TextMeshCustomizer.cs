@@ -6,12 +6,12 @@ public class TextMeshCustomizer : UIObject
 {
 	[SerializeField] float _revealSpeed;
 
-	TextMeshProUGUI _textMesh;
+	TMP_Text _textMesh;
 
 	protected override void Start() {
 		base.Start();
 
-		_textMesh = GetComponent<TextMeshProUGUI>();
+		_textMesh = GetComponent<TMP_Text>();
 		OnGameReload();
 	}
 

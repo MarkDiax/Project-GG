@@ -19,7 +19,7 @@ public class ButtonPrompt : UIObject
 
 	Transform _mainCamera;
 	Transform _parent;
-	TextMeshProUGUI _textMesh;
+    TMP_Text _textMesh;
 	Coroutine _endingRoutine;
 
 	protected override void Start() {
@@ -27,7 +27,7 @@ public class ButtonPrompt : UIObject
 
 		_mainCamera = Camera.main.transform;
 		_parent = transform.parent;
-		_textMesh = GetComponentInChildren<TextMeshProUGUI>(true);
+		_textMesh = GetComponentInChildren<TMP_Text>(true);
 
 		Interactable interactable = _parent.GetComponent<Interactable>();
 		if (interactable != null)
